@@ -11,7 +11,7 @@ var chai = require('chai');
  */
 chai.use(function (_chai, utils) {
 
-  utils.addMethod(chai.Assertion.prototype, 'sha1', function (str) {
+  utils.addMethod(chai.Assertion.prototype, 'sha1', function () {
     var obj = utils.flag(this, 'object');
     new chai.Assertion(obj).match(/^[a-f0-9]{40}$/i);
   });

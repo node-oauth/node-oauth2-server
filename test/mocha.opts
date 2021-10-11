@@ -1,4 +1,4 @@
---require should
+--require chai
 --require test/assertions
 --ui bdd
 --reporter spec
