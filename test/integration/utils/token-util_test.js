@@ -4,8 +4,8 @@
  * Module dependencies.
  */
 
-var should = require('chai').should();
-var TokenUtil = require('../../../lib/utils/token-util');
+const TokenUtil = require('../../../lib/utils/token-util');
+const should = require('chai').should();
 
 /**
  * Test `TokenUtil` integration.

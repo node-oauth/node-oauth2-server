@@ -1,8 +1,16 @@
 'use strict';
 
+/**
+ * Module dependencies.
+ */
+
 const AbstractGrantType = require('../../../lib/grant-types/abstract-grant-type');
 const sinon = require('sinon');
 const should = require('chai').should();
+
+/**
+ * Test `AbstractGrantType`.
+ */
 
 describe('AbstractGrantType', function() {
 
