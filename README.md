@@ -32,7 +32,9 @@ The *@node-oauth/oauth2-server* module is framework-agnostic but there are sever
 
 Most users should refer to our [Express](https://github.com/oauthjs/express-oauth-server/tree/master/examples) or [Koa](https://github.com/oauthjs/koa-oauth-server/tree/master/examples) examples.
 
-More examples can be found here: https://github.com/14gasher/oauth-example
+More examples can be found here:
+- https://github.com/14gasher/oauth-example
+- [Hapi](https://www.npmjs.com/package/hapi-oauth2-server-plugin)
 
 ## Upgrading from 2.x
 
