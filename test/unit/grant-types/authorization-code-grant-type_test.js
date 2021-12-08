@@ -83,6 +83,37 @@ describe('AuthorizationCodeGrantType', function() {
           model.saveToken.firstCall.args[1].should.equal(client);
           model.saveToken.firstCall.args[2].should.equal(user);
           model.saveToken.firstCall.thisValue.should.equal(model);
+          handler.validateScope.callCount.should.equal(1);
+        })
+        .catch(should.fail);
+    });
+  });
+
+  describe('saveToken() - no scope', function() {
+    it('should call `model.saveToken()`', function() {
+      const client = {};
+      const user = {};
+      const model = {
+        getAuthorizationCode: function() {},
+        revokeAuthorizationCode: function() {},
+        saveToken: sinon.stub().returns(true),
+        validateScope: function(u, c, s){ return null; }
+      };
+      const handler = new AuthorizationCodeGrantType({ accessTokenLifetime: 120, model: model });
+
+      sinon.stub(handler, 'generateAccessToken').returns(Promise.resolve('foo'));
+      sinon.stub(handler, 'generateRefreshToken').returns(Promise.resolve('bar'));
+      sinon.stub(handler, 'getAccessTokenExpiresAt').returns(Promise.resolve('biz'));
+      sinon.stub(handler, 'getRefreshTokenExpiresAt').returns(Promise.resolve('baz'));
+
+      return handler.saveToken(user, client, 'foobar', null)
+        .then(function() {
+          model.saveToken.callCount.should.equal(1);
+          model.saveToken.firstCall.args.should.have.length(3);
+          model.saveToken.firstCall.args[0].should.eql({ accessToken: 'foo', authorizationCode: 'foobar', accessTokenExpiresAt: 'biz', refreshToken: 'bar', refreshTokenExpiresAt: 'baz', scope: null });
+          model.saveToken.firstCall.args[1].should.equal(client);
+          model.saveToken.firstCall.args[2].should.equal(user);
+          model.saveToken.firstCall.thisValue.should.equal(model);
         })
         .catch(should.fail);
     });
