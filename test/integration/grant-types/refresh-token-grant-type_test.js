@@ -7,92 +7,113 @@
 const InvalidArgumentError = require('../../../lib/errors/invalid-argument-error');
 const InvalidGrantError = require('../../../lib/errors/invalid-grant-error');
 const InvalidRequestError = require('../../../lib/errors/invalid-request-error');
-const Promise = require('bluebird');
 const RefreshTokenGrantType = require('../../../lib/grant-types/refresh-token-grant-type');
 const Request = require('../../../lib/request');
 const ServerError = require('../../../lib/errors/server-error');
 const should = require('chai').should();
-
+const sinon = require('sinon');
 /**
  * Test `RefreshTokenGrantType` integration.
  */
 
 describe('RefreshTokenGrantType integration', function() {
-  describe('constructor()', function() {
-    it('should throw an error if `model` is missing', function() {
-      try {
-        new RefreshTokenGrantType();
 
-        should.fail();
+  describe('constructor()', function() {
+
+    it('should throw an error if `model` is missing', function() {
+
+      let refreshTokenGrantType;
+
+      try {
+        refreshTokenGrantType = new RefreshTokenGrantType();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
         e.message.should.equal('Missing parameter: `model`');
       }
+
+      should.not.exist(refreshTokenGrantType);
+
     });
 
     it('should throw an error if the model does not implement `getRefreshToken()`', function() {
-      try {
-        new RefreshTokenGrantType({ model: {} });
 
-        should.fail();
+      let refreshTokenGrantType;
+
+      try {
+        refreshTokenGrantType = new RefreshTokenGrantType({ model: {} });
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
         e.message.should.equal('Invalid argument: model does not implement `getRefreshToken()`');
       }
+      should.not.exist(refreshTokenGrantType);
+
     });
 
     it('should throw an error if the model does not implement `revokeToken()`', function() {
+      
+      let refreshTokenGrantType;
+
       try {
-        const model = {
-          getRefreshToken: function() {}
-        };
-
-        new RefreshTokenGrantType({ model: model });
-
-        should.fail();
+        refreshTokenGrantType = new RefreshTokenGrantType({
+          model: {
+            getRefreshToken: function() {}
+          } 
+        });
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
         e.message.should.equal('Invalid argument: model does not implement `revokeToken()`');
       }
+      should.not.exist(refreshTokenGrantType);
     });
 
     it('should throw an error if the model does not implement `saveToken()`', function() {
+
+      let refreshTokenGrantType;
+
       try {
-        const model = {
-          getRefreshToken: function() {},
-          revokeToken: function() {}
-        };
-
-        new RefreshTokenGrantType({ model: model });
-
-        should.fail();
+        refreshTokenGrantType = new RefreshTokenGrantType({ 
+          model: {
+            getRefreshToken: function() {},
+            revokeToken: function() {}
+          }
+        });
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
         e.message.should.equal('Invalid argument: model does not implement `saveToken()`');
       }
+
+      should.not.exist(refreshTokenGrantType);
+
     });
   });
 
   describe('handle()', function() {
-    it('should throw an error if `request` is missing', function() {
+
+    it('should throw an error if `request` is missing', async function() {
+
       const model = {
         getRefreshToken: function() {},
         revokeToken: function() {},
         saveToken: function() {}
       };
+
       const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 120, model: model });
 
-      try {
-        grantType.handle();
+      let res;
 
-        should.fail();
+      try {
+        res = await grantType.handle();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
         e.message.should.equal('Missing parameter: `request`');
       }
+
+      should.not.exist(res);
+
     });
 
-    it('should throw an error if `client` is missing', function() {
+    it('should throw an error if `client` is missing', async function() {
+
       const model = {
         getRefreshToken: function() {},
         revokeToken: function() {},
@@ -100,18 +121,21 @@ describe('RefreshTokenGrantType integration', function() {
       };
       const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 120, model: model });
       const request = new Request({ body: {}, headers: {}, method: {}, query: {} });
+      let res;
 
       try {
-        grantType.handle(request);
-
-        should.fail();
+        res = await grantType.handle(request);
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
         e.message.should.equal('Missing parameter: `client`');
       }
+
+      should.not.exist(res);
+
     });
 
     it('should return a token', function() {
+
       const client = { id: 123 };
       const token = { accessToken: 'foo', client: { id: 123 }, user: {} };
       const model = {
@@ -129,83 +153,65 @@ describe('RefreshTokenGrantType integration', function() {
         .catch(should.fail);
     });
 
-    it('should support promises', function() {
-      const client = { id: 123 };
-      const model = {
-        getRefreshToken: function() { return Promise.resolve({ accessToken: 'foo', client: { id: 123 }, user: {} }); },
-        revokeToken: function() { return Promise.resolve({ accessToken: 'foo', client: {}, refreshTokenExpiresAt: new Date(new Date() / 2), user: {} }); },
-        saveToken: function() { return Promise.resolve({ accessToken: 'foo', client: {}, user: {} }); }
-      };
-      const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 123, model: model });
-      const request = new Request({ body: { refresh_token: 'foobar' }, headers: {}, method: {}, query: {} });
-
-      grantType.handle(request, client).should.be.an.instanceOf(Promise);
-    });
-
-    it('should support non-promises', function() {
-      const client = { id: 123 };
-      const model = {
-        getRefreshToken: function() { return { accessToken: 'foo', client: { id: 123 }, user: {} }; },
-        revokeToken: function() { return { accessToken: 'foo', client: {}, refreshTokenExpiresAt: new Date(new Date() / 2), user: {} }; },
-        saveToken: function() { return { accessToken: 'foo', client: {}, user: {} }; }
-      };
-      const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 123, model: model });
-      const request = new Request({ body: { refresh_token: 'foobar' }, headers: {}, method: {}, query: {} });
-
-      grantType.handle(request, client).should.be.an.instanceOf(Promise);
-    });
-
-    it('should support callbacks', function() {
-      const client = { id: 123 };
-      const model = {
-        getRefreshToken: function(refreshToken, callback) { callback(null, { accessToken: 'foo', client: { id: 123 }, user: {} }); },
-        revokeToken: function(refreshToken, callback) { callback(null, { accessToken: 'foo', client: {}, refreshTokenExpiresAt: new Date(new Date() / 2), user: {} }); },
-        saveToken: function(tokenToSave, client, user, callback) { callback(null,{ accessToken: 'foo', client: {}, user: {} }); }
-      };
-      const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 123, model: model });
-      const request = new Request({ body: { refresh_token: 'foobar' }, headers: {}, method: {}, query: {} });
-
-      grantType.handle(request, client).should.be.an.instanceOf(Promise);
-    });
   });
 
   describe('getRefreshToken()', function() {
-    it('should throw an error if the `refreshToken` parameter is missing from the request body', function() {
+
+    it('should throw an error if the `refreshToken` parameter is missing from the request body', async function() {
+
       const client = {};
       const model = {
-        getRefreshToken: function() {},
-        revokeToken: function() {},
-        saveToken: function() {}
+        getRefreshToken: sinon.stub().resolves({}),
+        revokeToken: sinon.stub().resolves({}),
+        saveToken: sinon.stub().resolves({})
       };
-      const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 120, model: model });
-      const request = new Request({ body: {}, headers: {}, method: {}, query: {} });
+      const grantType = new RefreshTokenGrantType({
+        accessTokenLifetime: 120,
+        model: model
+      });
+      
+      const request = new Request({
+        body: {},
+        headers: {},
+        method: {},
+        query: {}
+      });
+
+      let res;
 
       try {
-        grantType.getRefreshToken(request, client);
-
-        should.fail();
-      } catch (e) {
-        e.should.be.an.instanceOf(InvalidRequestError);
-        e.message.should.equal('Missing parameter: `refresh_token`');
+        res = await grantType.getRefreshToken(request, client);
+      } catch (err) {
+        err.should.be.an.instanceOf(InvalidRequestError);
+        err.message.should.equal('Missing parameter: `refresh_token`');
       }
+
+      should.not.exist(res);
+
     });
 
-    it('should throw an error if `refreshToken` is not found', function() {
+    it('should throw an error if `refreshToken` is not found', async function() {
+
       const client = { id: 123 };
       const model = {
-        getRefreshToken: function() { return; },
-        revokeToken: function() {},
-        saveToken: function() {}
+        getRefreshToken: sinon.stub().resolves(null),
+        revokeToken: sinon.stub().resolves({}),
+        saveToken: sinon.stub().resolves({})
       };
       const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 120, model: model });
       const request = new Request({ body: { refresh_token: '12345' }, headers: {}, method: {}, query: {} });
 
-      return grantType.getRefreshToken(request, client)
-        .then(should.fail)
-        .catch(function(e) {
-          e.should.be.an.instanceOf(InvalidGrantError);
-          e.message.should.equal('Invalid grant: refresh token is invalid');
-        });
+      let res;
+
+      try {
+        res = await grantType.getRefreshToken(request, client);
+      } catch (err) {
+        err.should.be.an.instanceOf(InvalidGrantError);
+        err.message.should.equal('Invalid grant: refresh token is invalid');
+      }
+
+      should.not.exist(res);
+
     });
 
     it('should throw an error if `refreshToken.client` is missing', function() {
@@ -266,7 +272,7 @@ describe('RefreshTokenGrantType integration', function() {
         });
     });
 
-    it('should throw an error if `refresh_token` contains invalid characters', function() {
+    it('should throw an error if `refresh_token` contains invalid characters', async function() {
       const client = {};
       const model = {
         getRefreshToken: function() {
@@ -278,14 +284,17 @@ describe('RefreshTokenGrantType integration', function() {
       const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 120, model: model });
       const request = new Request({ body: { refresh_token: 'øå€£‰' }, headers: {}, method: {}, query: {} });
 
-      try {
-        grantType.getRefreshToken(request, client);
+      let token;
 
-        should.fail();
+      try {
+        token  = await grantType.getRefreshToken(request, client);
       } catch (e) {
         e.should.be.an.instanceOf(InvalidRequestError);
         e.message.should.equal('Invalid parameter: `refresh_token`');
       }
+
+      should.not.exist(token);
+
     });
 
     it('should throw an error if `refresh_token` is missing', function() {
@@ -367,67 +376,33 @@ describe('RefreshTokenGrantType integration', function() {
         .catch(should.fail);
     });
 
-    it('should support promises', function() {
-      const client = { id: 123 };
-      const token = { accessToken: 'foo', client: { id: 123 }, user: {} };
-      const model = {
-        getRefreshToken: function() { return Promise.resolve(token); },
-        revokeToken: function() {},
-        saveToken: function() {}
-      };
-      const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 123, model: model });
-      const request = new Request({ body: { refresh_token: 'foobar' }, headers: {}, method: {}, query: {} });
-
-      grantType.getRefreshToken(request, client).should.be.an.instanceOf(Promise);
-    });
-
-    it('should support non-promises', function() {
-      const client = { id: 123 };
-      const token = { accessToken: 'foo', client: { id: 123 }, user: {} };
-      const model = {
-        getRefreshToken: function() { return token; },
-        revokeToken: function() {},
-        saveToken: function() {}
-      };
-      const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 123, model: model });
-      const request = new Request({ body: { refresh_token: 'foobar' }, headers: {}, method: {}, query: {} });
-
-      grantType.getRefreshToken(request, client).should.be.an.instanceOf(Promise);
-    });
-
-    it('should support callbacks', function() {
-      const client = { id: 123 };
-      const token = { accessToken: 'foo', client: { id: 123 }, user: {} };
-      const model = {
-        getRefreshToken: function(refreshToken, callback) { callback(null, token); },
-        revokeToken: function() {},
-        saveToken: function() {}
-      };
-      const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 123, model: model });
-      const request = new Request({ body: { refresh_token: 'foobar' }, headers: {}, method: {}, query: {} });
-
-      grantType.getRefreshToken(request, client).should.be.an.instanceOf(Promise);
-    });
   });
 
   describe('revokeToken()', function() {
-    it('should throw an error if the `token` is invalid', function() {
+
+    it('should throw an error if the `token` is invalid', async function() {
       const model = {
         getRefreshToken: function() {},
         revokeToken: function() {},
         saveToken: function() {}
       };
       const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 120, model: model });
+      
+      let res;
 
-      grantType.revokeToken({})
-        .then(should.fail)
-        .catch(function (e) {
-          e.should.be.an.instanceOf(InvalidGrantError);
-          e.message.should.equal('Invalid grant: refresh token is invalid');
-        });
+      try {
+        res = await grantType.revokeToken({});
+      } catch (err) {
+        err.should.be.an.instanceOf(InvalidGrantError);
+        err.message.should.equal('Invalid grant: refresh token is invalid');
+      }
+
+      should.not.exist(res);
+      
+
     });
 
-    it('should revoke the token', function() {
+    it('should revoke the token', async function() {
       const token = { accessToken: 'foo', client: {}, refreshTokenExpiresAt: new Date(new Date() / 2), user: {} };
       const model = {
         getRefreshToken: function() {},
@@ -435,53 +410,24 @@ describe('RefreshTokenGrantType integration', function() {
         saveToken: function() {}
       };
       const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 123, model: model });
+      
+      let res;
 
-      return grantType.revokeToken(token)
-        .then(function(data) {
-          data.should.equal(token);
-        })
-        .catch(should.fail);
+      try {
+        res = await grantType.revokeToken(token);
+      } catch (err) {
+        should.fail(err);
+      }
+      
+      res.should.equal(token);
+
     });
 
-    it('should support promises', function() {
-      const token = { accessToken: 'foo', client: {}, refreshTokenExpiresAt: new Date(new Date() / 2), user: {} };
-      const model = {
-        getRefreshToken: function() {},
-        revokeToken: function() { return Promise.resolve(token); },
-        saveToken: function() {}
-      };
-      const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 123, model: model });
-
-      grantType.revokeToken(token).should.be.an.instanceOf(Promise);
-    });
-
-    it('should support non-promises', function() {
-      const token = { accessToken: 'foo', client: {}, refreshTokenExpiresAt: new Date(new Date() / 2), user: {} };
-      const model = {
-        getRefreshToken: function() {},
-        revokeToken: function() { return token; },
-        saveToken: function() {}
-      };
-      const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 123, model: model });
-
-      grantType.revokeToken(token).should.be.an.instanceOf(Promise);
-    });
-
-    it('should support callbacks', function() {
-      const token = { accessToken: 'foo', client: {}, refreshTokenExpiresAt: new Date(new Date() / 2), user: {} };
-      const model = {
-        getRefreshToken: function() {},
-        revokeToken: function(refreshToken, callback) { callback(null, token); },
-        saveToken: function() {}
-      };
-      const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 123, model: model });
-
-      grantType.revokeToken(token).should.be.an.instanceOf(Promise);
-    });
   });
 
   describe('saveToken()', function() {
-    it('should save the token', function() {
+
+    it('should save the token', async function() {
       const token = {};
       const model = {
         getRefreshToken: function() {},
@@ -489,48 +435,19 @@ describe('RefreshTokenGrantType integration', function() {
         saveToken: function() { return token; }
       };
       const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 123, model: model });
+      
+      let res;
 
-      return grantType.saveToken(token)
-        .then(function(data) {
-          data.should.equal(token);
-        })
-        .catch(should.fail);
+      try {
+        res = await grantType.saveToken(token);
+      } catch (err) {
+        should.fail(err);
+      }
+
+      res.should.equal(token);
+
     });
 
-    it('should support promises', function() {
-      const token = {};
-      const model = {
-        getRefreshToken: function() {},
-        revokeToken: function() {},
-        saveToken: function() { return Promise.resolve(token); }
-      };
-      const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 123, model: model });
-
-      grantType.saveToken(token).should.be.an.instanceOf(Promise);
-    });
-
-    it('should support non-promises', function() {
-      const token = {};
-      const model = {
-        getRefreshToken: function() {},
-        revokeToken: function() {},
-        saveToken: function() { return token; }
-      };
-      const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 123, model: model });
-
-      grantType.saveToken(token).should.be.an.instanceOf(Promise);
-    });
-
-    it('should support callbacks', function() {
-      const token = {};
-      const model = {
-        getRefreshToken: function() {},
-        revokeToken: function() {},
-        saveToken: function(tokenToSave, client, user, callback) { callback(null, token); }
-      };
-      const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 123, model: model });
-
-      grantType.saveToken(token).should.be.an.instanceOf(Promise);
-    });
   });
+
 });
