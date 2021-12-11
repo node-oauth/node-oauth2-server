@@ -150,6 +150,8 @@ describe('RefreshTokenGrantType Compliance', function () {
     });
 
     // TODO: test refresh token with different scopes
+    // https://github.com/node-oauth/node-oauth2-server/issues/104
+
     // it('Should throw invalid_scope error', async function () {
     //   const request = createLoginRequest();
     //   const response = new Response({});
