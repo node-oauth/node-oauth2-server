@@ -6,7 +6,6 @@
 
 const AbstractGrantType = require('../../../lib/grant-types/abstract-grant-type');
 const InvalidArgumentError = require('../../../lib/errors/invalid-argument-error');
-// const Promise = require('bluebird');
 const Request = require('../../../lib/request');
 const should = require('chai').should();
 

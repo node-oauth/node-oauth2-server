@@ -20,6 +20,7 @@ const UnauthorizedClientError = require('../../../lib/errors/unauthorized-client
 const UnsupportedGrantTypeError = require('../../../lib/errors/unsupported-grant-type-error');
 const should = require('chai').should();
 const util = require('util');
+const sinon = require('sinon');
 
 /**
  * Test `TokenHandler` integration.
@@ -779,22 +780,45 @@ describe('TokenHandler integration', function() {
       }
     });
 
-    it('should throw an invalid grant error if a non-oauth error is thrown', function() {
+    it('should throw an invalid grant error if a non-oauth error is thrown', async function() {
+      
       const client = { grants: ['password'] };
+      
       const model = {
-        getClient: function(clientId, password, callback) { callback(null, client); },
-        getUser: function(uid, pwd, callback) { callback(); },
-        saveToken: function() {}
+        getClient: sinon.stub().resolves(client),
+        getUser: sinon.stub().resolves({}),
+        saveToken: sinon.stub().resolves({}),
       };
-      const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
-      const request = new Request({ body: { grant_type: 'password', username: 'foo', password: 'bar' }, headers: {}, method: {}, query: {} });
+      
+      const handler = new TokenHandler({
+        accessTokenLifetime: 120,
+        model: model,
+        refreshTokenLifetime: 120
+      });
+      
+      const request = new Request({ 
+        body: {
+          grant_type: 'password',
+          username: 'foo',
+          password: 'bar'
+        },
+        headers: {},
+        method: {},
+        query: {}
+      });
+      
+      let res;
 
-      return handler.handleGrantType(request, client)
-        .then(should.fail)
-        .catch(function(e) {
-          e.should.be.an.instanceOf(InvalidGrantError);
-          e.message.should.equal('Invalid grant: user credentials are invalid');
-        });
+      try {
+        res = await handler.handleGrantType(request, client);  
+      } catch (err) {
+        should.exist(err);
+        err.should.be.an.instanceOf(InvalidGrantError);
+        err.message.should.equal('Invalid grant: user credentials are invalid');
+      }
+
+      should.not.exist(res);
+
     });
 
     describe('with grant_type `authorization_code`', function() {

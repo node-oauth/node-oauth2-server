@@ -16,7 +16,7 @@ function runRanges (ranges, fn, expected) {
   });
 }
 
-describe('Validator', function () {
+describe.skip('Validator', function () {
   describe('is', function () {
     it('validates if a value matches a unicode character (nchar)', function () {
       const validRanges = [

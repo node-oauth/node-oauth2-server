@@ -13,7 +13,9 @@ const should = require('chai').should();
  */
 
 describe('ClientCredentialsGrantType', function() {
+
   describe('getUserFromClient()', function() {
+
     it('should call `model.getUserFromClient()`', function() {
       const model = {
         getUserFromClient: sinon.stub().returns(true),
