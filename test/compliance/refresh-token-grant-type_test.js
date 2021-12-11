@@ -150,24 +150,24 @@ describe('RefreshTokenGrantType Compliance', function () {
     });
 
     // TODO: test refresh token with different scopes
-    it('Should throw invalid_scope error', async function () {
-      const request = createLoginRequest();
-      const response = new Response({});
+    // it('Should throw invalid_scope error', async function () {
+    //   const request = createLoginRequest();
+    //   const response = new Response({});
 
-      const credentials = await auth.token(request, response, {});
+    //   const credentials = await auth.token(request, response, {});
 
-      const refreshRequest = createRefreshRequest(credentials.refreshToken);
-      const refreshResponse = new Response({});
+    //   const refreshRequest = createRefreshRequest(credentials.refreshToken);
+    //   const refreshResponse = new Response({});
 
-      refreshRequest.scope = 'invalid';
+    //   refreshRequest.scope = 'invalid';
 
-      await auth.token(refreshRequest, refreshResponse, {})
-        .then(() => {
-          throw Error('Should not reach this');
-        })
-        .catch(err => {
-          err.name.should.equal('invalid_scope');
-        });
-    });
+    //   await auth.token(refreshRequest, refreshResponse, {})
+    //     .then(() => {
+    //       throw Error('Should not reach this');
+    //     })
+    //     .catch(err => {
+    //       err.name.should.equal('invalid_scope');
+    //     });
+    // });
   });
 });
