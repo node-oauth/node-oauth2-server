@@ -1,13 +1,72 @@
-const OAuth2Server = require('../../../');
-const db = require('./db');
-const model = require('./model');
-const Request = require('../../../lib/request');
-const Response = require('../../../lib/response');
+/**
+ * Request
+ * @see https://datatracker.ietf.org/doc/html/rfc6749#section-4.3.2
+ *
+ * grant_type
+ *      REQUIRED.  Value MUST be set to "password".
+ * username
+ *      REQUIRED.  The resource owner username.
+ * password
+ *      REQUIRED.  The resource owner password.
+ * scope
+ *      OPTIONAL.  The scope of the access request as described by Section 3.3.
+ */
+
+/**
+ * Response
+ * @see https://datatracker.ietf.org/doc/html/rfc6749#section-5.1
+ *
+ *   access_token
+ *         REQUIRED.  The access token issued by the authorization server.
+ *   token_type
+ *         REQUIRED.  The type of the token issued as described in
+ *         Section 7.1.  Value is case insensitive.
+ *   expires_in
+ *         RECOMMENDED.  The lifetime in seconds of the access token.  For
+ *         example, the value "3600" denotes that the access token will
+ *         expire in one hour from the time the response was generated.
+ *         If omitted, the authorization server SHOULD provide the
+ *         expiration time via other means or document the default value.
+ *   refresh_token
+ *         OPTIONAL.  The refresh token, which can be used to obtain new
+ *         access tokens using the same authorization grant as described
+ *         in Section 6.
+ *   scope
+ *         OPTIONAL, if identical to the scope requested by the client;
+ *         otherwise, REQUIRED.  The scope of the access token as
+ *         described by Section 3.3.
+ */
+
+/**
+ * Response (error)
+ * @see https://datatracker.ietf.org/doc/html/rfc6749#section-5.2
+ *
+ *   error
+ *         REQUIRED.  A single ASCII [USASCII] error code from the following:
+ *         invalid_request, invalid_client, invalid_grant
+ *         unauthorized_client, unsupported_grant_type, invalid_scope
+ *   error_description
+ *         OPTIONAL.  Human-readable ASCII [USASCII] text providing
+ *         additional information, used to assist the client developer in
+ *         understanding the error that occurred.
+ *   error_uri
+ *         OPTIONAL.  A URI identifying a human-readable web page with
+ *         information about the error, used to provide the client
+ *         developer with additional information about the error.
+ */
+
+const OAuth2Server = require('../..');
+const DB = require('../helpers/db');
+const createModel = require('../helpers/model');
+const createRequest = require('../helpers/request');
+const Response = require('../../lib/response');
 
 require('chai').should();
 
+const db = new DB();
+
 const auth = new OAuth2Server({
-  model: model
+  model: createModel(db)
 });
 
 const user = db.saveUser({ id: 1, username: 'test', password: 'test'});
@@ -15,7 +74,7 @@ const client = db.saveClient({ id: 'a', secret: 'b', grants: ['password'] });
 const scope = 'read write';
 
 function createDefaultRequest () {
-  const request = new Request({
+  return createRequest({
     body: {
       grant_type: 'password',
       client_id: client.id,
@@ -28,20 +87,12 @@ function createDefaultRequest () {
       'content-type': 'application/x-www-form-urlencoded'
     },
     method: 'POST',
-    query: {}
   });
-
-  request.is = function (header) {
-    return this.headers['content-type'] === header;
-  };
-
-  return request;
 }
 
-describe('PasswordGrantType Integration Flow', function () {
+describe('PasswordGrantType Compliance', function () {
   describe('Authenticate', function () {
-
-    it ('Succesfull authentication', async function () {
+    it ('Succesfull authorization', async function () {
       const request = createDefaultRequest();
       const response = new Response({});
 
@@ -60,6 +111,32 @@ describe('PasswordGrantType Integration Flow', function () {
 
       db.accessTokens.has(token.accessToken).should.equal(true);
       db.refreshTokens.has(token.refreshToken).should.equal(true);
+    });
+
+    it ('Succesfull authorization and authentication', async function () {
+      const tokenRequest = createDefaultRequest();
+      const tokenResponse = new Response({});
+
+      const token = await auth.token(tokenRequest, tokenResponse, {});
+
+      const authenticationRequest = createRequest({
+        body: {},
+        headers: {
+          'Authorization': `Bearer ${token.accessToken}`
+        },
+        method: 'GET',
+        query: {}
+      });
+      const authenticationResponse = new Response({});
+
+      const authenticated = await auth.authenticate(
+        authenticationRequest,
+        authenticationResponse,
+        {});
+
+      authenticated.scope.should.equal(scope);
+      authenticated.user.should.be.an('object');
+      authenticated.client.should.be.an('object');
     });
 
     it ('Username missing', async function () {

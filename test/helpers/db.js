@@ -1,5 +1,4 @@
 class DB {
-
   constructor () {
     this.users = new Map();
     this.clients = [];
@@ -51,6 +50,10 @@ class DB {
     return this.accessTokens.get(accessToken);
   }
 
+  deleteAccessToken (accessToken) {
+    this.accessTokens.delete(accessToken);
+  }
+
   saveRefreshToken (refreshToken, meta) {
     this.refreshTokens.set(refreshToken, meta);
   }
@@ -58,8 +61,10 @@ class DB {
   findRefreshToken (refreshToken) {
     return this.refreshTokens.get(refreshToken);
   }
+
+  deleteRefreshToken (refreshToken) {
+    this.refreshTokens.delete(refreshToken);
+  }
 }
 
-const db = new DB();
-
-module.exports = db;
+module.exports = DB;
