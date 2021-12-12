@@ -79,13 +79,12 @@ function createLoginRequest () {
   return createRequest({
     body: {
       grant_type: 'password',
-      client_id: client.id,
-      client_secret: client.secret,
       username: user.username,
       password: user.password,
       scope
     },
     headers: {
+      'authorization': 'Basic ' + Buffer.from(client.id + ':' + client.secret).toString('base64'),
       'content-type': 'application/x-www-form-urlencoded'
     },
     method: 'POST',
@@ -97,12 +96,11 @@ function createRefreshRequest (refresh_token) {
     method: 'POST',
     body: {
       grant_type: 'refresh_token',
-      client_id: client.id,
-      client_secret: client.secret,
       refresh_token,
       scope
     },
     headers: {
+      'authorization': 'Basic ' + Buffer.from(client.id + ':' + client.secret).toString('base64'),
       'content-type': 'application/x-www-form-urlencoded'
     }
   });

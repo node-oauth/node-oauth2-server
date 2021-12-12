@@ -77,13 +77,12 @@ function createDefaultRequest () {
   return createRequest({
     body: {
       grant_type: 'password',
-      client_id: client.id,
-      client_secret: client.secret,
       username: user.username,
       password: user.password,
       scope
     },
     headers: {
+      'authorization': 'Basic ' + Buffer.from(client.id + ':' + client.secret).toString('base64'),
       'content-type': 'application/x-www-form-urlencoded'
     },
     method: 'POST',
@@ -191,7 +190,7 @@ describe('PasswordGrantType Compliance', function () {
       const request = createDefaultRequest();
       const response = new Response({});
 
-      request.body.client_id = 'wrong';
+      request.headers.authorization = 'Basic ' + Buffer.from('wrong:wrong').toString('base64');
 
       await auth.token(request, response, {})
         .catch(err => {
