@@ -11,7 +11,6 @@ const InvalidClientError = require('../../../lib/errors/invalid-client-error');
 const InvalidGrantError = require('../../../lib/errors/invalid-grant-error');
 const InvalidRequestError = require('../../../lib/errors/invalid-request-error');
 const PasswordGrantType = require('../../../lib/grant-types/password-grant-type');
-const Promise = require('bluebird');
 const Request = require('../../../lib/request');
 const Response = require('../../../lib/response');
 const ServerError = require('../../../lib/errors/server-error');
@@ -27,6 +26,7 @@ const sinon = require('sinon');
  */
 
 describe('TokenHandler integration', function() {
+
   describe('constructor()', function() {
     it('should throw an error if `options.accessTokenLifetime` is missing', function() {
       try {
@@ -148,39 +148,61 @@ describe('TokenHandler integration', function() {
   });
 
   describe('handle()', function() {
-    it('should throw an error if `request` is missing', function() {
+
+    it('should throw an error if `request` is missing', async function() {
+
       const model = {
         getClient: function() {},
         saveToken: function() {}
       };
-      const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
+
+      const handler = new TokenHandler({
+        accessTokenLifetime: 120,
+        model: model,
+        refreshTokenLifetime: 120
+      });
+
+      let res;
 
       try {
-        handler.handle();
-
-        should.fail();
+        res = await handler.handle();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
         e.message.should.equal('Invalid argument: `request` must be an instance of Request');
       }
+
+      should.not.exist(res);
     });
 
-    it('should throw an error if `response` is missing', function() {
+    it('should throw an error if `response` is missing', async function() {
+
       const model = {
         getClient: function() {},
         saveToken: function() {}
       };
-      const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
-      const request = new Request({ body: {}, headers: {}, method: {}, query: {} });
+
+      const handler = new TokenHandler({
+        accessTokenLifetime: 120,
+        model: model,
+        refreshTokenLifetime: 120
+      });
+
+      const request = new Request({
+        body: {},
+        headers: {},
+        method: {},
+        query: {}
+      });
+      
+      let res;
 
       try {
-        handler.handle(request);
-
-        should.fail();
+        res = await handler.handle(request);
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
         e.message.should.equal('Invalid argument: `response` must be an instance of Response');
       }
+      should.not.exist(res);
     });
 
     it('should throw an error if the method is not `POST`', function() {
@@ -364,14 +386,30 @@ describe('TokenHandler integration', function() {
     });
 
     it('should return custom attributes in a bearer token if the allowExtendedTokenAttributes is set', function() {
-      const token = { accessToken: 'foo', client: {}, refreshToken: 'bar', scope: 'foobar', user: {}, foo: 'bar' };
+
+      const token = {
+        accessToken: 'foo',
+        client: {},
+        refreshToken: 'bar',
+        scope: 'foobar',
+        user: {},
+        foo: 'bar'
+      };
+
       const model = {
         getClient: function() { return { grants: ['password'] }; },
         getUser: function() { return {}; },
         saveToken: function() { return token; },
         validateScope: function() { return 'baz'; }
       };
-      const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120, allowExtendedTokenAttributes: true });
+
+      const handler = new TokenHandler({
+        accessTokenLifetime: 120,
+        model: model,
+        refreshTokenLifetime: 120,
+        allowExtendedTokenAttributes: true
+      });
+
       const request = new Request({
         body: {
           client_id: 12345,
@@ -389,52 +427,88 @@ describe('TokenHandler integration', function() {
 
       return handler.handle(request, response)
         .then(function() {
-          should.exist(response.body.access_token);
-          should.exist(response.body.refresh_token);
-          should.exist(response.body.token_type);
-          should.exist(response.body.scope);
-          should.exist(response.body.foo);
+          response.should.have.property('body');
+          response.body.should.have.property('access_token');
+          response.body.access_token.should.eql(token.accessToken);
+          response.body.should.have.property('refresh_token');
+          response.body.refresh_token.should.eql(token.refreshToken);
+          response.body.should.have.property('token_type');
+          response.body.token_type.should.eql('Bearer');
+          response.body.should.have.property('scope');
+          response.body.scope.should.eql(token.scope);
+          response.body.should.have.property('foo');
+          response.body.foo.should.eql(token.foo);
         })
         .catch(should.fail);
     });
   });
 
-
   describe('getClient()', function() {
-    it('should throw an error if `clientId` is invalid', function() {
+
+    it('should throw an error if `clientId` is invalid', async function() {
+
       const model = {
         getClient: function() {},
         saveToken: function() {}
       };
-      const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
-      const request = new Request({ body: { client_id: 'øå€£‰', client_secret: 'foo' }, headers: {}, method: {}, query: {} });
+
+      const handler = new TokenHandler({
+        accessTokenLifetime: 120,
+        model: model,
+        refreshTokenLifetime: 120
+      });
+
+      const request = new Request({
+        body: { client_id: 'øå€£‰', client_secret: 'foo' },
+        headers: {},
+        method: {},
+        query: {}
+      });
+
+      let res;
 
       try {
-        handler.getClient(request);
-
-        should.fail();
+        res = await handler.getClient(request);
       } catch (e) {
         e.should.be.an.instanceOf(InvalidRequestError);
         e.message.should.equal('Invalid parameter: `client_id`');
       }
+
+      should.not.exist(res);
+
     });
 
-    it('should throw an error if `clientSecret` is invalid', function() {
+    it('should throw an error if `clientSecret` is invalid', async function() {
+
       const model = {
         getClient: function() {},
         saveToken: function() {}
       };
-      const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
-      const request = new Request({ body: { client_id: 'foo', client_secret: 'øå€£‰' }, headers: {}, method: {}, query: {} });
+
+      const handler = new TokenHandler({
+        accessTokenLifetime: 120,
+        model: model,
+        refreshTokenLifetime: 120
+      });
+
+      const request = new Request({
+        body: { client_id: 'foo', client_secret: 'øå€£‰' },
+        headers: {},
+        method: {},
+        query: {}
+      });
+
+      let res;
 
       try {
-        handler.getClient(request);
-
-        should.fail();
+        res = await handler.getClient(request);
       } catch (e) {
         e.should.be.an.instanceOf(InvalidRequestError);
         e.message.should.equal('Invalid parameter: `client_secret`');
       }
+
+      should.not.exist(res);
+
     });
 
     it('should throw an error if `client` is missing', function() {
@@ -585,41 +659,10 @@ describe('TokenHandler integration', function() {
       });
     });
 
-    it('should support promises', function() {
-      const model = {
-        getClient: function() { return Promise.resolve({ grants: [] }); },
-        saveToken: function() {}
-      };
-      const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
-      const request = new Request({ body: { client_id: 12345, client_secret: 'secret' }, headers: {}, method: {}, query: {} });
-
-      handler.getClient(request).should.be.an.instanceOf(Promise);
-    });
-
-    it('should support non-promises', function() {
-      const model = {
-        getClient: function() { return { grants: [] }; },
-        saveToken: function() {}
-      };
-      const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
-      const request = new Request({ body: { client_id: 12345, client_secret: 'secret' }, headers: {}, method: {}, query: {} });
-
-      handler.getClient(request).should.be.an.instanceOf(Promise);
-    });
-
-    it('should support callbacks', function() {
-      const model = {
-        getClient: function(clientId, clientSecret, callback) { callback(null, { grants: [] }); },
-        saveToken: function() {}
-      };
-      const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
-      const request = new Request({ body: { client_id: 12345, client_secret: 'secret' }, headers: {}, method: {}, query: {} });
-
-      handler.getClient(request).should.be.an.instanceOf(Promise);
-    });
   });
 
   describe('getClientCredentials()', function() {
+
     it('should throw an error if `client_id` is missing', function() {
       const model = {
         getClient: function() {},
@@ -707,6 +750,7 @@ describe('TokenHandler integration', function() {
   });
 
   describe('handleGrantType()', function() {
+
     it('should throw an error if `grant_type` is missing', function() {
       const model = {
         getClient: function() {},
@@ -786,8 +830,8 @@ describe('TokenHandler integration', function() {
       
       const model = {
         getClient: sinon.stub().resolves(client),
-        getUser: sinon.stub().resolves({}),
-        saveToken: sinon.stub().resolves({}),
+        getUser: sinon.stub().resolves(undefined),
+        saveToken: sinon.stub().resolves(undefined),
       };
       
       const handler = new TokenHandler({

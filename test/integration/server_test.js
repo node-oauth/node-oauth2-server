@@ -5,7 +5,7 @@
  */
 
 const InvalidArgumentError = require('../../lib/errors/invalid-argument-error');
-// const Promise = require('bluebird');
+const Promise = require('bluebird');
 const Request = require('../../lib/request');
 const Response = require('../../lib/response');
 const Server = require('../../lib/server');
@@ -66,7 +66,7 @@ describe('Server integration', function() {
       });
 
       return server.authenticate(request, response)
-        .then(function() {
+        .then( function() {
           this.addAcceptedScopesHeader.should.be.true;
           this.addAuthorizedScopesHeader.should.be.true;
           this.allowBearerTokensInQueryString.should.be.false;

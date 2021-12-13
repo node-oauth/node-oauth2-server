@@ -13,7 +13,7 @@ const InvalidClientError = require('../../../lib/errors/invalid-client-error');
 const InvalidRequestError = require('../../../lib/errors/invalid-request-error');
 const InvalidScopeError = require('../../../lib/errors/invalid-scope-error');
 const UnsupportedResponseTypeError = require('../../../lib/errors/unsupported-response-type-error');
-const Promise = require('bluebird');
+// const Promise = require('bluebird');
 const Request = require('../../../lib/request');
 const Response = require('../../../lib/response');
 const ServerError = require('../../../lib/errors/server-error');
@@ -26,52 +26,55 @@ const url = require('url');
  */
 
 describe('AuthorizeHandler integration', function() {
+
   describe('constructor()', function() {
+
     it('should throw an error if `options.authorizationCodeLifetime` is missing', function() {
+
       try {
         new AuthorizeHandler();
-
-        should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
         e.message.should.equal('Missing parameter: `authorizationCodeLifetime`');
       }
+
     });
 
     it('should throw an error if `options.model` is missing', function() {
+
       try {
         new AuthorizeHandler({ authorizationCodeLifetime: 120 });
-
-        should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
         e.message.should.equal('Missing parameter: `model`');
       }
+
     });
 
     it('should throw an error if the model does not implement `getClient()`', function() {
+
       try {
         new AuthorizeHandler({ authorizationCodeLifetime: 120, model: {} });
-
-        should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
         e.message.should.equal('Invalid argument: model does not implement `getClient()`');
       }
+
     });
 
     it('should throw an error if the model does not implement `saveAuthorizationCode()`', function() {
+
       try {
         new AuthorizeHandler({ authorizationCodeLifetime: 120, model: { getClient: function() {} } });
-
-        should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
         e.message.should.equal('Invalid argument: model does not implement `saveAuthorizationCode()`');
       }
+
     });
 
     it('should throw an error if the model does not implement `getAccessToken()`', function() {
+
       const model = {
         getClient: function() {},
         saveAuthorizationCode: function() {}
@@ -79,87 +82,129 @@ describe('AuthorizeHandler integration', function() {
 
       try {
         new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
-
-        should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
         e.message.should.equal('Invalid argument: model does not implement `getAccessToken()`');
       }
+
     });
 
     it('should set the `authorizationCodeLifetime`', function() {
+
       const model = {
         getAccessToken: function() {},
         getClient: function() {},
         saveAuthorizationCode: function() {}
       };
-      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
+
+      const handler = new AuthorizeHandler({
+        authorizationCodeLifetime: 120,
+        model: model
+      });
 
       handler.authorizationCodeLifetime.should.equal(120);
+
     });
 
     it('should set the `authenticateHandler`', function() {
+
       const model = {
         getAccessToken: function() {},
         getClient: function() {},
         saveAuthorizationCode: function() {}
       };
-      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
+
+      const handler = new AuthorizeHandler({
+        authorizationCodeLifetime: 120,
+        model: model
+      });
 
       handler.authenticateHandler.should.be.an.instanceOf(AuthenticateHandler);
+
     });
 
     it('should set the `model`', function() {
+
       const model = {
         getAccessToken: function() {},
         getClient: function() {},
         saveAuthorizationCode: function() {}
       };
-      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
+
+      const handler = new AuthorizeHandler({
+        authorizationCodeLifetime: 120,
+        model: model
+      });
 
       handler.model.should.equal(model);
+
     });
   });
 
   describe('handle()', function() {
-    it('should throw an error if `request` is missing', function() {
+
+
+    it('should throw an error if `request` is missing', async function() {
+
       const model = {
         getAccessToken: function() {},
         getClient: function() {},
         saveAuthorizationCode: function() {}
       };
-      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
+
+      const handler = new AuthorizeHandler({
+        authorizationCodeLifetime: 120,
+        model: model
+      });
+
+      let res;
 
       try {
-        handler.handle();
-
-        should.fail();
+        res = await handler.handle();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
         e.message.should.equal('Invalid argument: `request` must be an instance of Request');
       }
+
+      should.not.exist(res);
+
     });
 
-    it('should throw an error if `response` is missing', function() {
+    it('should throw an error if `response` is missing', async function() {
+
       const model = {
         getAccessToken: function() {},
         getClient: function() {},
         saveAuthorizationCode: function() {}
       };
-      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
-      const request = new Request({ body: {}, headers: {}, method: {}, query: {} });
+
+      const handler = new AuthorizeHandler({
+        authorizationCodeLifetime: 120,
+        model: model
+      });
+
+      const request = new Request({
+        body: {},
+        headers: {},
+        method: {},
+        query: {}
+      });
+
+      let res;
 
       try {
-        handler.handle(request);
-
-        should.fail();
+        res = await handler.handle(request);
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
         e.message.should.equal('Invalid argument: `response` must be an instance of Response');
       }
+
+      should.not.exist(res);
+
     });
 
     it('should throw an error if `allowed` is `false`', function() {
+
       const model = {
         getAccessToken: function() {
           return {
@@ -167,14 +212,23 @@ describe('AuthorizeHandler integration', function() {
             accessTokenExpiresAt: new Date(new Date().getTime() + 10000)
           };
         },
+
         getClient: function() {
-          return { grants: ['authorization_code'], redirectUris: ['http://example.com/cb'] };
+          return {
+            grants: ['authorization_code'],
+            redirectUris: ['http://example.com/cb']
+          };
         },
         saveAuthorizationCode: function() {
           throw new Error('Unhandled exception');
         }
       };
-      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
+
+      const handler = new AuthorizeHandler({
+        authorizationCodeLifetime: 120,
+        model: model
+      });
+      
       const request = new Request({
         body: {
           client_id: 'test'
@@ -188,7 +242,11 @@ describe('AuthorizeHandler integration', function() {
           state: 'foobar'
         }
       });
-      const response = new Response({ body: {}, headers: {} });
+
+      const response = new Response({
+        body: {},
+        headers: {}
+      });
 
       return handler.handle(request, response)
         .then(should.fail)
@@ -196,9 +254,11 @@ describe('AuthorizeHandler integration', function() {
           e.should.be.an.instanceOf(AccessDeniedError);
           e.message.should.equal('Access denied: user denied access to application');
         });
+
     });
 
     it('should redirect to an error response if a non-oauth error is thrown', function() {
+
       const model = {
         getAccessToken: function() {
           return {
@@ -207,13 +267,22 @@ describe('AuthorizeHandler integration', function() {
           };
         },
         getClient: function() {
-          return { grants: ['authorization_code'], redirectUris: ['http://example.com/cb'] };
+          return {
+            grants: ['authorization_code'],
+            redirectUris: ['http://example.com/cb']
+          };
         },
         saveAuthorizationCode: function() {
           throw new Error('Unhandled exception');
         }
+
       };
-      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
+
+      const handler = new AuthorizeHandler({
+        authorizationCodeLifetime: 120,
+        model: model
+      });
+
       const request = new Request({
         body: {
           client_id: 12345,
@@ -227,13 +296,16 @@ describe('AuthorizeHandler integration', function() {
           state: 'foobar'
         }
       });
+
       const response = new Response({ body: {}, headers: {} });
 
       return handler.handle(request, response)
         .then(should.fail)
         .catch(function() {
-          response.get('location').should.equal('http://example.com/cb?error=server_error&error_description=Unhandled%20exception&state=foobar');
+          response.get('location').should
+            .equal('http://example.com/cb?error=server_error&error_description=Service%20Unavailable&state=foobar');
         });
+
     });
 
     it('should redirect to an error response if an oauth error is thrown', function() {
@@ -270,7 +342,9 @@ describe('AuthorizeHandler integration', function() {
       return handler.handle(request, response)
         .then(should.fail)
         .catch(function() {
-          response.get('location').should.equal('http://example.com/cb?error=access_denied&error_description=Cannot%20request%20this%20auth%20code&state=foobar');
+          response.get('location').should.equal(
+            'http://example.com/cb?error=access_denied&error_description=Cannot%20request%20this%20auth%20code&state=foobar'
+          );
         });
     });
 
@@ -309,7 +383,8 @@ describe('AuthorizeHandler integration', function() {
 
       return handler.handle(request, response)
         .then(function() {
-          response.get('location').should.equal('http://example.com/cb?code=12345&state=foobar');
+          response.get('location').should
+            .equal('http://example.com/cb?code=12345&state=foobar');
         })
         .catch(should.fail);
     });
@@ -323,13 +398,21 @@ describe('AuthorizeHandler integration', function() {
           };
         },
         getClient: function() {
-          return { grants: ['authorization_code'], redirectUris: ['http://example.com/cb'] };
+          return { 
+            grants: ['authorization_code'],
+            redirectUris: ['http://example.com/cb']
+          };
         },
         saveAuthorizationCode: function() {
           return {};
         }
       };
-      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
+
+      const handler = new AuthorizeHandler({
+        authorizationCodeLifetime: 120,
+        model: model
+      });
+
       const request = new Request({
         body: {
           client_id: 12345,
@@ -344,12 +427,15 @@ describe('AuthorizeHandler integration', function() {
           state: 'foobar'
         }
       });
+
       const response = new Response({ body: {}, headers: {} });
 
       return handler.handle(request, response)
         .then(should.fail)
-        .catch(function() {
-          response.get('location').should.equal('http://example.com/cb?error=invalid_scope&error_description=Invalid%20parameter%3A%20%60scope%60&state=foobar');
+        .catch( function(err) {
+          response.get('location').should.equal(
+            'http://example.com/cb?error=invalid_scope&error_description=Invalid%20parameter%3A%20%60scope%60&state=foobar'
+          );
         });
     });
 
@@ -554,7 +640,14 @@ describe('AuthorizeHandler integration', function() {
     });
 
     it('should return the `code` if successful', function() {
-      const client = { grants: ['authorization_code'], redirectUris: ['http://example.com/cb'] };
+
+      const authCode = 12345;
+
+      const client = {
+        grants: ['authorization_code'],
+        redirectUris: ['http://example.com/cb']
+      };
+
       const model = {
         getAccessToken: function() {
           return {
@@ -567,13 +660,18 @@ describe('AuthorizeHandler integration', function() {
           return client;
         },
         saveAuthorizationCode: function() {
-          return { authorizationCode: 12345, client: client };
+          return { authorizationCode: authCode, client: client };
         }
       };
-      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
+
+      const handler = new AuthorizeHandler({
+        authorizationCodeLifetime: 120,
+        model: model
+      });
+
       const request = new Request({
         body: {
-          client_id: 12345,
+          client_id: authCode,
           response_type: 'code'
         },
         headers: {
@@ -584,20 +682,24 @@ describe('AuthorizeHandler integration', function() {
           state: 'foobar'
         }
       });
+
       const response = new Response({ body: {}, headers: {} });
 
       return handler.handle(request, response)
         .then(function(data) {
           data.should.eql({
-            authorizationCode: 12345,
+            authorizationCode: authCode,
             client: client
           });
-        })
+        })  
         .catch(should.fail);
+
     });
+
   });
 
   describe('generateAuthorizationCode()', function() {
+
     it('should return an auth code', function() {
       const model = {
         getAccessToken: function() {},
@@ -613,33 +715,6 @@ describe('AuthorizeHandler integration', function() {
         .catch(should.fail);
     });
 
-    it('should support promises', function() {
-      const model = {
-        generateAuthorizationCode: function() {
-          return Promise.resolve({});
-        },
-        getAccessToken: function() {},
-        getClient: function() {},
-        saveAuthorizationCode: function() {}
-      };
-      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
-
-      handler.generateAuthorizationCode().should.be.an.instanceOf(Promise);
-    });
-
-    it('should support non-promises', function() {
-      const model = {
-        generateAuthorizationCode: function() {
-          return {};
-        },
-        getAccessToken: function() {},
-        getClient: function() {},
-        saveAuthorizationCode: function() {}
-      };
-      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
-
-      handler.generateAuthorizationCode().should.be.an.instanceOf(Promise);
-    });
   });
 
   describe('getAuthorizationCodeLifetime()', function() {
@@ -656,61 +731,107 @@ describe('AuthorizeHandler integration', function() {
   });
 
   describe('getClient()', function() {
-    it('should throw an error if `client_id` is missing', function() {
+
+    it('should throw an error if `client_id` is missing', async function() {
+
       const model = {
         getAccessToken: function() {},
         getClient: function() {},
         saveAuthorizationCode: function() {}
       };
-      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
-      const request = new Request({ body: { response_type: 'code' }, headers: {}, method: {}, query: {} });
+      
+      const handler = new AuthorizeHandler({
+        authorizationCodeLifetime: 120,
+        model: model
+      });
+      
+      const request = new Request({
+        body: { response_type: 'code' },
+        headers: {},
+        method: {},
+        query: {} 
+      });
+
+      let res;
 
       try {
-        handler.getClient(request);
-
-        should.fail();
+        res = await handler.getClient(request);
       } catch (e) {
         e.should.be.an.instanceOf(InvalidRequestError);
         e.message.should.equal('Missing parameter: `client_id`');
       }
+
+      should.not.exist(res);
     });
 
-    it('should throw an error if `client_id` is invalid', function() {
+    it('should throw an error if `client_id` is invalid', async function() {
+
       const model = {
         getAccessToken: function() {},
         getClient: function() {},
         saveAuthorizationCode: function() {}
       };
-      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
-      const request = new Request({ body: { client_id: 'øå€£‰', response_type: 'code' }, headers: {}, method: {}, query: {} });
+
+      const handler = new AuthorizeHandler({
+        authorizationCodeLifetime: 120,
+        model: model
+      });
+
+      const request = new Request({
+        body: { client_id: 'øå€£‰', response_type: 'code' },
+        headers: {},
+        method: {},
+        query: {}
+      });
+
+      let res;
 
       try {
-        handler.getClient(request);
-
-        should.fail();
+        res = await handler.getClient(request);
       } catch (e) {
         e.should.be.an.instanceOf(InvalidRequestError);
         e.message.should.equal('Invalid parameter: `client_id`');
       }
+
+      should.not.exist(res);
+
     });
 
-    it('should throw an error if `client.redirectUri` is invalid', function() {
+    it('should throw an error if `client.redirectUri` is invalid', async function() {
+
       const model = {
         getAccessToken: function() {},
         getClient: function() {},
         saveAuthorizationCode: function() {}
       };
-      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
-      const request = new Request({ body: { client_id: 12345, response_type: 'code', redirect_uri: 'foobar' }, headers: {}, method: {}, query: {} });
+
+      const handler = new AuthorizeHandler({
+        authorizationCodeLifetime: 120,
+        model: model
+      });
+
+      const request = new Request({
+        body: {
+          client_id: 12345,
+          response_type: 'code',
+          redirect_uri: 'foobar'
+        },
+        headers: {},
+        method: {},
+        query: {} 
+      });
+
+      let res;
 
       try {
-        handler.getClient(request);
-
-        should.fail();
+        res = await handler.getClient(request);
       } catch (e) {
         e.should.be.an.instanceOf(InvalidRequestError);
         e.message.should.equal('Invalid request: `redirect_uri` is not a valid URI');
       }
+
+      should.not.exist(res);
+
     });
 
     it('should throw an error if `client` is missing', function() {
@@ -1057,62 +1178,32 @@ describe('AuthorizeHandler integration', function() {
   });
 
   describe('saveAuthorizationCode()', function() {
+
     it('should return an auth code', function() {
+
       const authorizationCode = {};
+
       const model = {
         getAccessToken: function() {},
         getClient: function() {},
         saveAuthorizationCode: function() {
-          return authorizationCode;
+          return Promise.resolve(authorizationCode);
         }
       };
-      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
+
+      const handler = new AuthorizeHandler({
+        authorizationCodeLifetime: 120,
+        model: model
+      });
 
       return handler.saveAuthorizationCode('foo', 'bar', 'biz', 'baz')
         .then(function(data) {
           data.should.equal(authorizationCode);
         })
         .catch(should.fail);
+
     });
 
-    it('should support promises when calling `model.saveAuthorizationCode()`', function() {
-      const model = {
-        getAccessToken: function() {},
-        getClient: function() {},
-        saveAuthorizationCode: function() {
-          return Promise.resolve({});
-        }
-      };
-      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
-
-      handler.saveAuthorizationCode('foo', 'bar', 'biz', 'baz').should.be.an.instanceOf(Promise);
-    });
-
-    it('should support non-promises when calling `model.saveAuthorizationCode()`', function() {
-      const model = {
-        getAccessToken: function() {},
-        getClient: function() {},
-        saveAuthorizationCode: function() {
-          return {};
-        }
-      };
-      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
-
-      handler.saveAuthorizationCode('foo', 'bar', 'biz', 'baz').should.be.an.instanceOf(Promise);
-    });
-
-    it('should support callbacks when calling `model.saveAuthorizationCode()`', function() {
-      const model = {
-        getAccessToken: function() {},
-        getClient: function() {},
-        saveAuthorizationCode: function(code, client, user, callback) {
-          return callback(null, true);
-        }
-      };
-      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
-
-      handler.saveAuthorizationCode('foo', 'bar', 'biz', 'baz').should.be.an.instanceOf(Promise);
-    });
   });
 
   describe('getResponseType()', function() {
