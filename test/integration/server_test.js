@@ -5,7 +5,6 @@
  */
 
 const InvalidArgumentError = require('../../lib/errors/invalid-argument-error');
-const Promise = require('bluebird');
 const Request = require('../../lib/request');
 const Response = require('../../lib/response');
 const Server = require('../../lib/server');
@@ -67,9 +66,21 @@ describe('Server integration', function() {
 
       return server.authenticate(request, response)
         .then( function() {
-          this.addAcceptedScopesHeader.should.be.true;
-          this.addAuthorizedScopesHeader.should.be.true;
-          this.allowBearerTokensInQueryString.should.be.false;
+          // REVIEW: 'this' is not standard promise behaviour.
+          // Instaead access the handler from the server.
+
+          // old way 
+          // this.addAcceptedScopesHeader.should.be.true;
+          // this.addAuthorizedScopesHeader.should.be.true;
+          // this.allowBearerTokensInQueryString.should.be.false;
+
+          // new way
+          // server.should.have.property('authenticateHandler');
+          server.authenticateHandler.addAcceptedScopesHeader.should.be.true;
+          server.authenticateHandler.addAuthorizedScopesHeader.should.be.true;
+          server.authenticateHandler.allowBearerTokensInQueryString.should.be.false;
+
+
         })
         .catch(should.fail);
     });
@@ -77,6 +88,7 @@ describe('Server integration', function() {
   });
 
   describe('authorize()', function() {
+
     it('should set the default `options`', function() {
       const model = {
         getAccessToken: function() {
@@ -98,38 +110,16 @@ describe('Server integration', function() {
 
       return server.authorize(request, response)
         .then(function() {
-          this.allowEmptyState.should.be.false;
-          this.authorizationCodeLifetime.should.equal(300);
+          server.authorizeHandler.allowEmptyState.should.be.false;
+          server.authorizeHandler.authorizationCodeLifetime.should.equal(300);
         })
         .catch(should.fail);
-    });
-
-    it('should return a promise', function() {
-      const model = {
-        getAccessToken: function() {
-          return {
-            user: {},
-            accessTokenExpiresAt: new Date(new Date().getTime() + 10000)
-          };
-        },
-        getClient: function() {
-          return { grants: ['authorization_code'], redirectUris: ['http://example.com/cb'] };
-        },
-        saveAuthorizationCode: function() {
-          return { authorizationCode: 123 };
-        }
-      };
-      const server = new Server({ model: model });
-      const request = new Request({ body: { client_id: 1234, client_secret: 'secret', response_type: 'code' }, headers: { 'Authorization': 'Bearer foo' }, method: {}, query: { state: 'foobar' } });
-      const response = new Response({ body: {}, headers: {} });
-      const handler = server.authorize(request, response);
-
-      handler.should.be.an.instanceOf(Promise);
     });
 
   });
 
   describe('token()', function() {
+
     it('should set the default `options`', function() {
       const model = {
         getClient: function() {
@@ -149,31 +139,12 @@ describe('Server integration', function() {
 
       return server.token(request, response)
         .then(function() {
-          this.accessTokenLifetime.should.equal(3600);
-          this.refreshTokenLifetime.should.equal(1209600);
+          server.tokenHandler.accessTokenLifetime.should.equal(3600);
+          server.tokenHandler.refreshTokenLifetime.should.equal(1209600);
         })
         .catch(should.fail);
     });
 
-    it('should return a promise', function() {
-      const model = {
-        getClient: function() {
-          return { grants: ['password'] };
-        },
-        getUser: function() {
-          return {};
-        },
-        saveToken: function() {
-          return { accessToken: 1234, client: {}, user: {} };
-        }
-      };
-      const server = new Server({ model: model });
-      const request = new Request({ body: { client_id: 1234, client_secret: 'secret', grant_type: 'password', username: 'foo', password: 'pass' }, headers: { 'content-type': 'application/x-www-form-urlencoded', 'transfer-encoding': 'chunked' }, method: 'POST', query: {} });
-      const response = new Response({ body: {}, headers: {} });
-      const handler = server.token(request, response);
-
-      handler.should.be.an.instanceOf(Promise);
-    });
-
   });
+
 });
