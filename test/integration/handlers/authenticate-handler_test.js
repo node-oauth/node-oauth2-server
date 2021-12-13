@@ -334,10 +334,12 @@ describe('AuthenticateHandler integration', function() {
         }
       }); 
 
+      const authHeaderValue = 'foobar';
+
       const request = new Request({
         body: {},
         headers: {
-          'Authorization': 'foobar'
+          'Authorization': authHeaderValue
         },
         method: {},
         query: {}
