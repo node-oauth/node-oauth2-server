@@ -91,7 +91,7 @@ describe('AuthorizationCodeGrantType integration', function() {
         e.message.should.equal('Missing parameter: `request`');
       }
     });
-    
+
     it('should throw an error if `client` is invalid', function() {
       const client = {};
       const model = {
@@ -111,7 +111,7 @@ describe('AuthorizationCodeGrantType integration', function() {
     });
 
     it('should throw an error if `client` is missing', function() {
-      
+
       const model = {
         getAuthorizationCode: function() { return { authorizationCode: 12345, expiresAt: new Date(new Date() * 2), user: {} }; },
         revokeAuthorizationCode: function() {},
