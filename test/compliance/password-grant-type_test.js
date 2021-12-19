@@ -60,6 +60,7 @@ const DB = require('../helpers/db');
 const createModel = require('../helpers/model');
 const createRequest = require('../helpers/request');
 const Response = require('../../lib/response');
+const crypto = require('crypto');
 
 require('chai').should();
 
@@ -190,8 +191,8 @@ describe('PasswordGrantType Compliance', function () {
       const request = createDefaultRequest();
       const response = new Response({});
 
-      const clientId = Math.round(Math.random() * 1000000).toString(16);
-      const clientSecret = Math.round(Math.random() * 1000000).toString(16);
+      const clientId = crypto.randomBytes(4).toString('hex');
+      const clientSecret = crypto.randomBytes(4).toString('hex');
 
       request.headers.authorization = 'Basic ' + Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
 
