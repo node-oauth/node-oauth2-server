@@ -190,7 +190,10 @@ describe('PasswordGrantType Compliance', function () {
       const request = createDefaultRequest();
       const response = new Response({});
 
-      request.headers.authorization = 'Basic ' + Buffer.from('wrong:wrong').toString('base64');
+      const clientId = Math.round(Math.random() * 1000000).toString(16);
+      const clientSecret = Math.round(Math.random() * 1000000).toString(16);
+
+      request.headers.authorization = 'Basic ' + Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
 
       await auth.token(request, response, {})
         .catch(err => {
