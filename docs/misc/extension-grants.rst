@@ -2,7 +2,7 @@
  Extension Grants
 ==================
 
-Create a subclass of ``AbstractGrantType`` and create methods `handle` and `saveToken` along with other required methods according to needs
+Create a subclass of ``AbstractGrantType`` and create methods `handle` and `saveToken` along with other required methods according to your needs:
 
 .. code-block:: js
 
