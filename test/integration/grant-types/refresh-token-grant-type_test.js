@@ -262,7 +262,7 @@ describe('RefreshTokenGrantType integration', function() {
         .then(should.fail)
         .catch(function(e) {
           e.should.be.an.instanceOf(InvalidGrantError);
-          e.message.should.equal('Invalid grant: refresh token is invalid');
+          e.message.should.equal('Invalid grant: refresh token was issued to another client');
         });
     });
 
@@ -304,7 +304,7 @@ describe('RefreshTokenGrantType integration', function() {
         .then(should.fail)
         .catch(function(e) {
           e.should.be.an.instanceOf(InvalidGrantError);
-          e.message.should.equal('Invalid grant: refresh token is invalid');
+          e.message.should.equal('Invalid grant: refresh token was issued to another client');
         });
     });
 
