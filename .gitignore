@@ -41,3 +41,4 @@ coverage
 .nyc_output
 
 package-lock.json
+yarn.lock
