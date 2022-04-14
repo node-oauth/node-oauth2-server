@@ -39,3 +39,5 @@ tramp
 # coverage
 coverage
 .nyc_output
+
+package-lock.json
