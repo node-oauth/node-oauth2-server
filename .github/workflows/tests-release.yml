@@ -57,7 +57,7 @@ jobs:
           ${{ runner.os }}-node-${{ matrix.node }}
 
     # for this workflow we also require npm audit to pass
-    - run: npm ci
+    - run: npm i
     - run: npm run test:coverage
 
     # with the following action we enforce PRs to have a high coverage
@@ -110,7 +110,7 @@ jobs:
     # we just cloned and install it as local dependency
     - run: |
         cd github/testing/express
-        npm ci
+        npm i
         npm install ../../../
         npm run test
 
@@ -125,7 +125,7 @@ jobs:
         with:
           node-version: 12
           registry-url: https://registry.npmjs.org/
-      - run: npm ci
+      - run: npm i
       - run: npm publish --dry-run
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
@@ -143,7 +143,7 @@ jobs:
         # we always publish targeting the lowest supported node version
         node-version: 12
         registry-url: $registry-url(npm)
-    - run: npm ci
+    - run: npm i
     - run: npm publish --dry-run
       env:
         NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
