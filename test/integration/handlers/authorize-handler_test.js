@@ -161,12 +161,51 @@ describe('AuthorizeHandler integration', function() {
 
     it('should throw an error if `allowed` is `false`', function() {
       const model = {
+        getAccessToken: function() {
+          return {
+            user: {},
+            accessTokenExpiresAt: new Date(new Date().getTime() + 10000)
+          };
+        },
+        getClient: function() {
+          return { grants: ['authorization_code'], redirectUris: ['http://example.com/cb'] };
+        },
+        saveAuthorizationCode: function() {
+          throw new Error('Unhandled exception');
+        }
+      };
+      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
+      const request = new Request({
+        body: {
+          client_id: 'test'
+        },
+        headers: {
+          'Authorization': 'Bearer foo'
+        },
+        method: {},
+        query: {
+          allowed: 'false',
+          state: 'foobar'
+        }
+      });
+      const response = new Response({ body: {}, headers: {} });
+
+      return handler.handle(request, response)
+        .then(should.fail)
+        .catch(function(e) {
+          e.should.be.an.instanceOf(AccessDeniedError);
+          e.message.should.equal('Access denied: user denied access to application');
+        });
+    });
+
+    it('should throw an error if `allowed` is `false` body', function() {
+      const model = {
         getAccessToken: function() {},
         getClient: function() {},
         saveAuthorizationCode: function() {}
       };
       const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
-      const request = new Request({ body: {}, headers: {}, method: {}, query: { allowed: 'false' } });
+      const request = new Request({ body: { allowed: 'false' }, headers: {}, method: {}, query: {} });
       const response = new Response({ body: {}, headers: {} });
 
       return handler.handle(request, response)
@@ -328,7 +367,7 @@ describe('AuthorizeHandler integration', function() {
       return handler.handle(request, response)
         .then(should.fail)
         .catch(function() {
-          response.get('location').should.equal('http://example.com/cb?error=invalid_scope&error_description=Invalid%20parameter%3A%20%60scope%60');
+          response.get('location').should.equal('http://example.com/cb?error=invalid_scope&error_description=Invalid%20parameter%3A%20%60scope%60&state=foobar');
         });
     });
 
@@ -416,7 +455,7 @@ describe('AuthorizeHandler integration', function() {
       return handler.handle(request, response)
         .then(should.fail)
         .catch(function() {
-          response.get('location').should.equal('http://example.com/cb?error=invalid_scope&error_description=Invalid%20scope%3A%20Requested%20scope%20is%20invalid');
+          response.get('location').should.equal('http://example.com/cb?error=invalid_scope&error_description=Invalid%20scope%3A%20Requested%20scope%20is%20invalid&state=foobar');
         });
     });
 
@@ -631,6 +670,65 @@ describe('AuthorizeHandler integration', function() {
       const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
 
       handler.getAuthorizationCodeLifetime().should.be.an.instanceOf(Date);
+    });
+  });
+
+  describe('validateRedirectUri()', function() {
+    it('should support empty method', function() {
+      const model = {
+        getAccessToken: function() {},
+        getClient: function() {},
+        saveAuthorizationCode: function() {}
+      };
+
+      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
+
+      handler.validateRedirectUri('http://example.com/a', { redirectUris: ['http://example.com/a'] }).should.be.an.instanceOf(Promise);
+    });
+
+    it('should support promises', function() {
+      const model = {
+        getAccessToken: function() {},
+        getClient: function() {},
+        saveAuthorizationCode: function() {},
+        validateRedirectUri: function() {
+          return Promise.resolve(true);
+        }
+      };
+
+      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
+
+      handler.validateRedirectUri('http://example.com/a', { }).should.be.an.instanceOf(Promise);
+    });
+
+    it('should support non-promises', function() {
+      const model = {
+        getAccessToken: function() {},
+        getClient: function() {},
+        saveAuthorizationCode: function() {},
+        validateRedirectUri: function() {
+          return true;
+        }
+      };
+
+      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
+
+      handler.validateRedirectUri('http://example.com/a', { }).should.be.an.instanceOf(Promise);
+    });
+
+    it('should support callbacks', function() {
+      const model = {
+        getAccessToken: function() {},
+        getClient: function() {},
+        saveAuthorizationCode: function() {},
+        validateRedirectUri: function(redirectUri, client, callback) {
+          callback(null, false);
+        }
+      };
+
+      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
+
+      handler.validateRedirectUri('http://example.com/a', { }).should.be.an.instanceOf(Promise);
     });
   });
 
@@ -930,6 +1028,18 @@ describe('AuthorizeHandler integration', function() {
         e.should.be.an.instanceOf(InvalidRequestError);
         e.message.should.equal('Missing parameter: `state`');
       }
+    });
+
+    it('should allow missing `state` if `allowEmptyState` is valid', function () {
+      const model = {
+        getAccessToken: function() {},
+        getClient: function() {},
+        saveAuthorizationCode: function() {}
+      };
+      const handler = new AuthorizeHandler({ allowEmptyState: true, authorizationCodeLifetime: 120, model: model });
+      const request = new Request({ body: {}, headers: {}, method: {}, query: {} });
+      const state = handler.getState(request);
+      should.equal(state, undefined);
     });
 
     it('should throw an error if `state` is invalid', function() {
