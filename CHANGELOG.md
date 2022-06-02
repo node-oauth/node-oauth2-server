@@ -1,5 +1,39 @@
 ## Changelog
 
+## 4.2.0
+### Fixed
+- fix(core): Bearer regular expression matching in authenticate handler #105
+- fix(request): set WWW-Authenticate header for invalid requests #96 oauthjs#646
+- fix(handler): deny access when body.allowed is 'false' (#94)
+- fix(handlers): skip varcheck for state when allowEmptyState #89 #93
+
+### Added
+- supported custom validateRedirectUri
+- feature: Supported state in case of denialMerge #99
+- Bearer regular expression matching in authenticate handler
+- docs: Update extension-grants.rst with example #92
+- feature(core): extract is.js into standalone package @node-oauth/formats #55
+- feature(authorize): allow custom implementations of validateRedirectUri via model #89 p.4
+  - support custom validateRedirectUri()
+  - allow to implement model.validateRedirectUri
+  - updated AuthorizeHandler
+  - default conforms with RFC 6819 Section-5.2.3.5
+
+### Tests
+- Integration test password grant (#100)
+    * test example
+    * created db & model factories
+    * added refresh_token grant type test
+    * removed failing test, not implemented feature
+    * add reference to issue
+    * client authentication test
+    * random client credentials in test
+    * replace math.random by crypto.randomBytes
+
+### CI
+- refactor(ci): remove unused ci workflow
+- fix(ci): use node-oauth/express-oauth-server for integration test
+
 ## 4.1.0
 ### Changed 
 * Bump dev dependencies to resolve vulnerabilities
