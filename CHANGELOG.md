@@ -34,6 +34,14 @@
 - refactor(ci): remove unused ci workflow
 - fix(ci): use node-oauth/express-oauth-server for integration test
 
+## 4.1.1
+
+### Added
+- Added TypeScript types
+### Changed
+- Removed extra files when someone npm installs.
+- Upgrades all code from ES5 to ES6, where possible.
+
 ## 4.1.0
 ### Changed 
 * Bump dev dependencies to resolve vulnerabilities
