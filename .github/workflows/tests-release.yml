@@ -27,8 +27,9 @@ jobs:
     - uses: actions/setup-node@v2
       with:
         node-version: '12'
-    - run: npm i # install to create local package-lock.json but don't cache
-    - run: npm audit --production # no audit for dev dependencies
+    # install to create local package-lock.json but don't cache the files
+    # also: no audit for dev dependencies
+    - run: npm i --package-lock-only  && npm audit --production
 
   # STEP 2 - basic unit tests
 
