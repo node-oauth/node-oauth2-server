@@ -24,18 +24,18 @@
     "lib"
   ],
   "dependencies": {
-    "@node-oauth/formats": "^1.0.0",
+    "@node-oauth/formats": "1.0.0",
     "basic-auth": "2.0.1",
     "bluebird": "3.7.2",
     "promisify-any": "2.0.1",
     "type-is": "1.6.18"
   },
   "devDependencies": {
-    "chai": "^4.3.4",
-    "eslint": "^8.0.0",
-    "mocha": "^9.1.2",
-    "nyc": "^15.1.0",
-    "sinon": "^12.0.1"
+    "chai": "4.3.4",
+    "eslint": "8.4.1",
+    "mocha": "9.2.2",
+    "nyc": "15.1.0",
+    "sinon": "12.0.1"
   },
   "license": "MIT",
   "engines": {
