@@ -198,6 +198,24 @@ describe('AuthorizeHandler integration', function() {
         });
     });
 
+    it('should throw an error if `allowed` is `false` body', function() {
+      const model = {
+        getAccessToken: function() {},
+        getClient: function() {},
+        saveAuthorizationCode: function() {}
+      };
+      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
+      const request = new Request({ body: { allowed: 'false' }, headers: {}, method: {}, query: {} });
+      const response = new Response({ body: {}, headers: {} });
+
+      return handler.handle(request, response)
+        .then(should.fail)
+        .catch(function(e) {
+          e.should.be.an.instanceOf(AccessDeniedError);
+          e.message.should.equal('Access denied: user denied access to application');
+        });
+    });
+
     it('should redirect to an error response if a non-oauth error is thrown', function() {
       const model = {
         getAccessToken: function() {
@@ -652,6 +670,65 @@ describe('AuthorizeHandler integration', function() {
       const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
 
       handler.getAuthorizationCodeLifetime().should.be.an.instanceOf(Date);
+    });
+  });
+
+  describe('validateRedirectUri()', function() {
+    it('should support empty method', function() {
+      const model = {
+        getAccessToken: function() {},
+        getClient: function() {},
+        saveAuthorizationCode: function() {}
+      };
+
+      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
+
+      handler.validateRedirectUri('http://example.com/a', { redirectUris: ['http://example.com/a'] }).should.be.an.instanceOf(Promise);
+    });
+
+    it('should support promises', function() {
+      const model = {
+        getAccessToken: function() {},
+        getClient: function() {},
+        saveAuthorizationCode: function() {},
+        validateRedirectUri: function() {
+          return Promise.resolve(true);
+        }
+      };
+
+      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
+
+      handler.validateRedirectUri('http://example.com/a', { }).should.be.an.instanceOf(Promise);
+    });
+
+    it('should support non-promises', function() {
+      const model = {
+        getAccessToken: function() {},
+        getClient: function() {},
+        saveAuthorizationCode: function() {},
+        validateRedirectUri: function() {
+          return true;
+        }
+      };
+
+      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
+
+      handler.validateRedirectUri('http://example.com/a', { }).should.be.an.instanceOf(Promise);
+    });
+
+    it('should support callbacks', function() {
+      const model = {
+        getAccessToken: function() {},
+        getClient: function() {},
+        saveAuthorizationCode: function() {},
+        validateRedirectUri: function(redirectUri, client, callback) {
+          callback(null, false);
+        }
+      };
+
+      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
+
+      handler.validateRedirectUri('http://example.com/a', { }).should.be.an.instanceOf(Promise);
     });
   });
 
