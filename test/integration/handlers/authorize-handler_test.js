@@ -1321,4 +1321,44 @@ describe('AuthorizeHandler integration', function() {
       response.get('location').should.equal('http://example.com/cb?state=foobar');
     });
   });
+
+  describe('getCodeChallengeMethod()', function() {
+    it('should get code challenge method', function() {
+      const model = {
+        getAccessToken: function() {},
+        getClient: function() {},
+        saveAuthorizationCode: function() {}
+      };
+      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });      const request = new Request({ body: {code_challenge_method: 'S256'}, headers: {}, method: {}, query: {} });
+
+      const codeChallengeMethod  = handler.getCodeChallengeMethod(request);
+      codeChallengeMethod.should.equal('S256');
+    });
+
+    it('should get default code challenge method plain if missing', function() {
+      const model = {
+        getAccessToken: function() {},
+        getClient: function() {},
+        saveAuthorizationCode: function() {}
+      };
+      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });      const request = new Request({ body: {}, headers: {}, method: {}, query: {} });
+
+      const codeChallengeMethod  = handler.getCodeChallengeMethod(request);
+      codeChallengeMethod.should.equal('plain');
+    });
+  });
+
+  describe('getCodeChallenge()', function() {
+    it('should get code challenge', function() {
+      const model = {
+        getAccessToken: function() {},
+        getClient: function() {},
+        saveAuthorizationCode: function() {}
+      };
+      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });      const request = new Request({ body: {code_challenge: 'challenge'}, headers: {}, method: {}, query: {} });
+
+      const codeChallengeMethod  = handler.getCodeChallenge(request);
+      codeChallengeMethod.should.equal('challenge');
+    });
+  });
 });
