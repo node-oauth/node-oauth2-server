@@ -159,7 +159,7 @@ describe('AuthorizeHandler integration', function() {
       }
     });
 
-    it('should throw an error if `allowed` is `false`', function() {
+    it('should redirect to an error response if user denied access', function() {
       const model = {
         getAccessToken: function() {
           return {
@@ -170,49 +170,29 @@ describe('AuthorizeHandler integration', function() {
         getClient: function() {
           return { grants: ['authorization_code'], redirectUris: ['http://example.com/cb'] };
         },
-        saveAuthorizationCode: function() {
-          throw new Error('Unhandled exception');
-        }
+        saveAuthorizationCode: function() {}
       };
       const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
       const request = new Request({
         body: {
-          client_id: 'test'
+          client_id: 12345,
+          response_type: 'code'
         },
+        method: {},
         headers: {
           'Authorization': 'Bearer foo'
         },
-        method: {},
         query: {
-          allowed: 'false',
-          state: 'foobar'
+          state: 'foobar',
+          allowed: 'false'
         }
       });
       const response = new Response({ body: {}, headers: {} });
 
       return handler.handle(request, response)
         .then(should.fail)
-        .catch(function(e) {
-          e.should.be.an.instanceOf(AccessDeniedError);
-          e.message.should.equal('Access denied: user denied access to application');
-        });
-    });
-
-    it('should throw an error if `allowed` is `false` body', function() {
-      const model = {
-        getAccessToken: function() {},
-        getClient: function() {},
-        saveAuthorizationCode: function() {}
-      };
-      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
-      const request = new Request({ body: { allowed: 'false' }, headers: {}, method: {}, query: {} });
-      const response = new Response({ body: {}, headers: {} });
-
-      return handler.handle(request, response)
-        .then(should.fail)
-        .catch(function(e) {
-          e.should.be.an.instanceOf(AccessDeniedError);
-          e.message.should.equal('Access denied: user denied access to application');
+        .catch(function() {
+          response.get('location').should.equal('http://example.com/cb?error=access_denied&error_description=Access%20denied%3A%20user%20denied%20access%20to%20application&state=foobar');
         });
     });
 
