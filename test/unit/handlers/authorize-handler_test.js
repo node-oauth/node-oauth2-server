@@ -87,6 +87,26 @@ describe('AuthorizeHandler', function() {
       };
       const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
 
+      return handler.saveAuthorizationCode('foo', 'bar', 'qux', 'biz', 'baz', 'boz')
+        .then(function() {
+          model.saveAuthorizationCode.callCount.should.equal(1);
+          model.saveAuthorizationCode.firstCall.args.should.have.length(3);
+          model.saveAuthorizationCode.firstCall.args[0].should.eql({ authorizationCode: 'foo', expiresAt: 'bar', redirectUri: 'baz', scope: 'qux' });
+          model.saveAuthorizationCode.firstCall.args[1].should.equal('biz');
+          model.saveAuthorizationCode.firstCall.args[2].should.equal('boz');
+          model.saveAuthorizationCode.firstCall.thisValue.should.equal(model);
+        })
+        .catch(should.fail);
+    });
+
+    it('should call `model.saveAuthorizationCode()` with code challenge', function() {
+      const model = {
+        getAccessToken: function() {},
+        getClient: function() {},
+        saveAuthorizationCode: sinon.stub().returns({})
+      };
+      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
+
       return handler.saveAuthorizationCode('foo', 'bar', 'qux', 'biz', 'baz', 'boz', 'codeChallenge', 'codeChallengeMethod')
         .then(function() {
           model.saveAuthorizationCode.callCount.should.equal(1);
