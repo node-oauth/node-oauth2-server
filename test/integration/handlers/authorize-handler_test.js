@@ -1309,7 +1309,8 @@ describe('AuthorizeHandler integration', function() {
         getClient: function() {},
         saveAuthorizationCode: function() {}
       };
-      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });      const request = new Request({ body: {code_challenge_method: 'S256'}, headers: {}, method: {}, query: {} });
+      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });      
+      const request = new Request({ body: {code_challenge_method: 'S256'}, headers: {}, method: {}, query: {} });
 
       const codeChallengeMethod  = handler.getCodeChallengeMethod(request);
       codeChallengeMethod.should.equal('S256');
@@ -1321,7 +1322,8 @@ describe('AuthorizeHandler integration', function() {
         getClient: function() {},
         saveAuthorizationCode: function() {}
       };
-      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });      const request = new Request({ body: {}, headers: {}, method: {}, query: {} });
+      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });      
+      const request = new Request({ body: {}, headers: {}, method: {}, query: {} });
 
       const codeChallengeMethod  = handler.getCodeChallengeMethod(request);
       codeChallengeMethod.should.equal('plain');
@@ -1335,7 +1337,8 @@ describe('AuthorizeHandler integration', function() {
         getClient: function() {},
         saveAuthorizationCode: function() {}
       };
-      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });      const request = new Request({ body: {code_challenge: 'challenge'}, headers: {}, method: {}, query: {} });
+      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });      
+      const request = new Request({ body: {code_challenge: 'challenge'}, headers: {}, method: {}, query: {} });
 
       const codeChallengeMethod  = handler.getCodeChallenge(request);
       codeChallengeMethod.should.equal('challenge');
