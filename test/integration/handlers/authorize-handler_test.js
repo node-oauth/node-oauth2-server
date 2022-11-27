@@ -1316,6 +1316,26 @@ describe('AuthorizeHandler integration', function() {
       codeChallengeMethod.should.equal('S256');
     });
 
+    it('should throw if the code challenge method is not supported', async function () {
+      const model = {
+        getAccessToken: function() {},
+        getClient: function() {},
+        saveAuthorizationCode: function() {}
+      };
+      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
+      const request = new Request({ body: {code_challenge_method: 'foo'}, headers: {}, method: {}, query: {} });
+
+      try {
+        handler.getCodeChallengeMethod(request);
+
+        should.fail();
+      } catch (e) {
+        // defined in RFC 7636 - 4.4
+        e.should.be.an.instanceOf(InvalidRequestError);
+        e.message.should.equal('Invalid request: transform algorithm \'foo\' not supported');
+      }
+    });
+
     it('should get default code challenge method plain if missing', function() {
       const model = {
         getAccessToken: function() {},
