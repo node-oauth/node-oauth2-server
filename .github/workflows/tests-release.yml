@@ -23,10 +23,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
       with:
-        node-version: '12'
+        node-version: '14'
     # install to create local package-lock.json but don't cache the files
     # also: no audit for dev dependencies
     - run: npm i --package-lock-only  && npm audit --production
@@ -40,23 +40,15 @@ jobs:
     needs: [audit]
     strategy:
       matrix:
-        node: [12, 14, 16]
+        node: [14, 16, 18]
     steps:
     - name: Checkout ${{ matrix.node }}
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Setup node ${{ matrix.node }}
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node }}
-
-    - name: Cache dependencies ${{ matrix.node }}
-      uses: actions/cache@v1
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-${{ matrix.node }}
 
     # for this workflow we also require npm audit to pass
     - run: npm i
@@ -81,35 +73,28 @@ jobs:
     needs: [unittest]
     strategy:
       matrix:
-        node: [12, 14] # TODO get running for node 16
+        node: [14] # TODO get running for node 16 once we removed bluebird dependency
     steps:
     # checkout this repo
     - name: Checkout ${{ matrix.node }}
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     # checkout express-adapter repo
     - name: Checkout express-adapter ${{ matrix.node }}
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         repository:  node-oauth/express-oauth-server
         path: github/testing/express
 
     - name: Setup node ${{ matrix.node }}
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node }}
-
-    - name: Cache dependencies ${{ matrix.node }}
-      uses: actions/cache@v1
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ matrix.node }}-node-oauth/express-oauth-server-${{ hashFiles('github/testing/express/**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-${{ matrix.node }}-node-oauth/express-oauth-server
 
     # in order to test the adapter we need to use the current checkout
     # and install it as local dependency
     # we just cloned and install it as local dependency
+    # xxx: added bluebird as explicit dependency
     - run: |
         cd github/testing/express
         npm i
@@ -122,10 +107,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: [integrationtests]
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: 12
+          node-version: 14
           registry-url: https://registry.npmjs.org/
       - run: npm i
       - run: npm publish --dry-run
@@ -139,11 +124,11 @@ jobs:
       contents: read
       packages: write
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
       with:
         # we always publish targeting the lowest supported node version
-        node-version: 12
+        node-version: 14
         registry-url: $registry-url(npm)
     - run: npm i
     - run: npm publish --dry-run

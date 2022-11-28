@@ -306,7 +306,7 @@ declare namespace OAuth2Server {
          *
          */
         saveAuthorizationCode(
-          code: Pick<AuthorizationCode, 'authorizationCode' | 'expiresAt' | 'redirectUri' | 'scope'>,
+          code: Pick<AuthorizationCode, 'authorizationCode' | 'expiresAt' | 'redirectUri' | 'scope' | 'codeChallenge' | 'codeChallengeMethod'>,
           client: Client,
           user: User,
           callback?: Callback<AuthorizationCode>): Promise<AuthorizationCode | Falsey>;
@@ -410,6 +410,8 @@ declare namespace OAuth2Server {
         scope?: string | string[] | undefined;
         client: Client;
         user: User;
+        codeChallenge?: string;
+        codeChallengeMethod?: string;
         [key: string]: any;
     }
 
