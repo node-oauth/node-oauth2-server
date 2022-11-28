@@ -6,6 +6,7 @@
 
 const AuthorizationCodeGrantType = require('../../../lib/grant-types/authorization-code-grant-type');
 const InvalidGrantError = require('../../../lib/errors/invalid-grant-error');
+const ServerError  = require('../../../lib/errors/server-error');
 const Promise = require('bluebird');
 const Request = require('../../../lib/request');
 const sinon = require('sinon');
@@ -116,6 +117,33 @@ describe('AuthorizationCodeGrantType', function() {
         .catch(function(e) {
           e.should.be.an.instanceOf(InvalidGrantError);
           e.message.should.equal('Invalid grant: code verifier is invalid');
+        });
+    });
+
+    it('should throw an error in getAuthorizationCode if an invalid code challenge method has been saved', function () {
+      const codeVerifier = stringUtil.base64URLEncode(crypto.randomBytes(32));
+      const authorizationCode = {
+        authorizationCode: 12345,
+        client: { id: 'foobar', isPublic: true },
+        expiresAt: new Date(new Date().getTime() * 2),
+        user: {},
+        codeChallengeMethod: 'foobar', // assume this bypassed validation
+        codeChallenge: stringUtil.base64URLEncode(crypto.createHash('sha256').update(codeVerifier).digest())
+      };
+      const client = { id: 'foobar', isPublic: true };
+      const model = {
+        getAuthorizationCode: function() { return authorizationCode; },
+        revokeAuthorizationCode: function() {},
+        saveToken: function() {}
+      };
+      const grantType = new AuthorizationCodeGrantType({ accessTokenLifetime: 123, model: model });
+      const request = new Request({ body: { code: 12345, code_verifier: codeVerifier }, headers: {}, method: {}, query: {} });
+
+      return grantType.getAuthorizationCode(request, client)
+        .then(should.fail)
+        .catch(function(e) {
+          e.should.be.an.instanceOf(ServerError);
+          e.message.should.equal('Server error: `getAuthorizationCode()` did not return a valid `codeChallengeMethod` property');
         });
     });
 
