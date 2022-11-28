@@ -73,7 +73,7 @@ jobs:
     needs: [unittest]
     strategy:
       matrix:
-        node: [14, 16, 18] # TODO get running for node 16
+        node: [14] # TODO get running for node 16 once we removed bluebird dependency
     steps:
     # checkout this repo
     - name: Checkout ${{ matrix.node }}
@@ -99,7 +99,6 @@ jobs:
         cd github/testing/express
         npm i
         npm install ../../../
-        npm install bluebird
         npm run test
 
     # todo repeat with other adapters
