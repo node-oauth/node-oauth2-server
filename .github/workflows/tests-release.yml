@@ -94,10 +94,12 @@ jobs:
     # in order to test the adapter we need to use the current checkout
     # and install it as local dependency
     # we just cloned and install it as local dependency
+    # xxx: added bluebird as explicit dependency
     - run: |
         cd github/testing/express
         npm i
         npm install ../../../
+        npm install bluebird
         npm run test
 
     # todo repeat with other adapters
