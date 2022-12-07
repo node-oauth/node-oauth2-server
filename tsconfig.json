@@ -1,0 +1,72 @@
+{
+    "compilerOptions": {
+        "allowJs": true,
+        "allowSyntheticDefaultImports": true,
+        "alwaysStrict": true,
+        "checkJs": true,
+        "declaration": true,
+        "declarationMap": false,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "esModuleInterop": true,
+        "importHelpers": true,
+        "importsNotUsedAsValues": "preserve",
+        "inlineSourceMap": false,
+        "isolatedModules": false,
+        "incremental": true,
+        "moduleResolution": "NodeNext",
+        "removeComments": true,
+        "resolveJsonModule": true,
+        "skipLibCheck": true,
+        "strict": true,
+        "sourceMap": true,
+        "outDir": "dist",
+        "strictPropertyInitialization": false,
+
+        "module": "NodeNext",
+        "target": "ESNext",
+
+        "lib": [
+            "DOM",
+            "DOM.Iterable",
+
+            "ESNext",
+            "ESNext.AsyncIterable",
+            "ESNext.BigInt",
+            "ESNext.Intl",
+            "ESNext.Promise",
+            "ESNext.String",
+            "ESNext.Symbol",
+            "ESNext.WeakRef",
+
+            "ScriptHost",
+
+            "WebWorker",
+            "WebWorker.ImportScripts",
+            "Webworker.Iterable"
+        ]
+    },
+
+    "include": [
+        "**/**/scripts",
+        "**/**/src",
+        "**/**/tests",
+        "**/*/scripts",
+        "**/*/src",
+        "**/*/tests",
+        "**/scripts",
+        "**/src",
+        "**/tests",
+        "*/scripts",
+        "*/src",
+        "*/tests",
+        "scripts",
+        "src",
+        "tests"
+    ],
+
+    "ts-node": {
+        "esm": true,
+        "experimentalSpecifierResolution": "node"
+    }
+}

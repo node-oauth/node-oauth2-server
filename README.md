@@ -3,14 +3,6 @@
 
 Complete, compliant and well tested module for implementing an OAuth2 server in [Node.js](https://nodejs.org).
 
-[![Tests](https://github.com/node-oauth/node-oauth2-server/actions/workflows/tests.yml/badge.svg)](https://github.com/node-oauth/node-oauth2-server/actions/workflows/tests.yml)
-[![CodeQL Semantic Analysis](https://github.com/node-oauth/node-oauth2-server/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/node-oauth/node-oauth2-server/actions/workflows/codeql-analysis.yml)
-[![Tests for Release](https://github.com/node-oauth/node-oauth2-server/actions/workflows/tests-release.yml/badge.svg)](https://github.com/node-oauth/node-oauth2-server/actions/workflows/tests-release.yml)
-[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
-![npm Version](https://img.shields.io/npm/v/@node-oauth/oauth2-server?label=version)
-![npm Downloads/Week](https://img.shields.io/npm/dw/@node-oauth/oauth2-server)
-![GitHub License](https://img.shields.io/github/license/node-oauth/node-oauth2-server)
-
 NOTE: This project has been forked from [oauthjs/node-oauth2-server](https://github.com/oauthjs/node-oauth2-server) and is a continuation due to the project appearing to be abandoned. Please see [our issue board](https://github.com/node-oauth/node-oauth2-server/issues) to talk about next steps and the future of this project.
 
 ## Installation
