@@ -322,6 +322,12 @@ declare namespace OAuth2Server {
          *
          */
         validateScope?(user: User, client: Client, scope: string | string[], callback?: Callback<string | Falsey>): Promise<string | string[] | Falsey>;
+        
+        /**
+         * Invoked to check if the provided `redirectUri` is valid for a particular `client`.
+         *
+         */
+        validateRedirectUri?(redirect_uri: string, client: Client): Promise<boolean>;
     }
 
     interface PasswordModel extends BaseModel, RequestAuthenticationModel {
