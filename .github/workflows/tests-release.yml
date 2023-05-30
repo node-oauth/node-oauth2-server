@@ -57,7 +57,6 @@ jobs:
         key: ${{ runner.os }}-node-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
           ${{ runner.os }}-node-${{ matrix.node }}
-
     # for this workflow we also require npm audit to pass
     - run: npm i
     - run: npm run test:coverage
@@ -110,6 +109,7 @@ jobs:
     # in order to test the adapter we need to use the current checkout
     # and install it as local dependency
     # we just cloned and install it as local dependency
+    # xxx: added bluebird as explicit dependency
     - run: |
         cd github/testing/express
         npm i
