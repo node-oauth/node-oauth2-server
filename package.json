@@ -14,7 +14,8 @@
     "Michael Salinger <mjsalinger@gmail.com>",
     "Nuno Sousa",
     "Max Truxa",
-    "Daniel Reguero"
+    "Daniel Reguero",
+    "Jan Küster <info@jankuester.com>"
   ],
   "main": "index.js",
   "types": "index.d.ts",
@@ -24,18 +25,18 @@
     "lib"
   ],
   "dependencies": {
-    "@node-oauth/formats": "^1.0.0",
+    "@node-oauth/formats": "1.0.0",
     "basic-auth": "2.0.1",
     "bluebird": "3.7.2",
     "promisify-any": "2.0.1",
     "type-is": "1.6.18"
   },
   "devDependencies": {
-    "chai": "^4.3.4",
-    "eslint": "^8.0.0",
-    "mocha": "^10.0.0",
-    "nyc": "^15.1.0",
-    "sinon": "^15.0.2"
+    "chai": "4.3.4",
+    "eslint": "8.4.1",
+    "mocha": "9.2.2",
+    "nyc": "15.1.0",
+    "sinon": "13.0.1"
   },
   "license": "MIT",
   "engines": {
