@@ -14,7 +14,8 @@
     "Michael Salinger <mjsalinger@gmail.com>",
     "Nuno Sousa",
     "Max Truxa",
-    "Daniel Reguero"
+    "Daniel Reguero",
+    "Jan Küster <info@jankuester.com>"
   ],
   "main": "index.js",
   "types": "index.d.ts",
