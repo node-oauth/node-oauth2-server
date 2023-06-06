@@ -23,7 +23,7 @@ jobs:
       - name: setup node
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 20
 
       - name: cache dependencies
         uses: actions/cache@v3
@@ -41,7 +41,7 @@ jobs:
     needs: [lint]
     strategy:
       matrix:
-        node: [14, 16, 18]
+        node: [16, 18, 20]
     steps:
     - name: Checkout ${{ matrix.node }}
       uses: actions/checkout@v3
