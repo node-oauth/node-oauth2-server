@@ -38,7 +38,7 @@
   },
   "license": "MIT",
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=16.0.0"
   },
   "scripts": {
     "pretest": "./node_modules/.bin/eslint lib test index.js",
