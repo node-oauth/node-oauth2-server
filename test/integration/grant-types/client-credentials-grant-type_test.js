@@ -168,7 +168,7 @@ describe('ClientCredentialsGrantType integration', function() {
     it('should support promises', function() {
       const user = { email: 'foo@bar.com' };
       const model = {
-        getUserFromClient: function() { return Promise.resolve(user); },
+        getUserFromClient: async function() { return user; },
         saveToken: function() {}
       };
       const grantType = new ClientCredentialsGrantType({ accessTokenLifetime: 120, model: model });
@@ -211,7 +211,7 @@ describe('ClientCredentialsGrantType integration', function() {
       const token = {};
       const model = {
         getUserFromClient: function() {},
-        saveToken: function() { return Promise.resolve(token); }
+        saveToken: async function() { return token; }
       };
       const grantType = new ClientCredentialsGrantType({ accessTokenLifetime: 123, model: model });
 

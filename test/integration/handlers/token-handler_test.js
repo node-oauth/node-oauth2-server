@@ -587,7 +587,7 @@ describe('TokenHandler integration', function() {
 
     it('should support promises', function() {
       const model = {
-        getClient: function() { return Promise.resolve({ grants: [] }); },
+        getClient: async function() { return { grants: [] }; },
         saveToken: function() {}
       };
       const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });

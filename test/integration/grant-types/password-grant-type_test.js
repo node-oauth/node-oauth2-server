@@ -113,7 +113,7 @@ describe('PasswordGrantType integration', function() {
       const token = {};
       const model = {
         getUser: function() { return {}; },
-        saveToken: function() { return Promise.resolve(token); }
+        saveToken: async function() { return token; }
       };
       const grantType = new PasswordGrantType({ accessTokenLifetime: 123, model: model });
       const request = new Request({ body: { username: 'foo', password: 'bar' }, headers: {}, method: {}, query: {} });
@@ -245,7 +245,7 @@ describe('PasswordGrantType integration', function() {
     it('should support promises', function() {
       const user = { email: 'foo@bar.com' };
       const model = {
-        getUser: function() { return Promise.resolve(user); },
+        getUser: async function() { return user; },
         saveToken: function() {}
       };
       const grantType = new PasswordGrantType({ accessTokenLifetime: 123, model: model });
@@ -288,7 +288,7 @@ describe('PasswordGrantType integration', function() {
       const token = {};
       const model = {
         getUser: function() {},
-        saveToken: function() { return Promise.resolve(token); }
+        saveToken: async function() { return token; }
       };
       const grantType = new PasswordGrantType({ accessTokenLifetime: 123, model: model });
 

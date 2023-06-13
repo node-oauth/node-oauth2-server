@@ -70,8 +70,8 @@ describe('AbstractGrantType integration', function() {
 
     it('should support promises', function() {
       const model = {
-        generateAccessToken: function() {
-          return Promise.resolve({});
+        generateAccessToken: async function() {
+          return {};
         }
       };
       const handler = new AbstractGrantType({ accessTokenLifetime: 123, model: model, refreshTokenLifetime: 456 });
@@ -104,8 +104,8 @@ describe('AbstractGrantType integration', function() {
 
     it('should support promises', function() {
       const model = {
-        generateRefreshToken: function() {
-          return Promise.resolve({});
+        generateRefreshToken: async function() {
+          return {};
         }
       };
       const handler = new AbstractGrantType({ accessTokenLifetime: 123, model: model, refreshTokenLifetime: 456 });

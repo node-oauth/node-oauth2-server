@@ -612,8 +612,8 @@ describe('AuthorizeHandler integration', function() {
 
     it('should support promises', function() {
       const model = {
-        generateAuthorizationCode: function() {
-          return Promise.resolve({});
+        generateAuthorizationCode: async function() {
+          return {};
         },
         getAccessToken: function() {},
         getClient: function() {},
@@ -670,8 +670,8 @@ describe('AuthorizeHandler integration', function() {
         getAccessToken: function() {},
         getClient: function() {},
         saveAuthorizationCode: function() {},
-        validateRedirectUri: function() {
-          return Promise.resolve(true);
+        validateRedirectUri: async function() {
+          return true;
         }
       };
 
@@ -848,8 +848,8 @@ describe('AuthorizeHandler integration', function() {
     it('should support promises', function() {
       const model = {
         getAccessToken: function() {},
-        getClient: function() {
-          return Promise.resolve({ grants: ['authorization_code'], redirectUris: ['http://example.com/cb'] });
+        getClient: async function() {
+          return { grants: ['authorization_code'], redirectUris: ['http://example.com/cb'] };
         },
         saveAuthorizationCode: function() {}
       };
@@ -1100,8 +1100,8 @@ describe('AuthorizeHandler integration', function() {
       const model = {
         getAccessToken: function() {},
         getClient: function() {},
-        saveAuthorizationCode: function() {
-          return Promise.resolve({});
+        saveAuthorizationCode: async function() {
+          return {};
         }
       };
       const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });

@@ -445,8 +445,8 @@ describe('AuthenticateHandler integration', function() {
 
     it('should support promises', function() {
       const model = {
-        getAccessToken: function() {
-          return Promise.resolve({ user: {} });
+        getAccessToken: async function() {
+          return { user: {} };
         }
       };
       const handler = new AuthenticateHandler({ model: model });

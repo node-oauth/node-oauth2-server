@@ -145,7 +145,7 @@ describe('AuthorizationCodeGrantType integration', function() {
     it('should support promises', function() {
       const client = { id: 'foobar' };
       const model = {
-        getAuthorizationCode: function() { return Promise.resolve({ authorizationCode: 12345, client: { id: 'foobar' }, expiresAt: new Date(new Date() * 2), user: {} }); },
+        getAuthorizationCode: function() { return { authorizationCode: 12345, client: { id: 'foobar' }, expiresAt: new Date(new Date() * 2), user: {} }; },
         revokeAuthorizationCode: function() { return true; },
         saveToken: function() {}
       };
@@ -362,7 +362,7 @@ describe('AuthorizationCodeGrantType integration', function() {
       const authorizationCode = { authorizationCode: 12345, client: { id: 'foobar' }, expiresAt: new Date(new Date() * 2), user: {} };
       const client = { id: 'foobar' };
       const model = {
-        getAuthorizationCode: function() { return Promise.resolve(authorizationCode); },
+        getAuthorizationCode: async function() { return authorizationCode; },
         revokeAuthorizationCode: function() {},
         saveToken: function() {}
       };
@@ -469,7 +469,7 @@ describe('AuthorizationCodeGrantType integration', function() {
       const authorizationCode = { authorizationCode: 12345, client: {}, expiresAt: new Date(new Date() / 2), user: {} };
       const model = {
         getAuthorizationCode: function() {},
-        revokeAuthorizationCode: function() { return Promise.resolve(true); },
+        revokeAuthorizationCode: async function() { return true; },
         saveToken: function() {}
       };
       const grantType = new AuthorizationCodeGrantType({ accessTokenLifetime: 123, model: model });
@@ -513,7 +513,7 @@ describe('AuthorizationCodeGrantType integration', function() {
       const model = {
         getAuthorizationCode: function() {},
         revokeAuthorizationCode: function() {},
-        saveToken: function() { return Promise.resolve(token); }
+        saveToken: async function() { return token; }
       };
       const grantType = new AuthorizationCodeGrantType({ accessTokenLifetime: 123, model: model });
 
