@@ -7,7 +7,6 @@
 const InvalidArgumentError = require('../../../lib/errors/invalid-argument-error');
 const InvalidGrantError = require('../../../lib/errors/invalid-grant-error');
 const InvalidRequestError = require('../../../lib/errors/invalid-request-error');
-const Promise = require('bluebird');
 const RefreshTokenGrantType = require('../../../lib/grant-types/refresh-token-grant-type');
 const Request = require('../../../lib/request');
 const ServerError = require('../../../lib/errors/server-error');
@@ -74,7 +73,7 @@ describe('RefreshTokenGrantType integration', function() {
   });
 
   describe('handle()', function() {
-    it('should throw an error if `request` is missing', function() {
+    it('should throw an error if `request` is missing', async function() {
       const model = {
         getRefreshToken: function() {},
         revokeToken: function() {},
@@ -83,7 +82,7 @@ describe('RefreshTokenGrantType integration', function() {
       const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 120, model: model });
 
       try {
-        grantType.handle();
+        await grantType.handle();
 
         should.fail();
       } catch (e) {
@@ -92,7 +91,7 @@ describe('RefreshTokenGrantType integration', function() {
       }
     });
 
-    it('should throw an error if `client` is missing', function() {
+    it('should throw an error if `client` is missing', async function() {
       const model = {
         getRefreshToken: function() {},
         revokeToken: function() {},
@@ -102,7 +101,7 @@ describe('RefreshTokenGrantType integration', function() {
       const request = new Request({ body: {}, headers: {}, method: {}, query: {} });
 
       try {
-        grantType.handle(request);
+        await grantType.handle(request);
 
         should.fail();
       } catch (e) {
@@ -132,9 +131,9 @@ describe('RefreshTokenGrantType integration', function() {
     it('should support promises', function() {
       const client = { id: 123 };
       const model = {
-        getRefreshToken: function() { return Promise.resolve({ accessToken: 'foo', client: { id: 123 }, user: {} }); },
-        revokeToken: function() { return Promise.resolve({ accessToken: 'foo', client: {}, refreshTokenExpiresAt: new Date(new Date() / 2), user: {} }); },
-        saveToken: function() { return Promise.resolve({ accessToken: 'foo', client: {}, user: {} }); }
+        getRefreshToken: async function() { return { accessToken: 'foo', client: { id: 123 }, user: {} }; },
+        revokeToken: async function() { return { accessToken: 'foo', client: {}, refreshTokenExpiresAt: new Date(new Date() / 2), user: {} }; },
+        saveToken: async function() { return { accessToken: 'foo', client: {}, user: {} }; }
       };
       const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 123, model: model });
       const request = new Request({ body: { refresh_token: 'foobar' }, headers: {}, method: {}, query: {} });
@@ -154,23 +153,10 @@ describe('RefreshTokenGrantType integration', function() {
 
       grantType.handle(request, client).should.be.an.instanceOf(Promise);
     });
-
-    it('should support callbacks', function() {
-      const client = { id: 123 };
-      const model = {
-        getRefreshToken: function(refreshToken, callback) { callback(null, { accessToken: 'foo', client: { id: 123 }, user: {} }); },
-        revokeToken: function(refreshToken, callback) { callback(null, { accessToken: 'foo', client: {}, refreshTokenExpiresAt: new Date(new Date() / 2), user: {} }); },
-        saveToken: function(tokenToSave, client, user, callback) { callback(null,{ accessToken: 'foo', client: {}, user: {} }); }
-      };
-      const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 123, model: model });
-      const request = new Request({ body: { refresh_token: 'foobar' }, headers: {}, method: {}, query: {} });
-
-      grantType.handle(request, client).should.be.an.instanceOf(Promise);
-    });
   });
 
   describe('getRefreshToken()', function() {
-    it('should throw an error if the `refreshToken` parameter is missing from the request body', function() {
+    it('should throw an error if the `refreshToken` parameter is missing from the request body', async function() {
       const client = {};
       const model = {
         getRefreshToken: function() {},
@@ -181,7 +167,7 @@ describe('RefreshTokenGrantType integration', function() {
       const request = new Request({ body: {}, headers: {}, method: {}, query: {} });
 
       try {
-        grantType.getRefreshToken(request, client);
+        await grantType.getRefreshToken(request, client);
 
         should.fail();
       } catch (e) {
@@ -266,7 +252,7 @@ describe('RefreshTokenGrantType integration', function() {
         });
     });
 
-    it('should throw an error if `refresh_token` contains invalid characters', function() {
+    it('should throw an error if `refresh_token` contains invalid characters', async function() {
       const client = {};
       const model = {
         getRefreshToken: function() {
@@ -279,7 +265,7 @@ describe('RefreshTokenGrantType integration', function() {
       const request = new Request({ body: { refresh_token: 'øå€£‰' }, headers: {}, method: {}, query: {} });
 
       try {
-        grantType.getRefreshToken(request, client);
+        await grantType.getRefreshToken(request, client);
 
         should.fail();
       } catch (e) {
@@ -371,7 +357,7 @@ describe('RefreshTokenGrantType integration', function() {
       const client = { id: 123 };
       const token = { accessToken: 'foo', client: { id: 123 }, user: {} };
       const model = {
-        getRefreshToken: function() { return Promise.resolve(token); },
+        getRefreshToken: async function() { return token; },
         revokeToken: function() {},
         saveToken: function() {}
       };
@@ -386,20 +372,6 @@ describe('RefreshTokenGrantType integration', function() {
       const token = { accessToken: 'foo', client: { id: 123 }, user: {} };
       const model = {
         getRefreshToken: function() { return token; },
-        revokeToken: function() {},
-        saveToken: function() {}
-      };
-      const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 123, model: model });
-      const request = new Request({ body: { refresh_token: 'foobar' }, headers: {}, method: {}, query: {} });
-
-      grantType.getRefreshToken(request, client).should.be.an.instanceOf(Promise);
-    });
-
-    it('should support callbacks', function() {
-      const client = { id: 123 };
-      const token = { accessToken: 'foo', client: { id: 123 }, user: {} };
-      const model = {
-        getRefreshToken: function(refreshToken, callback) { callback(null, token); },
         revokeToken: function() {},
         saveToken: function() {}
       };
@@ -447,7 +419,7 @@ describe('RefreshTokenGrantType integration', function() {
       const token = { accessToken: 'foo', client: {}, refreshTokenExpiresAt: new Date(new Date() / 2), user: {} };
       const model = {
         getRefreshToken: function() {},
-        revokeToken: function() { return Promise.resolve(token); },
+        revokeToken: async function() { return token; },
         saveToken: function() {}
       };
       const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 123, model: model });
@@ -460,18 +432,6 @@ describe('RefreshTokenGrantType integration', function() {
       const model = {
         getRefreshToken: function() {},
         revokeToken: function() { return token; },
-        saveToken: function() {}
-      };
-      const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 123, model: model });
-
-      grantType.revokeToken(token).should.be.an.instanceOf(Promise);
-    });
-
-    it('should support callbacks', function() {
-      const token = { accessToken: 'foo', client: {}, refreshTokenExpiresAt: new Date(new Date() / 2), user: {} };
-      const model = {
-        getRefreshToken: function() {},
-        revokeToken: function(refreshToken, callback) { callback(null, token); },
         saveToken: function() {}
       };
       const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 123, model: model });
@@ -502,7 +462,7 @@ describe('RefreshTokenGrantType integration', function() {
       const model = {
         getRefreshToken: function() {},
         revokeToken: function() {},
-        saveToken: function() { return Promise.resolve(token); }
+        saveToken: async function() { return token; }
       };
       const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 123, model: model });
 
@@ -515,18 +475,6 @@ describe('RefreshTokenGrantType integration', function() {
         getRefreshToken: function() {},
         revokeToken: function() {},
         saveToken: function() { return token; }
-      };
-      const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 123, model: model });
-
-      grantType.saveToken(token).should.be.an.instanceOf(Promise);
-    });
-
-    it('should support callbacks', function() {
-      const token = {};
-      const model = {
-        getRefreshToken: function() {},
-        revokeToken: function() {},
-        saveToken: function(tokenToSave, client, user, callback) { callback(null, token); }
       };
       const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 123, model: model });
 
