@@ -6,7 +6,6 @@
 
 const AbstractGrantType = require('../../../lib/grant-types/abstract-grant-type');
 const InvalidArgumentError = require('../../../lib/errors/invalid-argument-error');
-const Promise = require('bluebird');
 const Request = require('../../../lib/request');
 const should = require('chai').should();
 
@@ -71,8 +70,8 @@ describe('AbstractGrantType integration', function() {
 
     it('should support promises', function() {
       const model = {
-        generateAccessToken: function() {
-          return Promise.resolve({});
+        generateAccessToken: async function() {
+          return {};
         }
       };
       const handler = new AbstractGrantType({ accessTokenLifetime: 123, model: model, refreshTokenLifetime: 456 });
@@ -105,8 +104,8 @@ describe('AbstractGrantType integration', function() {
 
     it('should support promises', function() {
       const model = {
-        generateRefreshToken: function() {
-          return Promise.resolve({});
+        generateRefreshToken: async function() {
+          return {};
         }
       };
       const handler = new AbstractGrantType({ accessTokenLifetime: 123, model: model, refreshTokenLifetime: 456 });

@@ -45,6 +45,13 @@ Most users should refer to our [Express (active)](https://github.com/node-oauth/
 
 More examples can be found here: https://github.com/14gasher/oauth-example
 
+## Version 5 notes
+
+Beginning with version `5.x` we removed dual support for callbacks and promises.
+With this version there is only support for Promises / async/await.
+
+With this version we also bumped the `engine` to Node 16 as 14 is now deprecated.
+
 ## Migrating from OAuthJs and 3.x
 
 Version 4.x should not be hard-breaking, however, there were many improvements and fixes that may
