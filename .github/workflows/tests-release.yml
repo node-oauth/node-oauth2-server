@@ -113,7 +113,7 @@ jobs:
     - run: |
         cd github/testing/express
         npm i
-        npm install ../../../
+        npm install https://github.com/node-oauth/node-oauth2-server.git#${{ github.ref_name }}
         npm run test
 
     # todo repeat with other adapters
