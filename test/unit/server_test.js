@@ -6,7 +6,6 @@
 
 const AuthenticateHandler = require('../../lib/handlers/authenticate-handler');
 const AuthorizeHandler = require('../../lib/handlers/authorize-handler');
-const Promise = require('bluebird');
 const Server = require('../../lib/server');
 const TokenHandler = require('../../lib/handlers/token-handler');
 const sinon = require('sinon');
