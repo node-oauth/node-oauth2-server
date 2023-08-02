@@ -7,6 +7,7 @@
 - drop support for Node 14 (EOL), setting Node 16 as `engine` in `package.json`
 - this is a breaking change, because **it removes callback support** for
   `OAuthServer` and your model implementation.
+- fixed missing await in calling generateAuthorizationCode in AuthorizeHandler
 
 ## 4.2.0
 ### Fixed
