@@ -1,4 +1,4 @@
-// Type definitions for Node OAuth2 Server 4.0
+// Type definitions for Node OAuth2 Server 5.0
 // Definitions by:  Robbie Van Gorkom <https://github.com/vangorra>,
 //                  Charles Irick <https://github.com/cirick>,
 //                  Daniel Fischer <https://github.com/d-fischer>,
