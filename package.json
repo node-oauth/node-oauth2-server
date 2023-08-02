@@ -34,7 +34,7 @@
     "eslint": "8.46.0",
     "mocha": "10.2.0",
     "nyc": "15.1.0",
-    "sinon": "15.1.0"
+    "sinon": "15.2.0"
   },
   "license": "MIT",
   "engines": {
