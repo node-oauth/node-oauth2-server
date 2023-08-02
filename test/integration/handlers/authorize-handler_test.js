@@ -563,8 +563,9 @@ describe('AuthorizeHandler integration', function() {
         getClient: function() {
           return client;
         },
-        saveAuthorizationCode: function() {
-          return { authorizationCode: 12345, client: client };
+        generateAuthorizationCode: async () => 'some-code',
+        saveAuthorizationCode: async function(code) {
+          return { authorizationCode: code.authorizationCode, client: client };
         }
       };
       const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
@@ -586,7 +587,7 @@ describe('AuthorizeHandler integration', function() {
       return handler.handle(request, response)
         .then(function(data) {
           data.should.eql({
-            authorizationCode: 12345,
+            authorizationCode: 'some-code',
             client: client
           });
         })
