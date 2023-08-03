@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# oauth2-server documentation build configuration file, created by
+# @node-oauth/oauth2-server documentation build configuration file, created by
 # sphinx-quickstart on Thu Nov 17 16:47:05 2016.
 #
 # This file is execfile()d with the current directory set to its containing dir.

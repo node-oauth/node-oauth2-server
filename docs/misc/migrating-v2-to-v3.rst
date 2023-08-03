@@ -11,7 +11,7 @@ Middlewares
 The naming of the exposed middlewares has changed to match the OAuth2 _RFC_ more closely. Please refer to the table below:
 
 +-------------------+------------------------------------------------+
-| oauth2-server 2.x | oauth2-server 3.x                              |
+| oauth2-server 2.x | @node-oauth/oauth2-server 3.x                              |
 +===================+================================================+
 | authorise         | authenticate                                   |
 +-------------------+------------------------------------------------+

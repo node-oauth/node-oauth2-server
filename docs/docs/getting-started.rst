@@ -14,7 +14,7 @@ oauth2-server_ is available via npm_.
 
 .. code-block:: sh
 
-  $ npm install oauth2-server
+  $ npm install @node-oauth/oauth2-server
 
 .. note:: The *oauth2-server* module is framework-agnostic but there are several officially supported adapters available for popular HTTP server frameworks such as Express_ and Koa_ (maintainer wanted!). If you're using one of those frameworks it is strongly recommended to use the respective adapter module instead of rolling your own.
 
