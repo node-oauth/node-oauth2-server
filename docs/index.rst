@@ -2,7 +2,7 @@
  oauth2-server
 ===============
 
-oauth2-server_ is a complete, compliant and well tested module for implementing an OAuth2 server in Node.js_. The project is `hosted on GitHub`_ and the included test suite is automatically `run on Travis CI`_.
+oauth2-server_ is a complete, compliant and well tested module for implementing an OAuth2 server in Node.js_. The project is `hosted on GitHub`_ and the included test suite is automatically `run on GitHub CI`_.
 
 .. _oauth2-server: https://www.npmjs.com/package/@node-oauth/oauth2-server
 .. _Node.js: https://nodejs.org
