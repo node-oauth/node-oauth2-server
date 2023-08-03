@@ -109,7 +109,6 @@ Note that this calls your model with additional arguments ``codeChallenge`` and 
     C. The client then sends the authorization code in the Access Token Request as usual but includes the "code_verifier" secret generated at (A).
 
 This is usually done in your token endpoint, that uses ``OAuth2Server.token``.
-Note that your client should have kept ``code_verifier`` a secret until this step and now includes it as param for the token endpoint call.
 
 ::
 
@@ -129,6 +128,9 @@ Note that your client should have kept ``code_verifier`` a secret until this ste
               // handle error condition
             })
     }
+
+Note that your client should have kept ``code_verifier`` a secret until this step and now includes it as param for the token endpoint call.
+
 
     D. The authorization server transforms "code_verifier" and compares it to "t(code_verifier)" from (B). Access is denied if they are not equal.
 
