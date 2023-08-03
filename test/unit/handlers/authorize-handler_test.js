@@ -7,7 +7,6 @@
 const AuthorizeHandler = require('../../../lib/handlers/authorize-handler');
 const Request = require('../../../lib/request');
 const Response = require('../../../lib/response');
-const Promise = require('bluebird');
 const sinon = require('sinon');
 const should = require('chai').should();
 

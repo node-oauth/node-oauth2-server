@@ -7,7 +7,6 @@
 const AuthorizationCodeGrantType = require('../../../lib/grant-types/authorization-code-grant-type');
 const InvalidGrantError = require('../../../lib/errors/invalid-grant-error');
 const ServerError  = require('../../../lib/errors/server-error');
-const Promise = require('bluebird');
 const Request = require('../../../lib/request');
 const sinon = require('sinon');
 const should = require('chai').should();

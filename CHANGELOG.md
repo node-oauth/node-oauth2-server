@@ -1,5 +1,13 @@
 ## Changelog
 
+## 5.0.0
+
+- removed `bluebird` and `promisify-any`
+- uses native Promises and `async/await` everywhere
+- drop support for Node 14 (EOL), setting Node 16 as `engine` in `package.json`
+- this is a breaking change, because **it removes callback support** for
+  `OAuthServer` and your model implementation.
+
 ## 4.2.0
 ### Fixed
 - fix(core): Bearer regular expression matching in authenticate handler #105
