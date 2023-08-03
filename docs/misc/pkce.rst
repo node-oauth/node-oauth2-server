@@ -130,9 +130,7 @@ Note that your client should have kept ``code_verifier`` a secret until this ste
             })
     }
 
-| D. The authorization server transforms "code_verifier" and compares
-| it to "t(code_verifier)" from (B). Access is denied if they are
-| not equal.
+.. D:: The authorization server transforms "code_verifier" and compares it to "t(code_verifier)" from (B). Access is denied if they are not equal.
 
 This will call ``model.getAuthorizationCode`` to load the code.
 The loaded code has to contain ``codeChallenge`` and ``codeChallengeMethod``.
