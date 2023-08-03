@@ -6,7 +6,7 @@ Represents an OAuth2 server instance.
 
 ::
 
-  const OAuth2Server = require('oauth2-server');
+  const OAuth2Server = require('@node-oauth/oauth2-server');
 
 --------
 
@@ -94,7 +94,7 @@ Possible errors include but are not limited to:
 :doc:`/api/errors/unauthorized-request-error`:
   The protected resource request failed authentication.
 
-The returned ``Promise`` **must** be ignored if ``callback`` is used.
+**Versions <=4.x note:** The returned ``Promise`` **must** be ignored if ``callback`` is used.
 
 **Remarks:**
 
@@ -139,7 +139,7 @@ Authorizes a token request.
 +-----------------------------------------+-----------------+-----------------------------------------------------------------------------+
 | [options={}]                            | Object          | Handler options.                                                            |
 +-----------------------------------------+-----------------+-----------------------------------------------------------------------------+
-| [options.authenticateHandler=undefined] | Object          | The authenticate handler (see remarks section).                             |
+| [options.authenticateHandler=undefined] | Object          | The authenticate handler (see remarks section below).                             |
 +-----------------------------------------+-----------------+-----------------------------------------------------------------------------+
 | [options.allowEmptyState=false]         | Boolean         | Allow clients to specify an empty ``state``.                                |
 +-----------------------------------------+-----------------+-----------------------------------------------------------------------------+
@@ -158,7 +158,7 @@ Possible errors include but are not limited to:
 :doc:`/api/errors/access-denied-error`
   The resource owner denied the access request (i.e. ``request.query.allow`` was ``'false'``).
 
-The returned ``Promise`` **must** be ignored if ``callback`` is used.
+**Versions <=4.x note:** The returned ``Promise`` **must** be ignored if ``callback`` is used.
 
 **Remarks:**
 
@@ -252,7 +252,7 @@ Possible errors include but are not limited to:
 :doc:`/api/errors/invalid-grant-error`:
   The access token request was invalid or not authorized.
 
-The returned ``Promise`` **must** be ignored if ``callback`` is used.
+**Versions <=4.x note:** The returned ``Promise`` **must** be ignored if ``callback`` is used.
 
 **Remarks:**
 

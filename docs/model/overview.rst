@@ -31,10 +31,11 @@ Model functions used by the authorization code grant:
 - :ref:`Model#generateAccessToken`
 - :ref:`Model#generateRefreshToken`
 - :ref:`Model#generateAuthorizationCode`
-- :ref:`Model#getAuthorizationCode`
+- :ref:`Model#saveAuthorizationCode`
 - :ref:`Model#getClient`
 - :ref:`Model#saveToken`
 - :ref:`Model#saveAuthorizationCode`
+- :ref:`Model#getAuthorizationCode`
 - :ref:`Model#revokeAuthorizationCode`
 - :ref:`Model#validateScope`
 - :ref:`Model#validateRedirectUri`

@@ -6,7 +6,7 @@ Represents an outgoing HTTP response.
 
 ::
 
-  const Response = require('oauth2-server').Response;
+  const Response = require('@node-oauth/oauth2-server').Response;
 
 --------
 
@@ -46,7 +46,7 @@ To convert `Express' response`_ to a ``Response`` simply pass ``res`` as ``optio
 ::
 
   function(req, res, next) {
-    var response = new Response(res);
+    let response = new Response(res);
     // ...
   }
 

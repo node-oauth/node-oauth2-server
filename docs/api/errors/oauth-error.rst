@@ -6,7 +6,7 @@ Base class for all errors returned by this module.
 
 ::
 
-  const OAuthError = require('oauth2-server/lib/errors/oauth-error');
+  const OAuthError = require('@node-oauth/oauth2-server/lib/errors/oauth-error');
 
 --------
 
