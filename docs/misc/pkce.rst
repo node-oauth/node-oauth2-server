@@ -38,7 +38,7 @@ See :rfc:`Section 1 of RFC 7636 <7636#section-1.1>`.
 
 .. _PKCE#authorizationRequest:
 
-.. A:: The client creates and records a secret named the "code_verifier" and derives a transformed version "t(code_verifier)" (referred to as the "code_challenge"), which is sent in the OAuth 2.0 Authorization Request along with the transformation method "t_m".
+    A. The client creates and records a secret named the "code_verifier" and derives a transformed version "t(code_verifier)" (referred to as the "code_challenge"), which is sent in the OAuth 2.0 Authorization Request along with the transformation method "t_m".
 
 The following shows an example of how a client could generate a `code_challenge`` and
 ``code_challenge_method`` for the authorizazion request.
@@ -95,7 +95,7 @@ If your Request body contains code_challenge and code_challenge_method then PKCE
 
 .. _PKCE#authorizationResponse:
 
-.. B:: The Authorization Endpoint responds as usual but records "t(code_verifier)" and the transformation method.
+    B. The Authorization Endpoint responds as usual but records "t(code_verifier)" and the transformation method.
 
 The ``AuthorizeHandler.handle`` saves code challenge and code challenge method automatically via ``model.saveAuthorizationCode``.
 Note that this calls your model with additional arguments ``codeChallenge`` and ``codeChallengeMethod``.
@@ -106,7 +106,7 @@ Note that this calls your model with additional arguments ``codeChallenge`` and 
 
 .. _PKCE#accessTokenRequest:
 
-.. C:: The client then sends the authorization code in the Access Token Request as usual but includes the "code_verifier" secret generated at (A).
+    C. The client then sends the authorization code in the Access Token Request as usual but includes the "code_verifier" secret generated at (A).
 
 This is usually done in your token endpoint, that uses ``OAuth2Server.token``.
 Note that your client should have kept ``code_verifier`` a secret until this step and now includes it as param for the token endpoint call.
@@ -130,7 +130,7 @@ Note that your client should have kept ``code_verifier`` a secret until this ste
             })
     }
 
-.. D:: The authorization server transforms "code_verifier" and compares it to "t(code_verifier)" from (B). Access is denied if they are not equal.
+    D. The authorization server transforms "code_verifier" and compares it to "t(code_verifier)" from (B). Access is denied if they are not equal.
 
 This will call ``model.getAuthorizationCode`` to load the code.
 The loaded code has to contain ``codeChallenge`` and ``codeChallengeMethod``.
