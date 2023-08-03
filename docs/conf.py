@@ -272,5 +272,5 @@ html_theme_options = {
 highlight_language = 'js'
 
 def setup(app):
-    app.add_stylesheet('custom.css')
+    app.add_css_file('custom.css')
 
