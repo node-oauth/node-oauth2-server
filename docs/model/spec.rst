@@ -632,7 +632,7 @@ If the ``allowExtendedTokenAttributes`` server option is enabled (see :ref:`OAut
 
 .. _Model#saveAuthorizationCode:
 
-``saveAuthorizationCode(code, client, user)``
+``saveAuthorizationCode(code, client, user, [codeChallenge], [codeChallengeMethod])``
 =========================================================
 
 Invoked to save an authorization code.
@@ -667,9 +667,7 @@ This model function is **required** if the ``authorization_code`` grant is used.
 | codeChallengeMethod    | String   | One of 'plain' or 'S256'. Only present in PKCE requests.            |
 +------------------------+----------+---------------------------------------------------------------------+
 
-For PKCE requests, see :ref:`PKCE#authorizationRequest`
-
-.. todo:: Is ``code.scope`` really optional?
+For PKCE requests, see :ref:`PKCE#authorizationRequest`.
 
 **Return value:**
 
