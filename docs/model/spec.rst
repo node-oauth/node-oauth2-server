@@ -632,7 +632,7 @@ If the ``allowExtendedTokenAttributes`` server option is enabled (see :ref:`OAut
 
 .. _Model#saveAuthorizationCode:
 
-``saveAuthorizationCode(code, client, user, [codeChallenge], [codeChallengeMethod])``
+``saveAuthorizationCode(code, client, user)``
 =========================================================
 
 Invoked to save an authorization code.

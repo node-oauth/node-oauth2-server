@@ -98,7 +98,7 @@ If your Request body contains code_challenge and code_challenge_method then PKCE
     B. The Authorization Endpoint responds as usual but records "t(code_verifier)" and the transformation method.
 
 The ``AuthorizeHandler.handle`` saves code challenge and code challenge method automatically via ``model.saveAuthorizationCode``.
-Note that this calls your model with additional arguments ``codeChallenge`` and ``codeChallengeMethod``.
+Note that this calls your model with additional properties ``code.codeChallenge`` and ``code.codeChallengeMethod``.
 
 
 3. Access Token Request
