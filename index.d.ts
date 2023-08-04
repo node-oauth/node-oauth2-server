@@ -279,7 +279,7 @@ declare namespace OAuth2Server {
          * Invoked during request authentication to check if the provided access token was authorized the requested scopes.
          *
          */
-        verifyScope(token: Token, scope: string | string[], callback?: Callback<boolean>): Promise<boolean>;
+        verifyScope?(token: Token, scope: string | string[], callback?: Callback<boolean>): Promise<boolean>;
     }
 
     interface AuthorizationCodeModel extends BaseModel, RequestAuthenticationModel {
