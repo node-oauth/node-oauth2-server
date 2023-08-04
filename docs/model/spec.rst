@@ -645,27 +645,27 @@ This model function is **required** if the ``authorization_code`` grant is used.
 
 **Arguments:**
 
-+------------------------+----------+---------------------------------------------------------------------+
-| Name                   | Type     | Description                                                         |
-+========================+==========+=====================================================================+
-| code                   | Object   | The code to be saved.                                               |
-+------------------------+----------+---------------------------------------------------------------------+
-| code.authorizationCode | String   | The authorization code to be saved.                                 |
-+------------------------+----------+---------------------------------------------------------------------+
-| code.expiresAt         | Date     | The expiry time of the authorization code.                          |
-+------------------------+----------+---------------------------------------------------------------------+
-| code.redirectUri       | String   | The redirect URI associated with the authorization code.            |
-+------------------------+----------+---------------------------------------------------------------------+
-| [code.scope]           | String   | The authorized scope of the authorization code.                     |
-+------------------------+----------+---------------------------------------------------------------------+
-| client                 | Object   | The client associated with the authorization code.                  |
-+------------------------+----------+---------------------------------------------------------------------+
-| user                   | Object   | The user associated with the authorization code.                    |
-+------------------------+----------+---------------------------------------------------------------------+
-| codeChallenge          | String   | The code challenge; hash or plain. Only present in PKCE requests.   |
-+------------------------+----------+---------------------------------------------------------------------+
-| codeChallengeMethod    | String   | One of 'plain' or 'S256'. Only present in PKCE requests.            |
-+------------------------+----------+---------------------------------------------------------------------+
++----------------------------+----------+---------------------------------------------------------------------+
+| Name                       | Type     | Description                                                         |
++----------------------------+----------+---------------------------------------------------------------------+
+| code                       | Object   | The code to be saved.                                               |
++----------------------------+----------+---------------------------------------------------------------------+
+| code.authorizationCode     | String   | The authorization code to be saved.                                 |
++----------------------------+----------+---------------------------------------------------------------------+
+| code.expiresAt             | Date     | The expiry time of the authorization code.                          |
++----------------------------+----------+---------------------------------------------------------------------+
+| code.redirectUri           | String   | The redirect URI associated with the authorization code.            |
++----------------------------+----------+---------------------------------------------------------------------+
+| [code.scope]               | String   | The authorized scope of the authorization code.                     |
++----------------------------+----------+---------------------------------------------------------------------+
+| [code.codeChallenge]       | String   | The code challenge; hash or plain. Only present in PKCE requests.   |
++----------------------------+----------+---------------------------------------------------------------------+
+| [code.codeChallengeMethod] | String   | One of 'plain' or 'S256'. Only present in PKCE requests.            |
++----------------------------+----------+---------------------------------------------------------------------+
+| client                     | Object   | The client associated with the authorization code.                  |
++----------------------------+----------+---------------------------------------------------------------------+
+| user                       | Object   | The user associated with the authorization code.                    |
++----------------------------+----------+---------------------------------------------------------------------+
 
 For PKCE requests, see :ref:`PKCE#authorizationRequest`.
 
