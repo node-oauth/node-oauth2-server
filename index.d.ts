@@ -277,9 +277,10 @@ declare namespace OAuth2Server {
 
         /**
          * Invoked during request authentication to check if the provided access token was authorized the requested scopes.
+         * Optional, if a custom authenticateHandler is used or if there is no scope part of the request.
          *
          */
-        verifyScope(token: Token, scope: string | string[], callback?: Callback<boolean>): Promise<boolean>;
+        verifyScope?(token: Token, scope: string | string[], callback?: Callback<boolean>): Promise<boolean>;
     }
 
     interface AuthorizationCodeModel extends BaseModel, RequestAuthenticationModel {
@@ -306,7 +307,7 @@ declare namespace OAuth2Server {
          *
          */
         saveAuthorizationCode(
-          code: Pick<AuthorizationCode, 'authorizationCode' | 'expiresAt' | 'redirectUri' | 'scope'>,
+          code: Pick<AuthorizationCode, 'authorizationCode' | 'expiresAt' | 'redirectUri' | 'scope' | 'codeChallenge' | 'codeChallengeMethod'>,
           client: Client,
           user: User,
           callback?: Callback<AuthorizationCode>): Promise<AuthorizationCode | Falsey>;
@@ -322,6 +323,12 @@ declare namespace OAuth2Server {
          *
          */
         validateScope?(user: User, client: Client, scope: string | string[], callback?: Callback<string | Falsey>): Promise<string | string[] | Falsey>;
+        
+        /**
+         * Invoked to check if the provided `redirectUri` is valid for a particular `client`.
+         *
+         */
+        validateRedirectUri?(redirect_uri: string, client: Client): Promise<boolean>;
     }
 
     interface PasswordModel extends BaseModel, RequestAuthenticationModel {
@@ -410,6 +417,8 @@ declare namespace OAuth2Server {
         scope?: string | string[] | undefined;
         client: Client;
         user: User;
+        codeChallenge?: string;
+        codeChallengeMethod?: string;
         [key: string]: any;
     }
 
