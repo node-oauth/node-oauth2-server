@@ -6,7 +6,7 @@ The request is missing a required parameter, includes an invalid parameter value
 
 ::
 
-  const InvalidRequestError = require('oauth2-server/lib/errors/invalid-request-error');
+  const InvalidRequestError = require('@node-oauth/oauth2-server/lib/errors/invalid-request-error');
 
 --------
 

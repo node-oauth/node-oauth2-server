@@ -6,7 +6,7 @@ The resource owner or authorization server denied the request. See :rfc:`Section
 
 ::
 
-  const AccessDeniedError = require('oauth2-server/lib/errors/access-denied-error');
+  const AccessDeniedError = require('@node-oauth/oauth2-server/lib/errors/access-denied-error');
 
 --------
 
