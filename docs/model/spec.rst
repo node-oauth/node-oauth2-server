@@ -336,25 +336,25 @@ This model function is **required** if the ``authorization_code`` grant is used.
 
 An ``Object`` representing the authorization code and associated data.
 
-+--------------------+--------+--------------------------------------------------------------+
-| Name               | Type   | Description                                                  |
-+====================+========+==============================================================+
-| code               | Object | The return value.                                            |
-+--------------------+--------+--------------------------------------------------------------+
-| code.code          | String | The authorization code passed to ``getAuthorizationCode()``. |
-+--------------------+--------+--------------------------------------------------------------+
-| code.expiresAt     | Date   | The expiry time of the authorization code.                   |
-+--------------------+--------+--------------------------------------------------------------+
-| [code.redirectUri] | String | The redirect URI of the authorization code.                  |
-+--------------------+--------+--------------------------------------------------------------+
-| [code.scope]       | String | The authorized scope of the authorization code.              |
-+--------------------+--------+--------------------------------------------------------------+
-| code.client        | Object | The client associated with the authorization code.           |
-+--------------------+--------+--------------------------------------------------------------+
-| code.client.id     | String | A unique string identifying the client.                      |
-+--------------------+--------+--------------------------------------------------------------+
-| code.user          | Object | The user associated with the authorization code.             |
-+--------------------+--------+--------------------------------------------------------------+
++--------------------+--------+------------------------------------------------------------------+
+| Name                   | Type   | Description                                                  |
++====================+========+==================================================================+
+| code                   | Object | The return value.                                            |
++--------------------+--------+------------------------------------------------------------------+
+| code.authorizationCode | String | The authorization code passed to ``getAuthorizationCode()``. |
++--------------------+--------+------------------------------------------------------------------+
+| code.expiresAt         | Date   | The expiry time of the authorization code.                   |
++--------------------+--------+------------------------------------------------------------------+
+| [code.redirectUri]     | String | The redirect URI of the authorization code.                  |
++--------------------+--------+------------------------------------------------------------------+
+| [code.scope]           | String | The authorized scope of the authorization code.              |
++--------------------+--------+------------------------------------------------------------------+
+| code.client            | Object | The client associated with the authorization code.           |
++--------------------+--------+------------------------------------------------------------------+
+| code.client.id         | String | A unique string identifying the client.                      |
++--------------------+--------+------------------------------------------------------------------+
+| code.user              | Object | The user associated with the authorization code.             |
++--------------------+--------+------------------------------------------------------------------+
 
 ``code.client`` and ``code.user`` can carry additional properties that will be ignored by *oauth2-server*.
 
@@ -810,27 +810,27 @@ This model function is **required** if the ``authorization_code`` grant is used.
 
 **Arguments:**
 
-+--------------------+----------+---------------------------------------------------------------------+
-| Name               | Type     | Description                                                         |
-+====================+==========+=====================================================================+
-| code               | Object   | The return value.                                                   |
-+--------------------+----------+---------------------------------------------------------------------+
-| code.code          | String   | The authorization code.                                             |
-+--------------------+----------+---------------------------------------------------------------------+
-| code.expiresAt     | Date     | The expiry time of the authorization code.                          |
-+--------------------+----------+---------------------------------------------------------------------+
-| [code.redirectUri] | String   | The redirect URI of the authorization code.                         |
-+--------------------+----------+---------------------------------------------------------------------+
-| [code.scope]       | String   | The authorized scope of the authorization code.                     |
-+--------------------+----------+---------------------------------------------------------------------+
-| code.client        | Object   | The client associated with the authorization code.                  |
-+--------------------+----------+---------------------------------------------------------------------+
-| code.client.id     | String   | A unique string identifying the client.                             |
-+--------------------+----------+---------------------------------------------------------------------+
-| code.user          | Object   | The user associated with the authorization code.                    |
-+--------------------+----------+---------------------------------------------------------------------+
-| [callback]         | Function | Node-style callback to be used instead of the returned ``Promise``. |
-+--------------------+----------+---------------------------------------------------------------------+
++--------------------+----------+-------------------------------------------------------------------------+
+| Name                   | Type     | Description                                                         |
++====================+==========+=========================================================================+
+| code                   | Object   | The code to be revoked.                                             |
++--------------------+----------+-------------------------------------------------------------------------+
+| code.authorizationCode | String   | The authorization code.                                             |
++--------------------+----------+-------------------------------------------------------------------------+
+| code.expiresAt         | Date     | The expiry time of the authorization code.                          |
++--------------------+----------+-------------------------------------------------------------------------+
+| [code.redirectUri]     | String   | The redirect URI of the authorization code.                         |
++--------------------+----------+-------------------------------------------------------------------------+
+| [code.scope]           | String   | The authorized scope of the authorization code.                     |
++--------------------+----------+-------------------------------------------------------------------------+
+| code.client            | Object   | The client associated with the authorization code.                  |
++--------------------+----------+-------------------------------------------------------------------------+
+| code.client.id         | String   | A unique string identifying the client.                             |
++--------------------+----------+-------------------------------------------------------------------------+
+| code.user              | Object   | The user associated with the authorization code.                    |
++--------------------+----------+-------------------------------------------------------------------------+
+| [callback]             | Function | Node-style callback to be used instead of the returned ``Promise``. |
++--------------------+----------+-------------------------------------------------------------------------+
 
 **Return value:**
 
