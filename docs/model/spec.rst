@@ -374,7 +374,7 @@ An ``Object`` representing the authorization code and associated data.
       })
       .spread(function(code, client, user) {
         return {
-          code: code.authorization_code,
+          authorizationCode: code.authorization_code,
           expiresAt: code.expires_at,
           redirectUri: code.redirect_uri,
           scope: code.scope,
