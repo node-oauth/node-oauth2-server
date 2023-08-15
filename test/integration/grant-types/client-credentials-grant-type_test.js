@@ -93,14 +93,21 @@ describe('ClientCredentialsGrantType integration', function() {
     it('should return a token', function() {
       const token = {};
       const model = {
-        getUserFromClient: function() { return {}; },
-        saveToken: function() { return token; },
+        getUserFromClient: async function(client) {
+          client.foo.should.equal('bar');
+          return { id: '123'};
+        },
+        saveToken: async function(_token, client, user) {
+          client.foo.should.equal('bar');
+          user.id.should.equal('123');
+          return token;
+        },
         validateScope: function() { return 'foo'; }
       };
       const grantType = new ClientCredentialsGrantType({ accessTokenLifetime: 120, model: model });
       const request = new Request({ body: {}, headers: {}, method: {}, query: {} });
 
-      return grantType.handle(request, {})
+      return grantType.handle(request, { foo: 'bar' })
         .then(function(data) {
           data.should.equal(token);
         })
