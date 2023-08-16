@@ -7,9 +7,9 @@ The *oauth2-server* module is typically not used directly but through one of the
 .. framework-agnostic but there are several officially supported adapters available for popular HTTP server frameworks such as Express_ and Koa_.
 
 - express-oauth-server_ for Express_
-- koa-oauth-server_ for Koa_
+- koa-oauth-server_ for Koa_ (outdated, maintainer wanted!)
 
-.. _express-oauth-server: https://npmjs.org/package/express-oauth-server
+.. _express-oauth-server: https://www.npmjs.com/package/@node-oauth/express-oauth-server
 .. _Express: https://npmjs.org/package/express
 .. _koa-oauth-server: https://npmjs.org/package/koa-oauth-server
 .. _Koa: https://npmjs.org/package/koa

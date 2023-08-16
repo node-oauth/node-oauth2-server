@@ -6,7 +6,7 @@ The access token provided is expired, revoked, malformed, or invalid for other r
 
 ::
 
-  const InvalidTokenError = require('oauth2-server/lib/errors/invalid-token-error');
+  const InvalidTokenError = require('@node-oauth/oauth2-server/lib/errors/invalid-token-error');
 
 --------
 

@@ -6,7 +6,7 @@ Represents an incoming HTTP request.
 
 ::
 
-  const Request = require('oauth2-server').Request;
+  const Request = require('@node-oauth/oauth2-server').Request;
 
 --------
 
@@ -50,7 +50,7 @@ To convert `Express' request`_ to a ``Request`` simply pass ``req`` as ``options
 ::
 
   function(req, res, next) {
-    var request = new Request(req);
+    let request = new Request(req);
     // ...
   }
 
