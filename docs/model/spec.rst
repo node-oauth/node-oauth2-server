@@ -326,25 +326,25 @@ This model function is **required** if the ``authorization_code`` grant is used.
 
 An ``Object`` representing the authorization code and associated data.
 
-+--------------------+--------+--------------------------------------------------------------+
-| Name               | Type   | Description                                                  |
-+====================+========+==============================================================+
-| code               | Object | The return value.                                            |
-+--------------------+--------+--------------------------------------------------------------+
-| code.code          | String | The authorization code passed to ``getAuthorizationCode()``. |
-+--------------------+--------+--------------------------------------------------------------+
-| code.expiresAt     | Date   | The expiry time of the authorization code.                   |
-+--------------------+--------+--------------------------------------------------------------+
-| [code.redirectUri] | String | The redirect URI of the authorization code.                  |
-+--------------------+--------+--------------------------------------------------------------+
-| [code.scope]       | String | The authorized scope of the authorization code.              |
-+--------------------+--------+--------------------------------------------------------------+
-| code.client        | Object | The client associated with the authorization code.           |
-+--------------------+--------+--------------------------------------------------------------+
-| code.client.id     | String | A unique string identifying the client.                      |
-+--------------------+--------+--------------------------------------------------------------+
-| code.user          | Object | The user associated with the authorization code.             |
-+--------------------+--------+--------------------------------------------------------------+
++------------------------+--------+--------------------------------------------------------------+
+| Name                   | Type   | Description                                                  |
++========================+========+==============================================================+
+| code                   | Object | The return value.                                            |
++------------------------+--------+--------------------------------------------------------------+
+| code.authorizationCode | String | The authorization code passed to ``getAuthorizationCode()``. |
++------------------------+--------+--------------------------------------------------------------+
+| code.expiresAt         | Date   | The expiry time of the authorization code.                   |
++------------------------+--------+--------------------------------------------------------------+
+| [code.redirectUri]     | String | The redirect URI of the authorization code.                  |
++------------------------+--------+--------------------------------------------------------------+
+| [code.scope]           | String | The authorized scope of the authorization code.              |
++------------------------+--------+--------------------------------------------------------------+
+| code.client            | Object | The client associated with the authorization code.           |
++------------------------+--------+--------------------------------------------------------------+
+| code.client.id         | String | A unique string identifying the client.                      |
++------------------------+--------+--------------------------------------------------------------+
+| code.user              | Object | The user associated with the authorization code.             |
++------------------------+--------+--------------------------------------------------------------+
 
 ``code.client`` and ``code.user`` can carry additional properties that will be ignored by *oauth2-server*.
 
@@ -364,7 +364,7 @@ An ``Object`` representing the authorization code and associated data.
       })
       .spread(function(code, client, user) {
         return {
-          code: code.authorization_code,
+          authorizationCode: code.authorization_code,
           expiresAt: code.expires_at,
           redirectUri: code.redirect_uri,
           scope: code.scope,
@@ -792,25 +792,25 @@ This model function is **required** if the ``authorization_code`` grant is used.
 
 **Arguments:**
 
-+--------------------+----------+---------------------------------------------------------------------+
-| Name               | Type     | Description                                                         |
-+====================+==========+=====================================================================+
-| code               | Object   | The return value.                                                   |
-+--------------------+----------+---------------------------------------------------------------------+
-| code.code          | String   | The authorization code.                                             |
-+--------------------+----------+---------------------------------------------------------------------+
-| code.expiresAt     | Date     | The expiry time of the authorization code.                          |
-+--------------------+----------+---------------------------------------------------------------------+
-| [code.redirectUri] | String   | The redirect URI of the authorization code.                         |
-+--------------------+----------+---------------------------------------------------------------------+
-| [code.scope]       | String   | The authorized scope of the authorization code.                     |
-+--------------------+----------+---------------------------------------------------------------------+
-| code.client        | Object   | The client associated with the authorization code.                  |
-+--------------------+----------+---------------------------------------------------------------------+
-| code.client.id     | String   | A unique string identifying the client.                             |
-+--------------------+----------+---------------------------------------------------------------------+
-| code.user          | Object   | The user associated with the authorization code.                    |
-+--------------------+----------+---------------------------------------------------------------------+
++------------------------+----------+---------------------------------------------------------------------+
+| Name                   | Type     | Description                                                         |
++========================+==========+=====================================================================+
+| code                   | Object   | The code to be revoked.                                             |
++------------------------+----------+---------------------------------------------------------------------+
+| code.authorizationCode | String   | The authorization code.                                             |
++------------------------+----------+---------------------------------------------------------------------+
+| code.expiresAt         | Date     | The expiry time of the authorization code.                          |
++------------------------+----------+---------------------------------------------------------------------+
+| [code.redirectUri]     | String   | The redirect URI of the authorization code.                         |
++------------------------+----------+---------------------------------------------------------------------+
+| [code.scope]           | String   | The authorized scope of the authorization code.                     |
++------------------------+----------+---------------------------------------------------------------------+
+| code.client            | Object   | The client associated with the authorization code.                  |
++------------------------+----------+---------------------------------------------------------------------+
+| code.client.id         | String   | A unique string identifying the client.                             |
++------------------------+----------+---------------------------------------------------------------------+
+| code.user              | Object   | The user associated with the authorization code.                    |
++------------------------+----------+---------------------------------------------------------------------+
 
 **Return value:**
 
