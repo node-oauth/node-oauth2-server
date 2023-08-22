@@ -101,16 +101,38 @@ describe('AuthenticateHandler integration', function() {
   });
 
   describe('handle()', function() {
-    it('should throw an error if `request` is missing', async function() {
-      const handler = new AuthenticateHandler({ model: { getAccessToken: function() {} } });
+    it('should throw an error if `request` is missing or not a Request instance', async function() {
+      class Request {} // intentionally fake
+      const values = [undefined, null, {}, [], new Date(), new Request()];
+      for (const request of values) {
+        const handler = new AuthenticateHandler({ model: { getAccessToken: function() {} } });
 
-      try {
-        await handler.handle();
+        try {
+          await handler.handle(request);
 
-        should.fail();
-      } catch (e) {
-        e.should.be.an.instanceOf(InvalidArgumentError);
-        e.message.should.equal('Invalid argument: `request` must be an instance of Request');
+          should.fail();
+        } catch (e) {
+          e.should.be.an.instanceOf(InvalidArgumentError);
+          e.message.should.equal('Invalid argument: `request` must be an instance of Request');
+        }
+      }
+    });
+
+    it('should throw an error if `response` is missing or not a Response instance', async function() {
+      class Response {} // intentionally fake
+      const values = [undefined, null, {}, [], new Date(), new Response()];
+      const request = new Request({ body: {}, headers: { 'Authorization': 'Bearer foo' }, method: {}, query: {} });
+
+      for (const response of values) {
+        const handler = new AuthenticateHandler({ model: { getAccessToken: function() {} } });
+        try {
+          await handler.handle(request, response);
+
+          should.fail();
+        } catch (e) {
+          e.should.be.an.instanceOf(InvalidArgumentError);
+          e.message.should.equal('Invalid argument: `response` must be an instance of Response');
+        }
       }
     });
 
