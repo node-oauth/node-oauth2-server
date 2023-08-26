@@ -17,14 +17,16 @@ const should = require('chai').should();
 describe('Server integration', function() {
   describe('constructor()', function() {
     it('should throw an error if `model` is missing', function() {
-      try {
-        new Server({});
+      [null, undefined, {}].forEach(options => {
+        try {
+          new Server(options);
 
-        should.fail();
-      } catch (e) {
-        e.should.be.an.instanceOf(InvalidArgumentError);
-        e.message.should.equal('Missing parameter: `model`');
-      }
+          should.fail();
+        } catch (e) {
+          e.should.be.an.instanceOf(InvalidArgumentError);
+          e.message.should.equal('Missing parameter: `model`');
+        }
+      });
     });
 
     it('should set the `model`', function() {
