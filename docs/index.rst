@@ -47,14 +47,12 @@ See the :doc:`/model/spec` of what is required from the model passed to :doc:`/a
 
 
 .. toctree::
-   :hidden:
 
    Home <self>
 
 .. toctree::
    :maxdepth: 2
    :caption: User Documentation
-   :hidden:
 
    docs/getting-started
    docs/adapters
@@ -63,7 +61,6 @@ See the :doc:`/model/spec` of what is required from the model passed to :doc:`/a
    :maxdepth: 2
    :caption: API
    :includehidden:
-   :hidden:
 
    api/oauth2-server
    api/request
@@ -73,7 +70,6 @@ See the :doc:`/model/spec` of what is required from the model passed to :doc:`/a
 .. toctree::
    :maxdepth: 3
    :caption: Model
-   :hidden:
 
    model/overview
    model/spec
@@ -81,7 +77,6 @@ See the :doc:`/model/spec` of what is required from the model passed to :doc:`/a
 .. toctree::
    :maxdepth: 2
    :caption: Miscellaneous
-   :hidden:
 
    misc/extension-grants
    misc/pkce
