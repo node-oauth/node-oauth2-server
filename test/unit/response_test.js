@@ -83,6 +83,20 @@ describe('Request', function() {
     response.custom2.should.eql(originalResponse.custom2);
   });
 
+  it('should not allow overwriting methods on the Response prototype via custom properties', () => {
+    const response = new Response({
+      headers: {
+        'content-type': 'application/json'
+      },
+      get() {
+        // malicious attempt to override the 'get' method
+        return 'text/html';
+      }
+    });
+
+    response.get('content-type').should.equal('application/json');
+  });
+
   it('should allow getting of headers using `response.get`', function() {
     const originalResponse = generateBaseResponse();
 

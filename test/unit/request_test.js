@@ -127,6 +127,22 @@ describe('Request', function() {
     request.custom2.should.eql(originalRequest.custom2);
   });
 
+  it('should not allow overwriting methods on the Request prototype via custom properties', () => {
+    const request = new Request({
+      query: {},
+      method: 'GET',
+      headers: {
+        'content-type': 'application/json'
+      },
+      get() {
+        // malicious attempt to override the 'get' method
+        return 'text/html';
+      }
+    });
+
+    request.get('content-type').should.equal('application/json');
+  });
+
   it('should allow getting of headers using `request.get`', function() {
     const originalRequest = generateBaseRequest();
 
