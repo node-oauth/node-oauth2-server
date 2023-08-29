@@ -269,6 +269,7 @@ declare namespace OAuth2Server {
 
         /**
          * Invoked during request authentication to check if the provided access token was authorized the requested scopes.
+         * Optional, if a custom authenticateHandler is used or if there is no scope part of the request.
          *
          */
         verifyScope(token: Token, scope: string | string[]): Promise<boolean>;
