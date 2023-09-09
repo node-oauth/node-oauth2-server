@@ -116,7 +116,7 @@ describe('RefreshTokenGrantType integration', function() {
         accessToken: 'foo',
         client: { id: 123 },
         user: { name: 'foo' },
-        scope: 'read write',
+        scope: ['read', 'write'],
         refreshTokenExpiresAt: new Date( new Date() * 2)
       };
       const model = {
@@ -131,13 +131,13 @@ describe('RefreshTokenGrantType integration', function() {
         generateAccessToken: async function (_client, _user, _scope) {
           _user.should.deep.equal({ name: 'foo' });
           _client.should.deep.equal({ id: 123 });
-          _scope.should.equal('read write');
+          _scope.should.eql(['read', 'write']);
           return 'new-access-token';
         },
         generateRefreshToken: async function (_client, _user, _scope) {
           _user.should.deep.equal({ name: 'foo' });
           _client.should.deep.equal({ id: 123 });
-          _scope.should.equal('read write');
+          _scope.should.eql(['read', 'write']);
           return 'new-refresh-token';
         },
         saveToken: async function(_token, _client, _user) {
@@ -506,7 +506,7 @@ describe('RefreshTokenGrantType integration', function() {
         saveToken: async function(_token, _client, _user) {
           _user.should.deep.equal(user);
           _client.should.deep.equal(client);
-          _token.scope.should.deep.equal(scope);
+          _token.scope.should.deep.eql(scope);
           _token.accessToken.should.be.a.sha256();
           _token.refreshToken.should.be.a.sha256();
           _token.accessTokenExpiresAt.should.be.instanceOf(Date);

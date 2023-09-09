@@ -144,7 +144,7 @@ describe('Server integration', function() {
         saveToken: function() {
           return { accessToken: 1234, client: {}, user: {} };
         },
-        validateScope: function() { return 'foo'; }
+        validateScope: function() { return ['foo']; }
       };
       const server = new Server({ model: model });
       const request = new Request({ body: { client_id: 1234, client_secret: 'secret', grant_type: 'password', username: 'foo', password: 'pass', scope: 'foo' }, headers: { 'content-type': 'application/x-www-form-urlencoded', 'transfer-encoding': 'chunked' }, method: 'POST', query: {} });

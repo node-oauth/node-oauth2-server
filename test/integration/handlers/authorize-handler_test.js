@@ -464,7 +464,7 @@ describe('AuthorizeHandler integration', function() {
           return { authorizationCode: 12345, client };
         },
         validateScope: async function(_user, _client, _scope) {
-          _scope.should.equal('read');
+          _scope.should.eql(['read']);
           return false;
         }
       };
@@ -629,7 +629,7 @@ describe('AuthorizeHandler integration', function() {
     it('should return the `code` if successful (full model implementation)', async function () {
       const user = { name: 'fooUser' };
       const state = 'fooobarstatebaz';
-      const scope = 'read';
+      const scope = ['read'];
       const client = {
         id: 'client-1322132131',
         grants: ['authorization_code'],
@@ -655,19 +655,19 @@ describe('AuthorizeHandler integration', function() {
         },
         verifyScope: async function (_tokenDoc, _scope) {
           _tokenDoc.should.equal(accessTokenDoc);
-          _scope.should.equal(accessTokenDoc.scope);
+          _scope.should.eql(accessTokenDoc.scope);
           return true;
         },
         validateScope: async function (_user, _client, _scope) {
           _user.should.deep.equal(user);
           _client.should.deep.equal(client);
-          _scope.should.equal(scope);
+          _scope.should.eql(scope);
           return _scope;
         },
         generateAuthorizationCode: async function (_client, _user, _scope) {
           _user.should.deep.equal(user);
           _client.should.deep.equal(client);
-          _scope.should.equal(scope);
+          _scope.should.eql(scope);
           return authorizationCode;
         },
         saveAuthorizationCode: async function (code, _client, _user) {
@@ -689,12 +689,12 @@ describe('AuthorizeHandler integration', function() {
           'Authorization': `Bearer ${accessTokenDoc.accessToken}`
         },
         method: {},
-        query: { state, scope }
+        query: { state, scope: scope.join(' ') }
       });
 
       const response = new Response({ body: {}, headers: {} });
       const data = await handler.handle(request, response);
-      data.scope.should.equal(scope);
+      data.scope.should.eql(scope);
       data.client.should.deep.equal(client);
       data.user.should.deep.equal(user);
       data.expiresAt.should.be.instanceOf(Date);
@@ -1096,7 +1096,7 @@ describe('AuthorizeHandler integration', function() {
         const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model });
         const request = new Request({ body: { scope: 'foo' }, headers: {}, method: {}, query: {} });
 
-        handler.getScope(request).should.equal('foo');
+        handler.getScope(request).should.eql(['foo']);
       });
     });
 
@@ -1110,7 +1110,7 @@ describe('AuthorizeHandler integration', function() {
         const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model });
         const request = new Request({ body: {}, headers: {}, method: {}, query: { scope: 'foo' } });
 
-        handler.getScope(request).should.equal('foo');
+        handler.getScope(request).should.eql(['foo']);
       });
     });
   });
@@ -1421,7 +1421,7 @@ describe('AuthorizeHandler integration', function() {
         getClient: function() {},
         saveAuthorizationCode: function() {}
       };
-      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model });      
+      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model });
       const request = new Request({ body: {code_challenge_method: 'S256'}, headers: {}, method: {}, query: {} });
 
       const codeChallengeMethod  = handler.getCodeChallengeMethod(request);
@@ -1454,7 +1454,7 @@ describe('AuthorizeHandler integration', function() {
         getClient: function() {},
         saveAuthorizationCode: function() {}
       };
-      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model });      
+      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model });
       const request = new Request({ body: {}, headers: {}, method: {}, query: {} });
 
       const codeChallengeMethod  = handler.getCodeChallengeMethod(request);
@@ -1469,7 +1469,7 @@ describe('AuthorizeHandler integration', function() {
         getClient: function() {},
         saveAuthorizationCode: function() {}
       };
-      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model });      
+      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model });
       const request = new Request({ body: {code_challenge: 'challenge'}, headers: {}, method: {}, query: {} });
 
       const codeChallengeMethod  = handler.getCodeChallenge(request);

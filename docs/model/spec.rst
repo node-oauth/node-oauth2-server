@@ -41,7 +41,7 @@ Code examples on this page use *promises*.
 
 .. _Model#generateAccessToken:
 
-``generateAccessToken(client, user, scope, [callback])``
+``generateAccessToken(client, user, scope)``
 ========================================================
 
 Invoked to generate a new access token.
@@ -64,7 +64,7 @@ This model function is **optional**. If not implemented, a default handler is us
 +------------+----------+---------------------------------------------------------------------+
 | user       | Object   | The user the access token is generated for.                         |
 +------------+----------+---------------------------------------------------------------------+
-| scope      | String   | The scopes associated with the access token. Can be ``null``.       |
+| scope      | String[] | The scopes associated with the access token. Can be ``null``.       |
 +------------+----------+---------------------------------------------------------------------+
 | [callback] | Function | Node-style callback to be used instead of the returned ``Promise``. |
 +------------+----------+---------------------------------------------------------------------+
@@ -85,7 +85,7 @@ A ``String`` to be used as access token.
 
 .. _Model#generateRefreshToken:
 
-``generateRefreshToken(client, user, scope, [callback])``
+``generateRefreshToken(client, user, scope)``
 =========================================================
 
 Invoked to generate a new refresh token.
@@ -107,7 +107,7 @@ This model function is **optional**. If not implemented, a default handler is us
 +------------+----------+---------------------------------------------------------------------+
 | user       | Object   | The user the refresh token is generated for.                        |
 +------------+----------+---------------------------------------------------------------------+
-| scope      | String   | The scopes associated with the refresh token. Can be ``null``.      |
+| scope      | String[] | The scopes associated with the refresh token. Can be ``null``.      |
 +------------+----------+---------------------------------------------------------------------+
 | [callback] | Function | Node-style callback to be used instead of the returned ``Promise``. |
 +------------+----------+---------------------------------------------------------------------+
@@ -148,7 +148,7 @@ This model function is **optional**. If not implemented, a default handler is us
 +------------+----------+---------------------------------------------------------------------+
 | user       | Object   | The user the authorization code is generated for.                   |
 +------------+----------+---------------------------------------------------------------------+
-| scope      | String   | The scopes associated with the authorization code. Can be ``null``. |
+| scope      | String[] | The scopes associated with the authorization code. Can be ``null``. |
 +------------+----------+---------------------------------------------------------------------+
 | [callback] | Function | Node-style callback to be used instead of the returned ``Promise``. |
 +------------+----------+---------------------------------------------------------------------+
@@ -188,23 +188,23 @@ This model function is **required** if :ref:`OAuth2Server#authenticate() <OAuth2
 
 An ``Object`` representing the access token and associated data.
 
-+------------------------------+--------+--------------------------------------------------+
-| Name                         | Type   | Description                                      |
-+==============================+========+==================================================+
-| token                        | Object | The return value.                                |
-+------------------------------+--------+--------------------------------------------------+
-| token.accessToken            | String | The access token passed to ``getAccessToken()``. |
-+------------------------------+--------+--------------------------------------------------+
-| token.accessTokenExpiresAt   | Date   | The expiry time of the access token.             |
-+------------------------------+--------+--------------------------------------------------+
-| [token.scope]                | String | The authorized scope of the access token.        |
-+------------------------------+--------+--------------------------------------------------+
-| token.client                 | Object | The client associated with the access token.     |
-+------------------------------+--------+--------------------------------------------------+
-| token.client.id              | String | A unique string identifying the client.          |
-+------------------------------+--------+--------------------------------------------------+
-| token.user                   | Object | The user associated with the access token.       |
-+------------------------------+--------+--------------------------------------------------+
++------------------------------+----------+--------------------------------------------------+
+| Name                         | Type     | Description                                      |
++==============================+==========+==================================================+
+| token                        | Object   | The return value.                                |
++------------------------------+----------+--------------------------------------------------+
+| token.accessToken            | String   | The access token passed to ``getAccessToken()``. |
++------------------------------+----------+--------------------------------------------------+
+| token.accessTokenExpiresAt   | Date     | The expiry time of the access token.             |
++------------------------------+----------+--------------------------------------------------+
+| [token.scope]                | String[] | The authorized scope of the access token.        |
++------------------------------+----------+--------------------------------------------------+
+| token.client                 | Object   | The client associated with the access token.     |
++------------------------------+----------+--------------------------------------------------+
+| token.client.id              | String   | A unique string identifying the client.          |
++------------------------------+----------+--------------------------------------------------+
+| token.user                   | Object   | The user associated with the access token.       |
++------------------------------+----------+--------------------------------------------------+
 
 ``token.client`` and ``token.user`` can carry additional properties that will be ignored by *oauth2-server*.
 
@@ -262,23 +262,23 @@ This model function is **required** if the ``refresh_token`` grant is used.
 
 An ``Object`` representing the refresh token and associated data.
 
-+-------------------------------+--------+----------------------------------------------------+
-| Name                          | Type   | Description                                        |
-+===============================+========+====================================================+
-| token                         | Object | The return value.                                  |
-+-------------------------------+--------+----------------------------------------------------+
-| token.refreshToken            | String | The refresh token passed to ``getRefreshToken()``. |
-+-------------------------------+--------+----------------------------------------------------+
-| [token.refreshTokenExpiresAt] | Date   | The expiry time of the refresh token.              |
-+-------------------------------+--------+----------------------------------------------------+
-| [token.scope]                 | String | The authorized scope of the refresh token.         |
-+-------------------------------+--------+----------------------------------------------------+
-| token.client                  | Object | The client associated with the refresh token.      |
-+-------------------------------+--------+----------------------------------------------------+
-| token.client.id               | String | A unique string identifying the client.            |
-+-------------------------------+--------+----------------------------------------------------+
-| token.user                    | Object | The user associated with the refresh token.        |
-+-------------------------------+--------+----------------------------------------------------+
++-------------------------------+----------+----------------------------------------------------+
+| Name                          | Type     | Description                                        |
++===============================+==========+====================================================+
+| token                         | Object   | The return value.                                  |
++-------------------------------+----------+----------------------------------------------------+
+| token.refreshToken            | String   | The refresh token passed to ``getRefreshToken()``. |
++-------------------------------+----------+----------------------------------------------------+
+| [token.refreshTokenExpiresAt] | Date     | The expiry time of the refresh token.              |
++-------------------------------+----------+----------------------------------------------------+
+| [token.scope]                 | String[] | The authorized scope of the refresh token.         |
++-------------------------------+----------+----------------------------------------------------+
+| token.client                  | Object   | The client associated with the refresh token.      |
++-------------------------------+----------+----------------------------------------------------+
+| token.client.id               | String   | A unique string identifying the client.            |
++-------------------------------+----------+----------------------------------------------------+
+| token.user                    | Object  | The user associated with the refresh token.        |
++-------------------------------+----------+----------------------------------------------------+
 
 ``token.client`` and ``token.user`` can carry additional properties that will be ignored by *oauth2-server*.
 
@@ -336,25 +336,25 @@ This model function is **required** if the ``authorization_code`` grant is used.
 
 An ``Object`` representing the authorization code and associated data.
 
-+--------------------+--------+--------------------------------------------------------------+
-| Name               | Type   | Description                                                  |
-+====================+========+==============================================================+
-| code               | Object | The return value.                                            |
-+--------------------+--------+--------------------------------------------------------------+
-| code.code          | String | The authorization code passed to ``getAuthorizationCode()``. |
-+--------------------+--------+--------------------------------------------------------------+
-| code.expiresAt     | Date   | The expiry time of the authorization code.                   |
-+--------------------+--------+--------------------------------------------------------------+
-| [code.redirectUri] | String | The redirect URI of the authorization code.                  |
-+--------------------+--------+--------------------------------------------------------------+
-| [code.scope]       | String | The authorized scope of the authorization code.              |
-+--------------------+--------+--------------------------------------------------------------+
-| code.client        | Object | The client associated with the authorization code.           |
-+--------------------+--------+--------------------------------------------------------------+
-| code.client.id     | String | A unique string identifying the client.                      |
-+--------------------+--------+--------------------------------------------------------------+
-| code.user          | Object | The user associated with the authorization code.             |
-+--------------------+--------+--------------------------------------------------------------+
++--------------------+----------+--------------------------------------------------------------+
+| Name               | Type     | Description                                                  |
++====================+==========+==============================================================+
+| code               | Object   | The return value.                                            |
++--------------------+----------+--------------------------------------------------------------+
+| code.code          | String  | The authorization code passed to ``getAuthorizationCode()``. |
++--------------------+----------+--------------------------------------------------------------+
+| code.expiresAt     | Date     | The expiry time of the authorization code.                   |
++--------------------+----------+--------------------------------------------------------------+
+| [code.redirectUri] | String   | The redirect URI of the authorization code.                  |
++--------------------+----------+--------------------------------------------------------------+
+| [code.scope]       | String[] | The authorized scope of the authorization code.              |
++--------------------+----------+--------------------------------------------------------------+
+| code.client        | Object   | The client associated with the authorization code.           |
++--------------------+----------+--------------------------------------------------------------+
+| code.client.id     | String   | A unique string identifying the client.                      |
++--------------------+----------+--------------------------------------------------------------+
+| code.user          | Object   | The user associated with the authorization code.             |
++--------------------+----------+--------------------------------------------------------------+
 
 ``code.client`` and ``code.user`` can carry additional properties that will be ignored by *oauth2-server*.
 
@@ -571,7 +571,7 @@ This model function is **required** for all grant types.
 +-------------------------------+----------+---------------------------------------------------------------------+
 | [token.refreshTokenExpiresAt] | Date     | The expiry time of the refresh token.                               |
 +-------------------------------+----------+---------------------------------------------------------------------+
-| [token.scope]                 | String   | The authorized scope of the token(s).                               |
+| [token.scope]                 | Stringp[] | The authorized scope of the token(s).                               |
 +-------------------------------+----------+---------------------------------------------------------------------+
 | client                        | Object   | The client associated with the token(s).                            |
 +-------------------------------+----------+---------------------------------------------------------------------+
@@ -584,27 +584,27 @@ This model function is **required** for all grant types.
 
 An ``Object`` representing the token(s) and associated data.
 
-+-----------------------------+--------+----------------------------------------------+
-| Name                        | Type   | Description                                  |
-+=============================+========+==============================================+
-| token                       | Object | The return value.                            |
-+-----------------------------+--------+----------------------------------------------+
-| token.accessToken           | String | The access token passed to ``saveToken()``.  |
-+-----------------------------+--------+----------------------------------------------+
-| token.accessTokenExpiresAt  | Date   | The expiry time of the access token.         |
-+-----------------------------+--------+----------------------------------------------+
-| token.refreshToken          | String | The refresh token passed to ``saveToken()``. |
-+-----------------------------+--------+----------------------------------------------+
-| token.refreshTokenExpiresAt | Date   | The expiry time of the refresh token.        |
-+-----------------------------+--------+----------------------------------------------+
-| [token.scope]               | String | The authorized scope of the access token.    |
-+-----------------------------+--------+----------------------------------------------+
-| token.client                | Object | The client associated with the access token. |
-+-----------------------------+--------+----------------------------------------------+
-| token.client.id             | String | A unique string identifying the client.      |
-+-----------------------------+--------+----------------------------------------------+
-| token.user                  | Object | The user associated with the access token.   |
-+-----------------------------+--------+----------------------------------------------+
++-----------------------------+----------+----------------------------------------------+
+| Name                        | Type     | Description                                  |
++=============================+==========+==============================================+
+| token                       | Object   | The return value.                            |
++-----------------------------+----------+----------------------------------------------+
+| token.accessToken           | String   | The access token passed to ``saveToken()``.  |
++-----------------------------+----------+----------------------------------------------+
+| token.accessTokenExpiresAt  | Date     | The expiry time of the access token.         |
++-----------------------------+----------+----------------------------------------------+
+| token.refreshToken          | String   | The refresh token passed to ``saveToken()``. |
++-----------------------------+----------+----------------------------------------------+
+| token.refreshTokenExpiresAt | Date     | The expiry time of the refresh token.        |
++-----------------------------+----------+----------------------------------------------+
+| [token.scope]               | String[] | The authorized scope of the access token.    |
++-----------------------------+----------+----------------------------------------------+
+| token.client                | Object   | The client associated with the access token. |
++-----------------------------+----------+----------------------------------------------+
+| token.client.id             | String   | A unique string identifying the client.      |
++-----------------------------+----------+----------------------------------------------+
+| token.user                  | Object   | The user associated with the access token.   |
++-----------------------------+----------+----------------------------------------------+
 
 ``token.client`` and ``token.user`` can carry additional properties that will be ignored by *oauth2-server*.
 
@@ -674,7 +674,7 @@ This model function is **required** if the ``authorization_code`` grant is used.
 +------------------------+----------+---------------------------------------------------------------------+
 | code.redirectUri       | String   | The redirect URI associated with the authorization code.            |
 +------------------------+----------+---------------------------------------------------------------------+
-| [code.scope]           | String   | The authorized scope of the authorization code.                     |
+| [code.scope]           | String[] | The authorized scope of the authorization code.                     |
 +------------------------+----------+---------------------------------------------------------------------+
 | client                 | Object   | The client associated with the authorization code.                  |
 +------------------------+----------+---------------------------------------------------------------------+
@@ -689,25 +689,25 @@ This model function is **required** if the ``authorization_code`` grant is used.
 
 An ``Object`` representing the authorization code and associated data.
 
-+------------------------+--------+---------------------------------------------------------------+
-| Name                   | Type   | Description                                                   |
-+========================+========+===============================================================+
-| code                   | Object | The return value.                                             |
-+------------------------+--------+---------------------------------------------------------------+
-| code.authorizationCode | String | The authorization code passed to ``saveAuthorizationCode()``. |
-+------------------------+--------+---------------------------------------------------------------+
-| code.expiresAt         | Date   | The expiry time of the authorization code.                    |
-+------------------------+--------+---------------------------------------------------------------+
-| code.redirectUri       | String | The redirect URI associated with the authorization code.      |
-+------------------------+--------+---------------------------------------------------------------+
-| [code.scope]           | String | The authorized scope of the authorization code.               |
-+------------------------+--------+---------------------------------------------------------------+
-| code.client            | Object | The client associated with the authorization code.            |
-+------------------------+--------+---------------------------------------------------------------+
-| code.client.id         | String | A unique string identifying the client.                       |
-+------------------------+--------+---------------------------------------------------------------+
-| code.user              | Object | The user associated with the authorization code.              |
-+------------------------+--------+---------------------------------------------------------------+
++------------------------+----------+---------------------------------------------------------------+
+| Name                   | Type     | Description                                                   |
++========================+==========+===============================================================+
+| code                   | Object   | The return value.                                             |
++------------------------+----------+---------------------------------------------------------------+
+| code.authorizationCode | String   | The authorization code passed to ``saveAuthorizationCode()``. |
++------------------------+----------+---------------------------------------------------------------+
+| code.expiresAt         | Date     | The expiry time of the authorization code.                    |
++------------------------+----------+---------------------------------------------------------------+
+| code.redirectUri       | String   | The redirect URI associated with the authorization code.      |
++------------------------+----------+---------------------------------------------------------------+
+| [code.scope]           | String[] | The authorized scope of the authorization code.               |
++------------------------+----------+---------------------------------------------------------------+
+| code.client            | Object   | The client associated with the authorization code.            |
++------------------------+----------+---------------------------------------------------------------+
+| code.client.id         | String  | A unique string identifying the client.                       |
++------------------------+----------+---------------------------------------------------------------+
+| code.user              | Object   | The user associated with the authorization code.              |
++------------------------+----------+---------------------------------------------------------------+
 
 ``code.client`` and ``code.user`` can carry additional properties that will be ignored by *oauth2-server*.
 
@@ -764,7 +764,7 @@ This model function is **required** if the ``refresh_token`` grant is used.
 +-------------------------------+----------+---------------------------------------------------------------------+
 | [token.refreshTokenExpiresAt] | Date     | The expiry time of the refresh token.                               |
 +-------------------------------+----------+---------------------------------------------------------------------+
-| [token.scope]                 | String   | The authorized scope of the refresh token.                          |
+| [token.scope]                 | String[] | The authorized scope of the refresh token.                          |
 +-------------------------------+----------+---------------------------------------------------------------------+
 | token.client                  | Object   | The client associated with the refresh token.                       |
 +-------------------------------+----------+---------------------------------------------------------------------+
@@ -821,7 +821,7 @@ This model function is **required** if the ``authorization_code`` grant is used.
 +--------------------+----------+---------------------------------------------------------------------+
 | [code.redirectUri] | String   | The redirect URI of the authorization code.                         |
 +--------------------+----------+---------------------------------------------------------------------+
-| [code.scope]       | String   | The authorized scope of the authorization code.                     |
+| [code.scope]       | String[] | The authorized scope of the authorization code.                     |
 +--------------------+----------+---------------------------------------------------------------------+
 | code.client        | Object   | The client associated with the authorization code.                  |
 +--------------------+----------+---------------------------------------------------------------------+
@@ -878,7 +878,7 @@ This model function is **optional**. If not implemented, any scope is accepted.
 +------------+----------+---------------------------------------------------------------------+
 | client.id  | Object   | A unique string identifying the client.                             |
 +------------+----------+---------------------------------------------------------------------+
-| scope      | String   | The scopes to validate.                                             |
+| scope      | String[] | The scopes to validate.                                             |
 +------------+----------+---------------------------------------------------------------------+
 | [callback] | Function | Node-style callback to be used instead of the returned ``Promise``. |
 +------------+----------+---------------------------------------------------------------------+
@@ -903,7 +903,7 @@ To reject invalid or only partially valid scopes:
   const VALID_SCOPES = ['read', 'write'];
 
   function validateScope(user, client, scope) {
-    if (!scope.split(' ').every(s => VALID_SCOPES.indexOf(s) >= 0)) {
+    if (!scope.every(s => VALID_SCOPES.indexOf(s) >= 0)) {
       return false;
     }
     return scope;
@@ -917,13 +917,8 @@ To accept partially valid scopes:
   const VALID_SCOPES = ['read', 'write'];
 
   function validateScope(user, client, scope) {
-    return scope
-      .split(' ')
-      .filter(s => VALID_SCOPES.indexOf(s) >= 0)
-      .join(' ');
+    return scope.filter(s => VALID_SCOPES.indexOf(s) >= 0);
   }
-
-Note that the example above will still reject completely invalid scopes, since ``validateScope`` returns an empty string if all scopes are filtered out.
 
 --------
 
@@ -951,7 +946,7 @@ This model function is **required** if scopes are used with :ref:`OAuth2Server#a
 +------------------------------+----------+---------------------------------------------------------------------+
 | [token.accessTokenExpiresAt] | Date     | The expiry time of the access token.                                |
 +------------------------------+----------+---------------------------------------------------------------------+
-| [token.scope]                | String   | The authorized scope of the access token.                           |
+| [token.scope]                | String[] | The authorized scope of the access token.                           |
 +------------------------------+----------+---------------------------------------------------------------------+
 | token.client                 | Object   | The client associated with the access token.                        |
 +------------------------------+----------+---------------------------------------------------------------------+
@@ -959,7 +954,7 @@ This model function is **required** if scopes are used with :ref:`OAuth2Server#a
 +------------------------------+----------+---------------------------------------------------------------------+
 | token.user                   | Object   | The user associated with the access token.                          |
 +------------------------------+----------+---------------------------------------------------------------------+
-| scope                        | String   | The required scopes.                                                |
+| scope                        | String[] | The required scopes.                                                |
 +------------------------------+----------+---------------------------------------------------------------------+
 | [callback]                   | Function | Node-style callback to be used instead of the returned ``Promise``. |
 +------------------------------+----------+---------------------------------------------------------------------+
@@ -976,13 +971,12 @@ Returns ``true`` if the access token passes, ``false`` otherwise.
 
 ::
 
-  function verifyScope(token, scope) {
+  function verifyScope(token, requestedScopes) {
     if (!token.scope) {
       return false;
     }
-    let requestedScopes = scope.split(' ');
-    let authorizedScopes = token.scope.split(' ');
-    return requestedScopes.every(s => authorizedScopes.indexOf(s) >= 0);
+    let authorizedScopes = token.scope;
+    return requestedScopes.every(s => token.scope.includes(scope));
   }
 
 --------

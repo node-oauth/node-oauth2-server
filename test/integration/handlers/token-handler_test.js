@@ -298,12 +298,12 @@ describe('TokenHandler integration', function() {
     });
 
     it('should return a bearer token if successful', function() {
-      const token = { accessToken: 'foo', client: {}, refreshToken: 'bar', scope: 'foobar', user: {} };
+      const token = { accessToken: 'foo', client: {}, refreshToken: 'bar', scope: ['foobar'], user: {} };
       const model = {
         getClient: function() { return { grants: ['password'] }; },
         getUser: function() { return {}; },
         saveToken: function() { return token; },
-        validateScope: function() { return 'baz'; }
+        validateScope: function() { return ['baz']; }
       };
       const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
       const request = new Request({
@@ -329,12 +329,12 @@ describe('TokenHandler integration', function() {
     });
 
     it('should not return custom attributes in a bearer token if the allowExtendedTokenAttributes is not set', function() {
-      const token = { accessToken: 'foo', client: {}, refreshToken: 'bar', scope: 'foobar', user: {}, foo: 'bar' };
+      const token = { accessToken: 'foo', client: {}, refreshToken: 'bar', scope: ['foobar'], user: {}, foo: 'bar' };
       const model = {
         getClient: function() { return { grants: ['password'] }; },
         getUser: function() { return {}; },
         saveToken: function() { return token; },
-        validateScope: function() { return 'baz'; }
+        validateScope: function() { return ['baz']; }
       };
       const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
       const request = new Request({
@@ -364,12 +364,12 @@ describe('TokenHandler integration', function() {
     });
 
     it('should return custom attributes in a bearer token if the allowExtendedTokenAttributes is set', function() {
-      const token = { accessToken: 'foo', client: {}, refreshToken: 'bar', scope: 'foobar', user: {}, foo: 'bar' };
+      const token = { accessToken: 'foo', client: {}, refreshToken: 'bar', scope: ['foobar'], user: {}, foo: 'bar' };
       const model = {
         getClient: function() { return { grants: ['password'] }; },
         getUser: function() { return {}; },
         saveToken: function() { return token; },
-        validateScope: function() { return 'baz'; }
+        validateScope: function() { return ['baz']; }
       };
       const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120, allowExtendedTokenAttributes: true });
       const request = new Request({
@@ -795,7 +795,7 @@ describe('TokenHandler integration', function() {
           getAuthorizationCode: function() { return { authorizationCode: 12345, client: { id: 'foobar' }, expiresAt: new Date(new Date() * 2), user: {} }; },
           getClient: function() {},
           saveToken: function() { return token; },
-          validateScope: function() { return 'foo'; },
+          validateScope: function() { return ['foo']; },
           revokeAuthorizationCode: function() { return { authorizationCode: 12345, client: { id: 'foobar' }, expiresAt: new Date(new Date() / 2), user: {} }; }
         };
         const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
@@ -834,7 +834,7 @@ describe('TokenHandler integration', function() {
           getAuthorizationCode: function() { return authorizationCode; },
           getClient: function() {},
           saveToken: function() { return token; },
-          validateScope: function() { return 'foo'; },
+          validateScope: function() { return ['foo']; },
           revokeAuthorizationCode: function() { return authorizationCode; }
         };
         const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
@@ -872,7 +872,7 @@ describe('TokenHandler integration', function() {
           getAuthorizationCode: function() { return authorizationCode; },
           getClient: function() {},
           saveToken: function() { return token; },
-          validateScope: function() { return 'foo'; },
+          validateScope: function() { return ['foo']; },
           revokeAuthorizationCode: function() { return authorizationCode; }
         };
         const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
@@ -910,7 +910,7 @@ describe('TokenHandler integration', function() {
           getAuthorizationCode: function() { return authorizationCode; },
           getClient: function() {},
           saveToken: function() { return token; },
-          validateScope: function() { return 'foo'; },
+          validateScope: function() { return ['foo']; },
           revokeAuthorizationCode: function() { return authorizationCode; }
         };
         const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
@@ -949,7 +949,7 @@ describe('TokenHandler integration', function() {
           getAuthorizationCode: function() { return authorizationCode; },
           getClient: function() {},
           saveToken: function() { return token; },
-          validateScope: function() { return 'foo'; },
+          validateScope: function() { return ['foo']; },
           revokeAuthorizationCode: function() { return authorizationCode; }
         };
         const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
@@ -984,7 +984,7 @@ describe('TokenHandler integration', function() {
           getAuthorizationCode: function() { return authorizationCode; },
           getClient: function() {},
           saveToken: function() { return token; },
-          validateScope: function() { return 'foo'; },
+          validateScope: function() { return ['foo']; },
           revokeAuthorizationCode: function() { return authorizationCode; }
         };
         const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
@@ -1016,7 +1016,7 @@ describe('TokenHandler integration', function() {
           getClient: function() {},
           getUserFromClient: function() { return {}; },
           saveToken: function() { return token; },
-          validateScope: function() { return 'foo'; }
+          validateScope: function() { return ['foo']; }
         };
         const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
         const request = new Request({
@@ -1045,7 +1045,7 @@ describe('TokenHandler integration', function() {
           getClient: function() {},
           getUser: function() { return {}; },
           saveToken: function() { return token; },
-          validateScope: function() { return 'baz'; }
+          validateScope: function() { return ['baz']; }
         };
         const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
         const request = new Request({
@@ -1107,7 +1107,7 @@ describe('TokenHandler integration', function() {
           getClient: function() {},
           getUser: function() { return {}; },
           saveToken: function() { return token; },
-          validateScope: function() { return 'foo'; }
+          validateScope: function() { return ['foo']; }
         };
         const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120, extendedGrantTypes: { 'urn:ietf:params:oauth:grant-type:saml2-bearer': PasswordGrantType } });
         const request = new Request({ body: { grant_type: 'urn:ietf:params:oauth:grant-type:saml2-bearer', username: 'foo', password: 'bar' }, headers: {}, method: {}, query: {} });
@@ -1176,8 +1176,8 @@ describe('TokenHandler integration', function() {
         saveToken: function() {}
       };
       const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
-      const tokenType = handler.getTokenType({ accessToken: 'foo', refreshToken: 'bar', scope: 'foobar' });
-      tokenType.should.deep.include({ accessToken: 'foo', accessTokenLifetime: undefined, refreshToken: 'bar', scope: 'foobar' });
+      const tokenType = handler.getTokenType({ accessToken: 'foo', refreshToken: 'bar', scope: ['foobar'] });
+      tokenType.should.deep.include({ accessToken: 'foo', accessTokenLifetime: undefined, refreshToken: 'bar', scope: ['foobar'] });
     });
   });
 

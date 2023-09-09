@@ -62,6 +62,7 @@ const DB = require('../helpers/db');
 const createModel = require('../helpers/model');
 const createRequest = require('../helpers/request');
 const Response = require('../../lib/response');
+const should = require('chai').should();
 
 require('chai').should();
 
@@ -123,13 +124,13 @@ describe('RefreshTokenGrantType Compliance', function () {
       refreshResponse.body.access_token.should.equal(token.accessToken);
       refreshResponse.body.refresh_token.should.equal(token.refreshToken);
       refreshResponse.body.expires_in.should.be.a('number');
-      refreshResponse.body.scope.should.equal(scope);
+      refreshResponse.body.scope.should.eql(['read', 'write']);
 
       token.accessToken.should.be.a('string');
       token.refreshToken.should.be.a('string');
       token.accessTokenExpiresAt.should.be.a('date');
       token.refreshTokenExpiresAt.should.be.a('date');
-      token.scope.should.equal(scope);
+      token.scope.should.eql(['read', 'write']);
 
       db.accessTokens.has(token.accessToken).should.equal(true);
       db.refreshTokens.has(token.refreshToken).should.equal(true);
@@ -147,27 +148,62 @@ describe('RefreshTokenGrantType Compliance', function () {
         });
     });
 
-    // TODO: test refresh token with different scopes
-    // https://github.com/node-oauth/node-oauth2-server/issues/104
+    it('Should throw invalid_scope error', async function () {
+      const request = createLoginRequest();
+      const response = new Response({});
 
-    // it('Should throw invalid_scope error', async function () {
-    //   const request = createLoginRequest();
-    //   const response = new Response({});
+      const credentials = await auth.token(request, response, {});
 
-    //   const credentials = await auth.token(request, response, {});
+      const refreshRequest = createRefreshRequest(credentials.refreshToken);
+      const refreshResponse = new Response({});
 
-    //   const refreshRequest = createRefreshRequest(credentials.refreshToken);
-    //   const refreshResponse = new Response({});
+      refreshRequest.body.scope = 'invalid';
 
-    //   refreshRequest.scope = 'invalid';
+      await auth.token(refreshRequest, refreshResponse, {})
+        .then(should.fail)
+        .catch(err => {
+          err.name.should.equal('invalid_scope');
+        });
+    });
 
-    //   await auth.token(refreshRequest, refreshResponse, {})
-    //     .then(() => {
-    //       throw Error('Should not reach this');
-    //     })
-    //     .catch(err => {
-    //       err.name.should.equal('invalid_scope');
-    //     });
-    // });
+    it('Should throw error if requested scope is greater than original scope', async function () {
+      const request = createLoginRequest();
+      const response = new Response({});
+
+      request.body.scope = 'read';
+
+      const credentials = await auth.token(request, response, {});
+
+      const refreshRequest = createRefreshRequest(credentials.refreshToken);
+      const refreshResponse = new Response({});
+
+      refreshRequest.scope = 'read write';
+
+      await auth.token(refreshRequest, refreshResponse, {})
+        .then(should.fail)
+        .catch(err => {
+          err.name.should.equal('invalid_scope');
+        });
+    });
+
+    it('Should create refresh token with smaller scope', async function () {
+      const request = createLoginRequest();
+      const response = new Response({});
+
+      const credentials = await auth.token(request, response, {});
+
+      const refreshRequest = createRefreshRequest(credentials.refreshToken);
+      const refreshResponse = new Response({});
+
+      refreshRequest.body.scope = 'read';
+
+      const token = await auth.token(refreshRequest, refreshResponse, {});
+
+      refreshResponse.body.token_type.should.equal('Bearer');
+      refreshResponse.body.access_token.should.equal(token.accessToken);
+      refreshResponse.body.refresh_token.should.equal(token.refreshToken);
+      refreshResponse.body.expires_in.should.be.a('number');
+      refreshResponse.body.scope.should.eql(['read']);
+    });
   });
 });

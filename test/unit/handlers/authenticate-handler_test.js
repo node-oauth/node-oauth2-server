@@ -166,13 +166,13 @@ describe('AuthenticateHandler', function() {
         getAccessToken: function() {},
         verifyScope: sinon.stub().returns(true)
       };
-      const handler = new AuthenticateHandler({ addAcceptedScopesHeader: true, addAuthorizedScopesHeader: true, model: model, scope: 'bar' });
+      const handler = new AuthenticateHandler({ addAcceptedScopesHeader: true, addAuthorizedScopesHeader: true, model: model, scope: ['bar'] });
 
-      return handler.verifyScope('foo')
+      return handler.verifyScope(['foo'])
         .then(function() {
           model.verifyScope.callCount.should.equal(1);
           model.verifyScope.firstCall.args.should.have.length(2);
-          model.verifyScope.firstCall.args[0].should.equal('foo', 'bar');
+          model.verifyScope.firstCall.args[0].should.eql(['foo'], ['bar']);
           model.verifyScope.firstCall.thisValue.should.equal(model);
         })
         .catch(should.fail);

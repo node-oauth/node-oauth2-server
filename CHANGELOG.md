@@ -8,6 +8,7 @@
 - this is a breaking change, because **it removes callback support** for
   `OAuthServer` and your model implementation.
 - fixed missing await in calling generateAuthorizationCode in AuthorizeHandler
+- validate scope as an array of strings
 
 ## 4.2.0
 ### Fixed
@@ -52,7 +53,7 @@
 - Upgrades all code from ES5 to ES6, where possible.
 
 ## 4.1.0
-### Changed 
+### Changed
 * Bump dev dependencies to resolve vulnerabilities
 * Replaced jshint with eslint along with should and chai
 * Use sha256 when generating tokens

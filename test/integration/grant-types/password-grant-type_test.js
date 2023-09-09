@@ -92,7 +92,7 @@ describe('PasswordGrantType integration', function() {
 
     it('should return a token', async function() {
       const client = { id: 'foobar' };
-      const scope = 'baz';
+      const scope = ['baz'];
       const token = {};
       const user = {
         id: 123456,
@@ -109,19 +109,19 @@ describe('PasswordGrantType integration', function() {
         validateScope: async function(_user, _client, _scope) {
           _client.should.equal(client);
           _user.should.equal(user);
-          _scope.should.equal(scope);
+          _scope.should.eql(scope);
           return scope;
         },
         generateAccessToken: async function (_client, _user, _scope) {
           _client.should.equal(client);
           _user.should.equal(user);
-          _scope.should.equal(scope);
+          _scope.should.eql(scope);
           return 'long-access-token-hash';
         },
         generateRefreshToken: async function (_client, _user, _scope) {
           _client.should.equal(client);
           _user.should.equal(user);
-          _scope.should.equal(scope);
+          _scope.should.eql(scope);
           return 'long-refresh-token-hash';
         },
         saveToken: async function(_token, _client, _user) {
@@ -313,14 +313,14 @@ describe('PasswordGrantType integration', function() {
           _token.accessTokenExpiresAt.should.be.instanceOf(Date);
           _token.refreshTokenExpiresAt.should.be.instanceOf(Date);
           _token.refreshToken.should.be.a.sha256();
-          _token.scope.should.equal('foo');
+          _token.scope.should.eql(['foo']);
           _client.should.equal('fallback');
           _user.should.equal('fallback');
           return token;
         },
-        validateScope: async function(_scope = 'fallback') {
-          _scope.should.equal('fallback');
-          return 'foo';
+        validateScope: async function(_scope = ['fallback']) {
+          _scope.should.eql(['fallback']);
+          return ['foo'];
         }
       };
       const grantType = new PasswordGrantType({ accessTokenLifetime: 123, model });
