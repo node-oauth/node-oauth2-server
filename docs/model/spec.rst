@@ -2,7 +2,7 @@
  Model Specification
 =====================
 
-Each model function supports *promises*, *Node-style callbacks*, *ES6 generators* and *async*/*await* (using Babel_). Note that promise support implies support for returning plain values where asynchronism is not required.
+Each model function supports *promises*, *ES6 generators* and *async*/*await* (using Babel_). Note that promise support implies support for returning plain values where asynchronism is not required.
 
 .. _Babel: https://babeljs.io
 
@@ -12,11 +12,6 @@ Each model function supports *promises*, *Node-style callbacks*, *ES6 generators
     // We support returning promises.
     getAccessToken: function() {
       return new Promise('works!');
-    },
-
-    // Or, calling a Node-style callback.
-    getAuthorizationCode: function(done) {
-      done(null, 'works!');
     },
 
     // Or, using generators.
@@ -66,8 +61,6 @@ This model function is **optional**. If not implemented, a default handler is us
 +------------+----------+---------------------------------------------------------------------+
 | scope      | String[] | The scopes associated with the access token. Can be ``null``.       |
 +------------+----------+---------------------------------------------------------------------+
-| [callback] | Function | Node-style callback to be used instead of the returned ``Promise``. |
-+------------+----------+---------------------------------------------------------------------+
 
 **Return value:**
 
@@ -109,8 +102,6 @@ This model function is **optional**. If not implemented, a default handler is us
 +------------+----------+---------------------------------------------------------------------+
 | scope      | String[] | The scopes associated with the refresh token. Can be ``null``.      |
 +------------+----------+---------------------------------------------------------------------+
-| [callback] | Function | Node-style callback to be used instead of the returned ``Promise``. |
-+------------+----------+---------------------------------------------------------------------+
 
 **Return value:**
 
@@ -128,7 +119,7 @@ A ``String`` to be used as refresh token.
 
 .. _Model#generateAuthorizationCode:
 
-``generateAuthorizationCode(client, user, scope, [callback])``
+``generateAuthorizationCode(client, user, scope)``
 =========================================
 
 Invoked to generate a new authorization code.
@@ -150,8 +141,6 @@ This model function is **optional**. If not implemented, a default handler is us
 +------------+----------+---------------------------------------------------------------------+
 | scope      | String[] | The scopes associated with the authorization code. Can be ``null``. |
 +------------+----------+---------------------------------------------------------------------+
-| [callback] | Function | Node-style callback to be used instead of the returned ``Promise``. |
-+------------+----------+---------------------------------------------------------------------+
 
 **Return value:**
 
@@ -163,7 +152,7 @@ A ``String`` to be used as authorization code.
 
 .. _Model#getAccessToken:
 
-``getAccessToken(accessToken, [callback])``
+``getAccessToken(accessToken)``
 ===========================================
 
 Invoked to retrieve an existing access token previously saved through :ref:`Model#saveToken() <Model#saveToken>`.
@@ -180,8 +169,6 @@ This model function is **required** if :ref:`OAuth2Server#authenticate() <OAuth2
 | Name        | Type     | Description                                                         |
 +=============+==========+=====================================================================+
 | accessToken | String   | The access token to retrieve.                                       |
-+-------------+----------+---------------------------------------------------------------------+
-| [callback]  | Function | Node-style callback to be used instead of the returned ``Promise``. |
 +-------------+----------+---------------------------------------------------------------------+
 
 **Return value:**
@@ -237,7 +224,7 @@ An ``Object`` representing the access token and associated data.
 
 .. _Model#getRefreshToken:
 
-``getRefreshToken(refreshToken, [callback])``
+``getRefreshToken(refreshToken)``
 =============================================
 
 Invoked to retrieve an existing refresh token previously saved through :ref:`Model#saveToken() <Model#saveToken>`.
@@ -254,8 +241,6 @@ This model function is **required** if the ``refresh_token`` grant is used.
 | Name         | Type     | Description                                                         |
 +==============+==========+=====================================================================+
 | refreshToken | String   | The access token to retrieve.                                       |
-+--------------+----------+---------------------------------------------------------------------+
-| [callback]   | Function | Node-style callback to be used instead of the returned ``Promise``. |
 +--------------+----------+---------------------------------------------------------------------+
 
 **Return value:**
@@ -311,7 +296,7 @@ An ``Object`` representing the refresh token and associated data.
 
 .. _Model#getAuthorizationCode:
 
-``getAuthorizationCode(authorizationCode, [callback])``
+``getAuthorizationCode(authorizationCode)``
 =======================================================
 
 Invoked to retrieve an existing authorization code previously saved through :ref:`Model#saveAuthorizationCode() <Model#saveAuthorizationCode>`.
@@ -328,8 +313,6 @@ This model function is **required** if the ``authorization_code`` grant is used.
 | Name              | Type     | Description                                                         |
 +===================+==========+=====================================================================+
 | authorizationCode | String   | The authorization code to retrieve.                                 |
-+-------------------+----------+---------------------------------------------------------------------+
-| [callback]        | Function | Node-style callback to be used instead of the returned ``Promise``. |
 +-------------------+----------+---------------------------------------------------------------------+
 
 **Return value:**
@@ -388,7 +371,7 @@ An ``Object`` representing the authorization code and associated data.
 
 .. _Model#getClient:
 
-``getClient(clientId, clientSecret, [callback])``
+``getClient(clientId, clientSecret)``
 =================================================
 
 Invoked to retrieve a client using a client id or a client id/client secret combination, depending on the grant type.
@@ -410,8 +393,6 @@ This model function is **required** for all grant types.
 | clientId     | String   | The client id of the client to retrieve.                            |
 +--------------+----------+---------------------------------------------------------------------+
 | clientSecret | String   | The client secret of the client to retrieve. Can be ``null``.       |
-+--------------+----------+---------------------------------------------------------------------+
-| [callback]   | Function | Node-style callback to be used instead of the returned ``Promise``. |
 +--------------+----------+---------------------------------------------------------------------+
 
 **Return value:**
@@ -460,7 +441,7 @@ The return value (``client``) can carry additional properties that will be ignor
 
 .. _Model#getUser:
 
-``getUser(username, password, [callback])``
+``getUser(username, password)``
 ===========================================
 
 Invoked to retrieve a user using a username/password combination.
@@ -480,8 +461,6 @@ This model function is **required** if the ``password`` grant is used.
 +------------+----------+---------------------------------------------------------------------+
 | password   | String   | The user's password.                                                |
 +------------+----------+---------------------------------------------------------------------+
-| [callback] | Function | Node-style callback to be used instead of the returned ``Promise``. |
-+------------+----------+---------------------------------------------------------------------+
 
 **Return value:**
 
@@ -500,7 +479,7 @@ An ``Object`` representing the user, or a falsy value if no such user could be f
 
 .. _Model#getUserFromClient:
 
-``getUserFromClient(client, [callback])``
+``getUserFromClient(client)``
 =========================================
 
 Invoked to retrieve the user associated with the specified client.
@@ -519,8 +498,6 @@ This model function is **required** if the ``client_credentials`` grant is used.
 | client     | Object   | The client to retrieve the associated user for.                     |
 +------------+----------+---------------------------------------------------------------------+
 | client.id  | String   | A unique string identifying the client.                             |
-+------------+----------+---------------------------------------------------------------------+
-| [callback] | Function | Node-style callback to be used instead of the returned ``Promise``. |
 +------------+----------+---------------------------------------------------------------------+
 
 **Return value:**
@@ -542,7 +519,7 @@ An ``Object`` representing the user, or a falsy value if the client does not hav
 
 .. _Model#saveToken:
 
-``saveToken(token, client, user, [callback])``
+``saveToken(token, client, user)``
 ==============================================
 
 Invoked to save an access token and optionally a refresh token, depending on the grant type.
@@ -576,8 +553,6 @@ This model function is **required** for all grant types.
 | client                        | Object   | The client associated with the token(s).                            |
 +-------------------------------+----------+---------------------------------------------------------------------+
 | user                          | Object   | The user associated with the token(s).                              |
-+-------------------------------+----------+---------------------------------------------------------------------+
-| [callback]                    | Function | Node-style callback to be used instead of the returned ``Promise``. |
 +-------------------------------+----------+---------------------------------------------------------------------+
 
 **Return value:**
@@ -650,7 +625,7 @@ If the ``allowExtendedTokenAttributes`` server option is enabled (see :ref:`OAut
 
 .. _Model#saveAuthorizationCode:
 
-``saveAuthorizationCode(code, client, user, [callback])``
+``saveAuthorizationCode(code, client, user)``
 =========================================================
 
 Invoked to save an authorization code.
@@ -679,8 +654,6 @@ This model function is **required** if the ``authorization_code`` grant is used.
 | client                 | Object   | The client associated with the authorization code.                  |
 +------------------------+----------+---------------------------------------------------------------------+
 | user                   | Object   | The user associated with the authorization code.                    |
-+------------------------+----------+---------------------------------------------------------------------+
-| [callback]             | Function | Node-style callback to be used instead of the returned ``Promise``. |
 +------------------------+----------+---------------------------------------------------------------------+
 
 .. todo:: Is ``code.scope`` really optional?
@@ -742,7 +715,7 @@ An ``Object`` representing the authorization code and associated data.
 
 .. _Model#revokeToken:
 
-``revokeToken(token, [callback])``
+``revokeToken(token)``
 ==================================
 
 Invoked to revoke a refresh token.
@@ -772,8 +745,6 @@ This model function is **required** if the ``refresh_token`` grant is used.
 +-------------------------------+----------+---------------------------------------------------------------------+
 | token.user                    | Object   | The user associated with the refresh token.                         |
 +-------------------------------+----------+---------------------------------------------------------------------+
-| [callback]                    | Function | Node-style callback to be used instead of the returned ``Promise``. |
-+-------------------------------+----------+---------------------------------------------------------------------+
 
 **Return value:**
 
@@ -797,7 +768,7 @@ Return ``true`` if the revocation was successful or ``false`` if the refresh tok
 
 .. _Model#revokeAuthorizationCode:
 
-``revokeAuthorizationCode(code, [callback])``
+``revokeAuthorizationCode(code)``
 =============================================
 
 Invoked to revoke an authorization code.
@@ -829,8 +800,6 @@ This model function is **required** if the ``authorization_code`` grant is used.
 +--------------------+----------+---------------------------------------------------------------------+
 | code.user          | Object   | The user associated with the authorization code.                    |
 +--------------------+----------+---------------------------------------------------------------------+
-| [callback]         | Function | Node-style callback to be used instead of the returned ``Promise``. |
-+--------------------+----------+---------------------------------------------------------------------+
 
 **Return value:**
 
@@ -854,7 +823,7 @@ Return ``true`` if the revocation was successful or ``false`` if the authorizati
 
 .. _Model#validateScope:
 
-``validateScope(user, client, scope, [callback])``
+``validateScope(user, client, scope)``
 ==================================================
 
 Invoked to check if the requested ``scope`` is valid for a particular ``client``/``user`` combination.
@@ -879,8 +848,6 @@ This model function is **optional**. If not implemented, any scope is accepted.
 | client.id  | Object   | A unique string identifying the client.                             |
 +------------+----------+---------------------------------------------------------------------+
 | scope      | String[] | The scopes to validate.                                             |
-+------------+----------+---------------------------------------------------------------------+
-| [callback] | Function | Node-style callback to be used instead of the returned ``Promise``. |
 +------------+----------+---------------------------------------------------------------------+
 
 **Return value:**
@@ -924,7 +891,7 @@ To accept partially valid scopes:
 
 .. _Model#verifyScope:
 
-``verifyScope(accessToken, scope, [callback])``
+``verifyScope(accessToken, scope)``
 ===============================================
 
 Invoked during request authentication to check if the provided access token was authorized the requested scopes.
@@ -956,8 +923,6 @@ This model function is **required** if scopes are used with :ref:`OAuth2Server#a
 +------------------------------+----------+---------------------------------------------------------------------+
 | scope                        | String[] | The required scopes.                                                |
 +------------------------------+----------+---------------------------------------------------------------------+
-| [callback]                   | Function | Node-style callback to be used instead of the returned ``Promise``. |
-+------------------------------+----------+---------------------------------------------------------------------+
 
 **Return value:**
 
@@ -983,7 +948,7 @@ Returns ``true`` if the access token passes, ``false`` otherwise.
 
 .. _Model#validateRedirectUri:
 
-``validateRedirectUri(redirectUri, client, [callback])``
+``validateRedirectUri(redirectUri, client)``
 ================================================================
 
 Invoked to check if the provided ``redirectUri`` is valid for a particular ``client``.
