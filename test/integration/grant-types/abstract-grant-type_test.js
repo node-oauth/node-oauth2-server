@@ -195,7 +195,7 @@ describe('AbstractGrantType integration', function() {
     });
 
     it('throws if the model rejects the scope', async function () {
-      const scope = 'some,scope,this,that';
+      const scope = ['some,scope,this,that'];
       const user = { id: 123 };
       const client = { id: 456 };
       const returnTypes = [undefined, null, false, 0, ''];
@@ -206,7 +206,7 @@ describe('AbstractGrantType integration', function() {
             // make sure the model received the correct args
             _user.should.deep.equal(user);
             _client.should.deep.equal(_client);
-            _scope.should.equal(scope);
+            _scope.should.eql(scope);
 
             return type;
           }
