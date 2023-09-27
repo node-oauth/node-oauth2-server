@@ -186,6 +186,26 @@ describe('RefreshTokenGrantType Compliance', function () {
         });
     });
 
+    it('Should throw error if a scope is requested without a previous scope', async function () {
+      const request = createLoginRequest();
+      const response = new Response({});
+
+      delete request.body.scope;
+
+      const credentials = await auth.token(request, response, {});
+
+      const refreshRequest = createRefreshRequest(credentials.refreshToken);
+      const refreshResponse = new Response({});
+
+      refreshRequest.scope = 'read write';
+
+      await auth.token(refreshRequest, refreshResponse, {})
+        .then(should.fail)
+        .catch(err => {
+          err.name.should.equal('invalid_scope');
+        });
+    });
+
     it('Should create refresh token with smaller scope', async function () {
       const request = createLoginRequest();
       const response = new Response({});
