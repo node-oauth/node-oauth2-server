@@ -8,9 +8,9 @@ Complete, compliant and well tested module for implementing an OAuth2 server in 
 [![Tests for Release](https://github.com/node-oauth/node-oauth2-server/actions/workflows/tests-release.yml/badge.svg)](https://github.com/node-oauth/node-oauth2-server/actions/workflows/tests-release.yml)
 [![Documentation Status](https://readthedocs.org/projects/node-oauthoauth2-server/badge/?version=latest)](https://node-oauthoauth2-server.readthedocs.io/en/latest/?badge=latest)
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
-![npm Version](https://img.shields.io/npm/v/@node-oauth/oauth2-server?label=version)
-![npm Downloads/Week](https://img.shields.io/npm/dw/@node-oauth/oauth2-server)
-![GitHub License](https://img.shields.io/github/license/node-oauth/node-oauth2-server)
+[![npm Version](https://img.shields.io/npm/v/@node-oauth/oauth2-server?label=version)](https://www.npmjs.com/package/@node-oauth/oauth2-server)
+[![npm Downloads/Week](https://img.shields.io/npm/dw/@node-oauth/oauth2-server)](https://www.npmjs.com/package/@node-oauth/oauth2-server)
+[![GitHub License](https://img.shields.io/github/license/node-oauth/node-oauth2-server)](https://github.com/node-oauth/node-oauth2-server/blob/master/LICENSE)
 
 NOTE: This project has been forked from [oauthjs/node-oauth2-server](https://github.com/oauthjs/node-oauth2-server) and is a continuation due to the project appearing to be abandoned. Please see [our issue board](https://github.com/node-oauth/node-oauth2-server/issues) to talk about next steps and the future of this project.
 
