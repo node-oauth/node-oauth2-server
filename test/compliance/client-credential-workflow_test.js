@@ -90,14 +90,14 @@ describe('ClientCredentials Workflow Compliance (4.4)', function () {
       response.body.token_type.should.equal('Bearer');
       response.body.access_token.should.equal(token.accessToken);
       response.body.expires_in.should.be.a('number');
-      response.body.scope.should.equal(enabledScope);
+      response.body.scope.should.eql(['read', 'write']);
       ('refresh_token' in response.body).should.equal(false);
 
       token.accessToken.should.be.a('string');
       token.accessTokenExpiresAt.should.be.a('date');
       ('refreshToken' in token).should.equal(false);
       ('refreshTokenExpiresAt' in token).should.equal(false);
-      token.scope.should.equal(enabledScope);
+      token.scope.should.eql(['read', 'write']);
 
       db.accessTokens.has(token.accessToken).should.equal(true);
       db.refreshTokens.has(token.refreshToken).should.equal(false);
@@ -130,7 +130,7 @@ describe('ClientCredentials Workflow Compliance (4.4)', function () {
       token.accessToken.should.equal(accessToken);
       token.user.should.deep.equal(userDoc);
       token.client.should.deep.equal(clientDoc);
-      token.scope.should.equal(enabledScope);
+      token.scope.should.eql(['read', 'write']);
 
       response.status.should.equal(200);
       // there should be no information in the response as it

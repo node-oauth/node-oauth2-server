@@ -57,7 +57,7 @@ Advanced example with additional options:
 
 .. _OAuth2Server#authenticate:
 
-``authenticate(request, response, [options], [callback])``
+``authenticate(request, response, [options])``
 ==========================================================
 
 Authenticates a request.
@@ -73,15 +73,13 @@ Authenticates a request.
 +------------------------------------------------+-----------------+-----------------------------------------------------------------------+
 | [options={}]                                   | Object          | Handler options.                                                      |
 +------------------------------------------------+-----------------+-----------------------------------------------------------------------+
-| [options.scope=undefined]                      | String          | The scope(s) to authenticate.                                         |
+| [options.scope=undefined]                      | String[]        | The scope(s) to authenticate.                                         |
 +------------------------------------------------+-----------------+-----------------------------------------------------------------------+
 | [options.addAcceptedScopesHeader=true]         | Boolean         | Set the ``X-Accepted-OAuth-Scopes`` HTTP header on response objects.  |
 +------------------------------------------------+-----------------+-----------------------------------------------------------------------+
 | [options.addAuthorizedScopesHeader=true]       | Boolean         | Set the ``X-OAuth-Scopes`` HTTP header on response objects.           |
 +------------------------------------------------+-----------------+-----------------------------------------------------------------------+
 | [options.allowBearerTokensInQueryString=false] | Boolean         | Allow clients to pass bearer tokens in the query string of a request. |
-+------------------------------------------------+-----------------+-----------------------------------------------------------------------+
-| [callback=undefined]                           | Function        | Node-style callback to be used instead of the returned ``Promise``.   |
 +------------------------------------------------+-----------------+-----------------------------------------------------------------------+
 
 **Return value:**
@@ -93,8 +91,6 @@ Possible errors include but are not limited to:
 
 :doc:`/api/errors/unauthorized-request-error`:
   The protected resource request failed authentication.
-
-The returned ``Promise`` **must** be ignored if ``callback`` is used.
 
 **Remarks:**
 
@@ -121,7 +117,7 @@ The returned ``Promise`` **must** be ignored if ``callback`` is used.
 
 .. _OAuth2Server#authorize:
 
-``authorize(request, response, [options], [callback])``
+``authorize(request, response, [options])``
 =======================================================
 
 Authorizes a token request.
@@ -145,8 +141,6 @@ Authorizes a token request.
 +-----------------------------------------+-----------------+-----------------------------------------------------------------------------+
 | [options.authorizationCodeLifetime=300] | Number          | Lifetime of generated authorization codes in seconds (default = 5 minutes). |
 +-----------------------------------------+-----------------+-----------------------------------------------------------------------------+
-| [callback=undefined]                    | Function        | Node-style callback to be used instead of the returned ``Promise``.         |
-+-----------------------------------------+-----------------+-----------------------------------------------------------------------------+
 
 **Return value:**
 
@@ -157,8 +151,6 @@ Possible errors include but are not limited to:
 
 :doc:`/api/errors/access-denied-error`
   The resource owner denied the access request (i.e. ``request.query.allow`` was ``'false'``).
-
-The returned ``Promise`` **must** be ignored if ``callback`` is used.
 
 **Remarks:**
 
@@ -211,7 +203,7 @@ When working with a session-based login mechanism, the handler can simply look l
 
 .. _OAuth2Server#token:
 
-``token(request, response, [options], [callback])``
+``token(request, response, [options])``
 ===================================================
 
 Retrieves a new token for an authorized token request.
@@ -239,8 +231,6 @@ Retrieves a new token for an authorized token request.
 +----------------------------------------------+-----------------+-------------------------------------------------------------------------------------------+
 | [options.extendedGrantTypes={}]              | Object          | Additional supported grant types.                                                         |
 +----------------------------------------------+-----------------+-------------------------------------------------------------------------------------------+
-| [callback=undefined]                         | Function        | Node-style callback to be used instead of the returned ``Promise``.                       |
-+----------------------------------------------+-----------------+-------------------------------------------------------------------------------------------+
 
 **Return value:**
 
@@ -251,8 +241,6 @@ Possible errors include but are not limited to:
 
 :doc:`/api/errors/invalid-grant-error`:
   The access token request was invalid or not authorized.
-
-The returned ``Promise`` **must** be ignored if ``callback`` is used.
 
 **Remarks:**
 

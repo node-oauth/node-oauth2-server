@@ -28,7 +28,7 @@ Features
 ========
 
 - Supports :ref:`authorization code <AuthorizationCodeGrant>`, :ref:`client credentials <ClientCredentialsGrant>`, :ref:`refresh token <RefreshTokenGrant>` and :ref:`password <PasswordGrant>` grant, as well as :ref:`extension grants <ExtensionGrants>`, with scopes.
-- Can be used with *promises*, *Node-style callbacks*, *ES6 generators* and *async*/*await* (using Babel_).
+- Can be used with *promises*, *ES6 generators* and *async*/*await* (using Babel_).
 - Fully :rfc:`6749` and :rfc:`6750` compliant.
 - Implicitly supports any form of storage, e.g. *PostgreSQL*, *MySQL*, *MongoDB*, *Redis*, etc.
 - Complete `test suite`_.

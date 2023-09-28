@@ -88,7 +88,7 @@ describe('AuthorizationCodeGrantType integration', function() {
         e.message.should.equal('Missing parameter: `request`');
       }
     });
-    
+
     it('should throw an error if `client` is invalid (not in code)', async function() {
       const client = { id: 1234 };
       const model = {
@@ -131,7 +131,7 @@ describe('AuthorizationCodeGrantType integration', function() {
 
     it('should return a token', async function() {
       const client = { id: 'foobar' };
-      const scope = 'fooscope';
+      const scope = ['fooscope'];
       const user = { name: 'foouser' };
       const codeDoc = {
         authorizationCode: 12345,
@@ -153,19 +153,19 @@ describe('AuthorizationCodeGrantType integration', function() {
         validateScope: async function (_user, _client, _scope) {
           _user.should.deep.equal(user);
           _client.should.deep.equal(client);
-          _scope.should.equal(scope);
+          _scope.should.eql(scope);
           return scope;
         },
         generateAccessToken: async function (_client, _user, _scope) {
           _user.should.deep.equal(user);
           _client.should.deep.equal(client);
-          _scope.should.equal(scope);
+          _scope.should.eql(scope);
           return 'long-access-token-hash';
         },
         generateRefreshToken: async function (_client, _user, _scope) {
           _user.should.deep.equal(user);
           _client.should.deep.equal(client);
-          _scope.should.equal(scope);
+          _scope.should.eql(scope);
           return 'long-refresh-token-hash';
         },
         saveToken: async function (_token, _client, _user) {
@@ -581,17 +581,17 @@ describe('AuthorizationCodeGrantType integration', function() {
           _token.accessTokenExpiresAt.should.be.instanceOf(Date);
           _token.refreshTokenExpiresAt.should.be.instanceOf(Date);
           _token.refreshToken.should.be.a.sha256();
-          _token.scope.should.equal('foo');
+          _token.scope.should.eql(['foo']);
           (_token.authorizationCode === undefined).should.equal(true);
           _user.should.equal('fallback');
           _client.should.equal('fallback');
           return token;
         },
-        validateScope: function(_user= 'fallback', _client= 'fallback', _scope = 'fallback') {
+        validateScope: function(_user= 'fallback', _client= 'fallback', _scope = ['fallback']) {
           _user.should.equal('fallback');
           _client.should.equal('fallback');
-          _scope.should.equal('fallback');
-          return 'foo';
+          _scope.should.eql(['fallback']);
+          return ['foo'];
         }
       };
       const grantType = new AuthorizationCodeGrantType({ accessTokenLifetime: 123, model: model });

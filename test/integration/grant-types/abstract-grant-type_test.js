@@ -144,7 +144,7 @@ describe('AbstractGrantType integration', function() {
 
         should.fail();
       } catch (e) {
-        e.should.be.an.instanceOf(InvalidArgumentError);
+        e.should.be.an.instanceOf(InvalidScopeError);
         e.message.should.equal('Invalid parameter: `scope`');
       }
     });
@@ -160,22 +160,22 @@ describe('AbstractGrantType integration', function() {
       const handler = new AbstractGrantType({ accessTokenLifetime: 123, model: {}, refreshTokenLifetime: 456 });
       const request = new Request({ body: { scope: 'foo' }, headers: {}, method: {}, query: {} });
 
-      handler.getScope(request).should.equal('foo');
+      handler.getScope(request).should.eql(['foo']);
     });
   });
 
   describe('validateScope()', function () {
     it('accepts the scope, if the model does not implement it', async function () {
-      const scope = 'some,scope,this,that';
+      const scope = ['some,scope,this,that'];
       const user = { id: 123 };
       const client = { id: 456 };
       const handler = new AbstractGrantType({ accessTokenLifetime: 123, model: {}, refreshTokenLifetime: 456 });
       const validated = await handler.validateScope(user, client, scope);
-      validated.should.equal(scope);
+      validated.should.eql(scope);
     });
 
     it('accepts the scope, if the model accepts it', async function () {
-      const scope = 'some,scope,this,that';
+      const scope = ['some,scope,this,that'];
       const user = { id: 123 };
       const client = { id: 456 };
 
@@ -184,18 +184,18 @@ describe('AbstractGrantType integration', function() {
           // make sure the model received the correct args
           _user.should.deep.equal(user);
           _client.should.deep.equal(_client);
-          _scope.should.equal(scope);
+          _scope.should.eql(scope);
 
           return scope;
         }
       };
       const handler = new AbstractGrantType({ accessTokenLifetime: 123, model, refreshTokenLifetime: 456 });
       const validated = await handler.validateScope(user, client, scope);
-      validated.should.equal(scope);
+      validated.should.eql(scope);
     });
 
     it('throws if the model rejects the scope', async function () {
-      const scope = 'some,scope,this,that';
+      const scope = ['some,scope,this,that'];
       const user = { id: 123 };
       const client = { id: 456 };
       const returnTypes = [undefined, null, false, 0, ''];
@@ -206,7 +206,7 @@ describe('AbstractGrantType integration', function() {
             // make sure the model received the correct args
             _user.should.deep.equal(user);
             _client.should.deep.equal(_client);
-            _scope.should.equal(scope);
+            _scope.should.eql(scope);
 
             return type;
           }

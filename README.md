@@ -27,7 +27,7 @@ If you're using one of those frameworks it is strongly recommended to use the re
 ## Features
 
 - Supports `authorization_code`, `client_credentials`, `refresh_token` and `password` grant, as well as *extension grants*, with scopes.
-- Can be used with *promises*, *Node-style callbacks*, *ES6 generators* and *async*/*await* (using [Babel](https://babeljs.io)).
+- Can be used with *promises*, *ES6 generators* and *async*/*await* (using [Babel](https://babeljs.io)).
 - Fully [RFC 6749](https://tools.ietf.org/html/rfc6749.html) and [RFC 6750](https://tools.ietf.org/html/rfc6750.html) compliant.
 - Implicitly supports any form of storage, e.g. *PostgreSQL*, *MySQL*, *MongoDB*, *Redis*, etc.
 - Support for PKCE

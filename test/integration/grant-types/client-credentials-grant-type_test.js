@@ -94,7 +94,7 @@ describe('ClientCredentialsGrantType integration', function() {
       const token = {};
       const client = { foo: 'bar' };
       const user = { name: 'foo' };
-      const scope = 'fooscope';
+      const scope = ['fooscope'];
 
       const model = {
         getUserFromClient: async function(_client) {
@@ -106,24 +106,24 @@ describe('ClientCredentialsGrantType integration', function() {
           _user.should.deep.equal(user);
           _token.accessToken.should.equal('long-access-token-hash');
           _token.accessTokenExpiresAt.should.be.instanceOf(Date);
-          _token.scope.should.equal(scope);
+          _token.scope.should.eql(scope);
           return token;
         },
         validateScope: async function (_user, _client, _scope) {
           _user.should.deep.equal(user);
           _client.should.deep.equal(client);
-          _scope.should.equal(scope);
+          _scope.should.eql(scope);
           return scope;
         },
         generateAccessToken: async function (_client, _user, _scope) {
           _user.should.deep.equal(user);
           _client.should.deep.equal(client);
-          _scope.should.equal(scope);
+          _scope.should.eql(scope);
           return 'long-access-token-hash';
         }
       };
       const grantType = new ClientCredentialsGrantType({ accessTokenLifetime: 120, model: model });
-      const request = new Request({ body: { scope }, headers: {}, method: {}, query: {} });
+      const request = new Request({ body: { scope: scope.join(' ') }, headers: {}, method: {}, query: {} });
 
       const data = await grantType.handle(request, client);
       data.should.equal(token);
@@ -218,7 +218,7 @@ describe('ClientCredentialsGrantType integration', function() {
       const model = {
         getUserFromClient: () => should.fail(),
         saveToken: function() { return token; },
-        validateScope: function() { return 'foo'; }
+        validateScope: function() { return ['foo']; }
       };
       const grantType = new ClientCredentialsGrantType({ accessTokenLifetime: 123, model: model });
       const data = await grantType.saveToken(token);
