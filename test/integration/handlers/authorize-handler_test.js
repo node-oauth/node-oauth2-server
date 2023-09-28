@@ -635,9 +635,9 @@ describe('AuthorizeHandler integration', function() {
         grants: ['authorization_code'],
         redirectUris: ['http://example.com/cb']
       };
-      const authorizationCode = 'long-authz-code-?';
+      const authorizationCode = 'long-authz-code';
       const accessTokenDoc = {
-        accessToken: 'some-access-token-code-?',
+        accessToken: 'some-access-token-code',
         client,
         user,
         scope,
@@ -703,7 +703,7 @@ describe('AuthorizeHandler integration', function() {
       response
         .get('location')
         .should
-        .equal('http://example.com/cb?code=long-authz-code-%3F&state=fooobarstatebaz');
+        .equal('http://example.com/cb?code=long-authz-code&state=fooobarstatebaz');
     });
 
     it('should support a custom `authenticateHandler`', async function () {
