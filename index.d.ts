@@ -360,7 +360,7 @@ declare namespace OAuth2Server {
          * Invoked to revoke a refresh token.
          *
          */
-        revokeToken(token: RefreshToken | Token): Promise<boolean>;
+        revokeToken(token: RefreshToken): Promise<boolean>;
     }
 
     interface ClientCredentialsModel extends BaseModel, RequestAuthenticationModel {
