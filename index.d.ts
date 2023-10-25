@@ -334,7 +334,7 @@ declare namespace OAuth2Server {
          * Invoked to retrieve a user using a username/password combination.
          *
          */
-        getUser(username: string, password: string): Promise<User | Falsey>;
+        getUser(username: string, password: string, client: Client): Promise<User | Falsey>;
 
         /**
          * Invoked to check if the requested scope is valid for a particular client/user combination.
