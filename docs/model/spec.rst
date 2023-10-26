@@ -441,7 +441,7 @@ The return value (``client``) can carry additional properties that will be ignor
 
 .. _Model#getUser:
 
-``getUser(username, password)``
+``getUser(username, password, client)``
 ===========================================
 
 Invoked to retrieve a user using a username/password combination.
@@ -454,13 +454,15 @@ This model function is **required** if the ``password`` grant is used.
 
 **Arguments:**
 
-+------------+----------+---------------------------------------------------------------------+
-| Name       | Type     | Description                                                         |
-+============+==========+=====================================================================+
-| username   | String   | The username of the user to retrieve.                               |
-+------------+----------+---------------------------------------------------------------------+
-| password   | String   | The user's password.                                                |
-+------------+----------+---------------------------------------------------------------------+
++-------------------+----------+---------------------------------------------------------------------+
+| Name              | Type     | Description                                                         |
++===================+==========+=====================================================================+
+| username          | String   | The username of the user to retrieve.                               |
++-------------------+----------+---------------------------------------------------------------------+
+| password          | String   | The user's password.                                                |
++-------------------+----------+---------------------------------------------------------------------+
+| client (optional) | Client   | The client.                                                |
++-------------------+----------+---------------------------------------------------------------------+
 
 **Return value:**
 
