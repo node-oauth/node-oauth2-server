@@ -461,7 +461,7 @@ This model function is **required** if the ``password`` grant is used.
 +-------------------+----------+---------------------------------------------------------------------+
 | password          | String   | The user's password.                                                |
 +-------------------+----------+---------------------------------------------------------------------+
-| client (optional) | Client   | The user's password.                                                |
+| client (optional) | Client   | The client.                                                |
 +-------------------+----------+---------------------------------------------------------------------+
 
 **Return value:**
