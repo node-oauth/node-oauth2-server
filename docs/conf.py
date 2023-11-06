@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# oauth2-server documentation build configuration file, created by
+# @node-oauth/oauth2-server documentation build configuration file, created by
 # sphinx-quickstart on Thu Nov 17 16:47:05 2016.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -272,5 +272,5 @@ html_theme_options = {
 highlight_language = 'js'
 
 def setup(app):
-    app.add_stylesheet('custom.css')
+    app.add_css_file('custom.css')
 
