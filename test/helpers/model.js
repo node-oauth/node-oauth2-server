@@ -71,11 +71,7 @@ function createModel (db) {
   }
 
   async function verifyScope (token, scope) {
-    if (typeof scope === 'string') {
-      return scopes.includes(scope);
-    } else {
-      return scope.every(s => scopes.includes(s));
-    }
+    return scope.every(s => scopes.includes(s));
   }
 
   return  {

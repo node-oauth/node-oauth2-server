@@ -101,13 +101,13 @@ describe('PasswordGrantType Compliance', function () {
       response.body.access_token.should.equal(token.accessToken);
       response.body.refresh_token.should.equal(token.refreshToken);
       response.body.expires_in.should.be.a('number');
-      response.body.scope.should.equal(scope);
+      response.body.scope.should.eql(['read', 'write']);
 
       token.accessToken.should.be.a('string');
       token.refreshToken.should.be.a('string');
       token.accessTokenExpiresAt.should.be.a('date');
       token.refreshTokenExpiresAt.should.be.a('date');
-      token.scope.should.equal(scope);
+      token.scope.should.eql(['read', 'write']);
 
       db.accessTokens.has(token.accessToken).should.equal(true);
       db.refreshTokens.has(token.refreshToken).should.equal(true);
@@ -134,7 +134,7 @@ describe('PasswordGrantType Compliance', function () {
         authenticationResponse,
         {});
 
-      authenticated.scope.should.equal(scope);
+      authenticated.scope.should.eql(['read', 'write']);
       authenticated.user.should.be.an('object');
       authenticated.client.should.be.an('object');
     });

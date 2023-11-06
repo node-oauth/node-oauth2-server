@@ -6,7 +6,7 @@ Create a subclass of ``AbstractGrantType`` and create methods `handle` and `save
 
 .. code-block:: js
 
-  const OAuth2Server = require('oauth2-server');
+  const OAuth2Server = require('@node-oauth/oauth2-server');
   const AbstractGrantType = OAuth2Server.AbstractGrantType;
   const InvalidArgumentError = OAuth2Server.InvalidArgumentError;
   const InvalidRequestError = OAuth2Server.InvalidRequestError;

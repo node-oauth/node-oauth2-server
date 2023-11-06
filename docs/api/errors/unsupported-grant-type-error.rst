@@ -6,7 +6,7 @@ The authorization grant type is not supported by the authorization server. See :
 
 ::
 
-  const UnsupportedGrantTypeError = require('oauth2-server/lib/errors/unsupported-grant-type-error');
+  const UnsupportedGrantTypeError = require('@node-oauth/oauth2-server/lib/errors/unsupported-grant-type-error');
 
 --------
 

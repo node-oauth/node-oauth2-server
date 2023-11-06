@@ -10,7 +10,6 @@ on:
     branches:
       - release-* # all release-<version> branches
 
-
 jobs:
   # STEP 1 - NPM Audit
 
@@ -23,13 +22,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 20
-    # install to create local package-lock.json but don't cache the files
-    # also: no audit for dev dependencies
-    - run: npm i --package-lock-only  && npm audit --production
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      # install to create local package-lock.json but don't cache the files
+      # also: no audit for dev dependencies
+      - run: npm i --package-lock-only  && npm audit --production
 
   # STEP 2 - basic unit tests
 
@@ -40,34 +39,34 @@ jobs:
     needs: [audit]
     strategy:
       matrix:
-        node: [14, 16, 18]
+        node: [16, 18, 20]
     steps:
-    - name: Checkout ${{ matrix.node }}
-      uses: actions/checkout@v3
+      - name: Checkout ${{ matrix.node }}
+        uses: actions/checkout@v3
 
-    - name: Setup node ${{ matrix.node }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node }}
+      - name: Setup node ${{ matrix.node }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
 
-    - name: Cache dependencies ${{ matrix.node }}
-      uses: actions/cache@v3
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-${{ matrix.node }}
-    # for this workflow we also require npm audit to pass
-    - run: npm i
-    - run: npm run test:coverage
+      - name: Cache dependencies ${{ matrix.node }}
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ matrix.node }}
+      # for this workflow we also require npm audit to pass
+      - run: npm i
+      - run: npm run test:coverage
 
-    # with the following action we enforce PRs to have a high coverage
-    # and ensure, changes are tested well enough so that coverage won't fail
-    - name: check coverage
-      uses: VeryGoodOpenSource/very_good_coverage@v1.2.0
-      with:
-        path: './coverage/lcov.info'
-        min_coverage: 95
+      # with the following action we enforce PRs to have a high coverage
+      # and ensure, changes are tested well enough so that coverage won't fail
+      - name: check coverage
+        uses: VeryGoodOpenSource/very_good_coverage@v1.2.0
+        with:
+          path: './coverage/lcov.info'
+          min_coverage: 95
 
   # STEP 3 - Integration tests
 
@@ -80,41 +79,41 @@ jobs:
     needs: [unittest]
     strategy:
       matrix:
-        node: [14, 16, 18] # TODO get running for node 16+
+        node: [16, 18, 20] # TODO get running for node 16+
     steps:
-    # checkout this repo
-    - name: Checkout ${{ matrix.node }}
-      uses: actions/checkout@v3
+      # checkout this repo
+      - name: Checkout ${{ matrix.node }}
+        uses: actions/checkout@v3
 
-    # checkout express-adapter repo
-    - name: Checkout express-adapter ${{ matrix.node }}
-      uses: actions/checkout@v3
-      with:
-        repository:  node-oauth/express-oauth-server
-        path: github/testing/express
+      # checkout express-adapter repo
+      - name: Checkout express-adapter ${{ matrix.node }}
+        uses: actions/checkout@v3
+        with:
+          repository: node-oauth/express-oauth-server
+          path: github/testing/express
 
-    - name: Setup node ${{ matrix.node }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node }}
+      - name: Setup node ${{ matrix.node }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
 
-    - name: Cache dependencies ${{ matrix.node }}
-      uses: actions/cache@v3
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ matrix.node }}-node-oauth/express-oauth-server-${{ hashFiles('github/testing/express/**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-${{ matrix.node }}-node-oauth/express-oauth-server
+      - name: Cache dependencies ${{ matrix.node }}
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ matrix.node }}-node-oauth/express-oauth-server-${{ hashFiles('github/testing/express/**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ matrix.node }}-node-oauth/express-oauth-server
 
-    # in order to test the adapter we need to use the current checkout
-    # and install it as local dependency
-    # we just cloned and install it as local dependency
-    # xxx: added bluebird as explicit dependency
-    - run: |
-        cd github/testing/express
-        npm i
-        npm install ../../../
-        npm run test
+      # in order to test the adapter we need to use the current checkout
+      # and install it as local dependency
+      # we just cloned and install it as local dependency
+      # xxx: added bluebird as explicit dependency
+      - run: |
+          cd github/testing/express
+          npm i
+          npm install https://github.com/node-oauth/node-oauth2-server.git#${{ github.ref_name }}
+          npm run test
 
     # todo repeat with other adapters
 
@@ -139,13 +138,13 @@ jobs:
       contents: read
       packages: write
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
-      with:
-        # we always publish targeting the lowest supported node version
-        node-version: 16
-        registry-url: $registry-url(npm)
-    - run: npm i
-    - run: npm publish --dry-run
-      env:
-        NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          # we always publish targeting the lowest supported node version
+          node-version: 16
+          registry-url: $registry-url(npm)
+      - run: npm i
+      - run: npm publish --dry-run
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}

@@ -1,7 +1,7 @@
 {
   "name": "@node-oauth/oauth2-server",
   "description": "Complete, framework-agnostic, compliant and well tested module for implementing an OAuth2 Server in node.js",
-  "version": "4.3.0",
+  "version": "5.0.0",
   "keywords": [
     "oauth",
     "oauth2"
@@ -22,7 +22,8 @@
   "files": [
     "index.js",
     "index.d.ts",
-    "lib"
+    "lib",
+    "CHANGELOG.md"
   ],
   "dependencies": {
     "@node-oauth/formats": "1.0.0",

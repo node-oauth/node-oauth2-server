@@ -6,7 +6,7 @@ The request lacked any authentication information or the client attempted to use
 
 ::
 
-  const UnauthorizedRequestError = require('oauth2-server/lib/errors/unauthorized-request-error');
+  const UnauthorizedRequestError = require('@node-oauth/oauth2-server/lib/errors/unauthorized-request-error');
 
 According to :rfc:`Section 3.1 of RFC 6750 <6750#section-3.1>` you should just fail the request with ``401 Unauthorized`` and not send any error information in the body if this error occurs:
 

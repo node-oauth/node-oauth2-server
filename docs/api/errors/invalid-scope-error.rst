@@ -6,7 +6,7 @@ The requested scope is invalid, unknown, or malformed. See :rfc:`Section 4.1.2.1
 
 ::
 
-  const InvalidScopeError = require('oauth2-server/lib/errors/invalid-scope-error');
+  const InvalidScopeError = require('@node-oauth/oauth2-server/lib/errors/invalid-scope-error');
 
 --------
 

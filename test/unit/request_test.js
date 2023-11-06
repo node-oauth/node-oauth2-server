@@ -5,6 +5,7 @@
  */
 
 const Request = require('../../lib/request');
+const InvalidArgumentError = require('../../lib/errors/invalid-argument-error');
 const should = require('chai').should();
 
 /**
@@ -27,6 +28,24 @@ function generateBaseRequest() {
 }
 
 describe('Request', function() {
+  it('should throw on missing args', function () {
+    const args = [
+      [undefined, InvalidArgumentError, 'Missing parameter: `headers`'],
+      [null, TypeError, 'Cannot destructure property \'headers\''],
+      [{}, InvalidArgumentError, 'Missing parameter: `headers`'],
+      [{ headers: { }}, InvalidArgumentError, 'Missing parameter: `method`'],
+      [{ headers: {}, method: 'GET' }, InvalidArgumentError, 'Missing parameter: `query`'],
+    ];
+
+    args.forEach(([value, error, message]) => {
+      try {
+        new Request(value);
+      } catch (e) {
+        e.should.be.instanceOf(error);
+        e.message.should.include(message);
+      }
+    });
+  });
   it('should instantiate with a basic request', function() {
     const originalRequest = generateBaseRequest();
 

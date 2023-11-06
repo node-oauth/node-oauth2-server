@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# oauth2-server documentation build configuration file, created by
+# @node-oauth/oauth2-server documentation build configuration file, created by
 # sphinx-quickstart on Thu Nov 17 16:47:05 2016.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -28,7 +28,7 @@ needs_sphinx = '1.3'
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.intersphinx', 'sphinx.ext.ifconfig', 'sphinx.ext.todo']
+extensions = ['sphinx.ext.intersphinx', 'sphinx.ext.ifconfig', 'sphinx.ext.todo', 'sphinx_rtd_theme']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -94,7 +94,7 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'default'
+html_theme = "sphinx_rtd_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -272,5 +272,5 @@ html_theme_options = {
 highlight_language = 'js'
 
 def setup(app):
-    app.add_stylesheet('custom.css')
+    app.add_css_file('custom.css')
 
