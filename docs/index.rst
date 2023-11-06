@@ -52,14 +52,14 @@ Contents
    Home <self>
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: User Documentation
 
    docs/getting-started
    docs/adapters
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: API
    :includehidden:
 
@@ -69,18 +69,18 @@ Contents
    api/errors/index
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
    :caption: Model
 
    model/overview
    model/spec
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Miscellaneous
 
    misc/extension-grants
    misc/pkce
-   misc/migrating-v5
+   misc/migrating-to-v5
    misc/migrating-v2-to-v3
 
