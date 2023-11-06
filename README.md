@@ -35,7 +35,11 @@ If you're using one of those frameworks it is strongly recommended to use the re
 
 ## Documentation
 
-[Documentation](https://node-oauthoauth2-server.readthedocs.io/en/latest/) is hosted on Read the Docs.
+Documentation is hosted on Read the Docs. We have multiple versions of the docs available:
+
+- [stable](https://node-oauthoauth2-server.readthedocs.io/en/master/) (master branch)
+- [development](https://node-oauthoauth2-server.readthedocs.io/en/development/) (development branch)
+
 Please leave an issue if something is confusing or missing in the docs.
 
 ## Examples
