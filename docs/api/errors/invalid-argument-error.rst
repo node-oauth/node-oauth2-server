@@ -6,7 +6,7 @@ An invalid argument was encountered.
 
 ::
 
-  const InvalidArgumentError = require('oauth2-server/lib/errors/invalid-argument-error');
+  const InvalidArgumentError = require('@node-oauth/oauth2-server/lib/errors/invalid-argument-error');
 
 .. note:: This error indicates that the module is used incorrectly (i.e., there is a programming error) and should never be seen because of external errors (like invalid data sent by a client).
 

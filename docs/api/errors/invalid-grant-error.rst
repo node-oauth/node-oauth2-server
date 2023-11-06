@@ -6,7 +6,7 @@ The provided authorization grant (e.g., authorization code, resource owner crede
 
 ::
 
-  const InvalidGrantError = require('oauth2-server/lib/errors/invalid-grant-error');
+  const InvalidGrantError = require('@node-oauth/oauth2-server/lib/errors/invalid-grant-error');
 
 --------
 

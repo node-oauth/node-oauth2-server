@@ -40,10 +40,10 @@ def get_config():
         'name': package['name'],
         'version': package['version'],
         'short_version': get_short_version(package['version']),
-        'organization': 'oauthjs',
+        'organization': '@node-oauth',
         'copyright_year': get_copyright_year(2016),
         # TODO: Get authors from package.
-        'docs_author': 'Max Truxa',
-        'docs_author_email': 'dev@maxtruxa.com'
+        'docs_author': 'Node-OAuth Authors',
+        'docs_author_email': ''
     }
 

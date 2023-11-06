@@ -2,7 +2,9 @@
  Model Specification
 =====================
 
-Each model function supports *promises*, *ES6 generators* and *async*/*await* (using Babel_). Note that promise support implies support for returning plain values where asynchronism is not required.
+**Version >=5.x:** Callback support has been removed! Each model function supports either sync or async (``Promise`` or ``async function``) return values.
+
+**Version <=4.x:** Each model function supports *promises*, *Node-style callbacks*, *ES6 generators* and *async*/*await* (using Babel_). Note that promise support implies support for returning plain values where asynchronism is not required.
 
 .. _Babel: https://babeljs.io
 
@@ -12,6 +14,11 @@ Each model function supports *promises*, *ES6 generators* and *async*/*await* (u
     // We support returning promises.
     getAccessToken: function() {
       return new Promise('works!');
+    },
+
+    // Or sync-style values
+    getAuthorizationCode: function() {
+      return 'works!'
     },
 
     // Or, using generators.
@@ -27,7 +34,7 @@ Each model function supports *promises*, *ES6 generators* and *async*/*await* (u
     }
   };
 
-  const OAuth2Server = require('oauth2-server');
+  const OAuth2Server = require('@node-oauth/oauth2-server');
   let oauth = new OAuth2Server({model: model});
 
 Code examples on this page use *promises*.
@@ -357,7 +364,7 @@ An ``Object`` representing the authorization code and associated data.
       })
       .spread(function(code, client, user) {
         return {
-          code: code.authorization_code,
+          authorizationCode: code.authorization_code,
           expiresAt: code.expires_at,
           redirectUri: code.redirect_uri,
           scope: code.scope,
@@ -898,7 +905,8 @@ To accept partially valid scopes:
 
 Invoked during request authentication to check if the provided access token was authorized the requested scopes.
 
-This model function is **required** if scopes are used with :ref:`OAuth2Server#authenticate() <OAuth2Server#authenticate>`.
+This model function is **required** if scopes are used with :ref:`OAuth2Server#authenticate() <OAuth2Server#authenticate>`
+but it's never called, if you provide your own ``authenticateHandler`` to the options.
 
 **Invoked during:**
 

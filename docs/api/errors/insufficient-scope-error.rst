@@ -6,7 +6,7 @@ The request requires higher privileges than provided by the access token. See :r
 
 ::
 
-  const InsufficientScopeError = require('oauth2-server/lib/errors/insufficient-scope-error');
+  const InsufficientScopeError = require('@node-oauth/oauth2-server/lib/errors/insufficient-scope-error');
 
 --------
 
