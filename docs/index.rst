@@ -85,5 +85,6 @@ See the :doc:`/model/spec` of what is required from the model passed to :doc:`/a
 
    misc/extension-grants
    misc/pkce
+   misc/migrating-v5
    misc/migrating-v2-to-v3
 
