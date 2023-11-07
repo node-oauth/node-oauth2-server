@@ -45,25 +45,23 @@ Example Usage
 
 See the :doc:`/model/spec` of what is required from the model passed to :doc:`/api/oauth2-server`.
 
+Contents
+--------
 
 .. toctree::
-   :hidden:
-
    Home <self>
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: User Documentation
-   :hidden:
 
    docs/getting-started
    docs/adapters
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: API
    :includehidden:
-   :hidden:
 
    api/oauth2-server
    api/request
@@ -71,19 +69,18 @@ See the :doc:`/model/spec` of what is required from the model passed to :doc:`/a
    api/errors/index
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 1
    :caption: Model
-   :hidden:
 
    model/overview
    model/spec
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Miscellaneous
-   :hidden:
 
    misc/extension-grants
    misc/pkce
+   misc/migrating-to-v5
    misc/migrating-v2-to-v3
 

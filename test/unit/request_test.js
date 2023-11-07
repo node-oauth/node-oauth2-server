@@ -5,6 +5,7 @@
  */
 
 const Request = require('../../lib/request');
+const InvalidArgumentError = require('../../lib/errors/invalid-argument-error');
 const should = require('chai').should();
 
 /**
@@ -27,6 +28,24 @@ function generateBaseRequest() {
 }
 
 describe('Request', function() {
+  it('should throw on missing args', function () {
+    const args = [
+      [undefined, InvalidArgumentError, 'Missing parameter: `headers`'],
+      [null, TypeError, 'Cannot destructure property \'headers\''],
+      [{}, InvalidArgumentError, 'Missing parameter: `headers`'],
+      [{ headers: { }}, InvalidArgumentError, 'Missing parameter: `method`'],
+      [{ headers: {}, method: 'GET' }, InvalidArgumentError, 'Missing parameter: `query`'],
+    ];
+
+    args.forEach(([value, error, message]) => {
+      try {
+        new Request(value);
+      } catch (e) {
+        e.should.be.instanceOf(error);
+        e.message.should.include(message);
+      }
+    });
+  });
   it('should instantiate with a basic request', function() {
     const originalRequest = generateBaseRequest();
 
@@ -125,6 +144,22 @@ describe('Request', function() {
     request.body.should.eql(originalRequest.body);
     request.custom.should.eql(originalRequest.custom);
     request.custom2.should.eql(originalRequest.custom2);
+  });
+
+  it('should not allow overwriting methods on the Request prototype via custom properties', () => {
+    const request = new Request({
+      query: {},
+      method: 'GET',
+      headers: {
+        'content-type': 'application/json'
+      },
+      get() {
+        // malicious attempt to override the 'get' method
+        return 'text/html';
+      }
+    });
+
+    request.get('content-type').should.equal('application/json');
   });
 
   it('should allow getting of headers using `request.get`', function() {

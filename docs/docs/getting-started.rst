@@ -16,7 +16,7 @@ oauth2-server_ is available via npm_.
 
   $ npm install @node-oauth/oauth2-server
 
-.. note:: The *oauth2-server* module is framework-agnostic but there are several officially supported adapters available for popular HTTP server frameworks such as Express_ and Koa_ (maintainer wanted!). If you're using one of those frameworks it is strongly recommended to use the respective adapter module instead of rolling your own.
+.. note:: The *@node-oauth/oauth2-server* module is framework-agnostic but there are several officially supported adapters available for popular HTTP server frameworks such as Express_ and Koa_. If you're using one of those frameworks it is strongly recommended to use the respective adapter module instead of rolling your own.
 
 .. _Express: https://www.npmjs.com/package/@node-oauth/express-oauth-server
 .. _Koa: https://npmjs.org/package/koa-oauth-server
@@ -28,14 +28,11 @@ Features
 ========
 
 - Supports :ref:`authorization code <AuthorizationCodeGrant>`, :ref:`client credentials <ClientCredentialsGrant>`, :ref:`refresh token <RefreshTokenGrant>` and :ref:`password <PasswordGrant>` grant, as well as :ref:`extension grants <ExtensionGrants>`, with scopes.
-- Can be used with *promises*, *Node-style callbacks*, *ES6 generators* and *async*/*await* (using Babel_).
-- From version 5.0.0 fully native async/await implemented
+- Can be used with *promises*, *ES6 generators* and *async*/*await*.
 - Fully :rfc:`6749` and :rfc:`6750` compliant.
-- Supports PKCE (:rfc:`7636`)
 - Implicitly supports any form of storage, e.g. *PostgreSQL*, *MySQL*, *MongoDB*, *Redis*, etc.
 - Complete `test suite`_.
 
-.. _Babel: https://babeljs.io
 .. _test suite: https://github.com/node-oauth/node-oauth2-server/tree/master/test
 
 

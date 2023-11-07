@@ -6,8 +6,8 @@
 
 const AbstractGrantType = require('../../../lib/grant-types/abstract-grant-type');
 const InvalidArgumentError = require('../../../lib/errors/invalid-argument-error');
-const Promise = require('bluebird');
 const Request = require('../../../lib/request');
+const InvalidScopeError = require('../../../lib/errors/invalid-scope-error');
 const should = require('chai').should();
 
 /**
@@ -45,7 +45,7 @@ describe('AbstractGrantType integration', function() {
     });
 
     it('should set the `model`', function() {
-      const model = {};
+      const model = { async generateAccessToken () {} };
       const grantType = new AbstractGrantType({ accessTokenLifetime: 123, model: model });
 
       grantType.model.should.equal(model);
@@ -59,70 +59,62 @@ describe('AbstractGrantType integration', function() {
   });
 
   describe('generateAccessToken()', function() {
-    it('should return an access token', function() {
+    it('should return an access token', async function() {
       const handler = new AbstractGrantType({ accessTokenLifetime: 123, model: {}, refreshTokenLifetime: 456 });
-
-      return handler.generateAccessToken()
-        .then(function(data) {
-          data.should.be.a.sha256();
-        })
-        .catch(should.fail);
+      const accessToken = await handler.generateAccessToken();
+      accessToken.should.be.a.sha256();
     });
 
-    it('should support promises', function() {
+    it('should support promises', async function() {
       const model = {
-        generateAccessToken: function() {
-          return Promise.resolve({});
+        generateAccessToken: async function() {
+          return 'long-hash-foo-bar';
         }
       };
       const handler = new AbstractGrantType({ accessTokenLifetime: 123, model: model, refreshTokenLifetime: 456 });
-
-      handler.generateAccessToken().should.be.an.instanceOf(Promise);
+      const accessToken = await handler.generateAccessToken();
+      accessToken.should.equal('long-hash-foo-bar');
     });
 
-    it('should support non-promises', function() {
+    it('should support non-promises', async function() {
       const model = {
         generateAccessToken: function() {
-          return {};
+          return 'long-hash-foo-bar';
         }
       };
       const handler = new AbstractGrantType({ accessTokenLifetime: 123, model: model, refreshTokenLifetime: 456 });
-
-      handler.generateAccessToken().should.be.an.instanceOf(Promise);
+      const accessToken = await handler.generateAccessToken();
+      accessToken.should.equal('long-hash-foo-bar');
     });
   });
 
   describe('generateRefreshToken()', function() {
-    it('should return a refresh token', function() {
+    it('should return a refresh token', async function() {
       const handler = new AbstractGrantType({ accessTokenLifetime: 123, model: {}, refreshTokenLifetime: 456 });
-
-      return handler.generateRefreshToken()
-        .then(function(data) {
-          data.should.be.a.sha256();
-        })
-        .catch(should.fail);
+      const refreshToken = await handler.generateRefreshToken();
+      refreshToken.should.be.a.sha256();
     });
 
-    it('should support promises', function() {
+    it('should support promises', async function() {
       const model = {
-        generateRefreshToken: function() {
-          return Promise.resolve({});
+        generateRefreshToken: async function() {
+          return 'long-hash-foo-bar';
         }
       };
       const handler = new AbstractGrantType({ accessTokenLifetime: 123, model: model, refreshTokenLifetime: 456 });
-
-      handler.generateRefreshToken().should.be.an.instanceOf(Promise);
+      const refreshToken = await handler.generateRefreshToken();
+      refreshToken.should.equal('long-hash-foo-bar');
     });
 
-    it('should support non-promises', function() {
+    it('should support non-promises', async function() {
       const model = {
         generateRefreshToken: function() {
-          return {};
+          return 'long-hash-foo-bar';
         }
       };
       const handler = new AbstractGrantType({ accessTokenLifetime: 123, model: model, refreshTokenLifetime: 456 });
-
-      handler.generateRefreshToken().should.be.an.instanceOf(Promise);
+      const refreshToken = await handler.generateRefreshToken();
+      refreshToken.should.equal('long-hash-foo-bar');
     });
   });
 
@@ -152,7 +144,7 @@ describe('AbstractGrantType integration', function() {
 
         should.fail();
       } catch (e) {
-        e.should.be.an.instanceOf(InvalidArgumentError);
+        e.should.be.an.instanceOf(InvalidScopeError);
         e.message.should.equal('Invalid parameter: `scope`');
       }
     });
@@ -168,7 +160,67 @@ describe('AbstractGrantType integration', function() {
       const handler = new AbstractGrantType({ accessTokenLifetime: 123, model: {}, refreshTokenLifetime: 456 });
       const request = new Request({ body: { scope: 'foo' }, headers: {}, method: {}, query: {} });
 
-      handler.getScope(request).should.equal('foo');
+      handler.getScope(request).should.eql(['foo']);
+    });
+  });
+
+  describe('validateScope()', function () {
+    it('accepts the scope, if the model does not implement it', async function () {
+      const scope = ['some,scope,this,that'];
+      const user = { id: 123 };
+      const client = { id: 456 };
+      const handler = new AbstractGrantType({ accessTokenLifetime: 123, model: {}, refreshTokenLifetime: 456 });
+      const validated = await handler.validateScope(user, client, scope);
+      validated.should.eql(scope);
+    });
+
+    it('accepts the scope, if the model accepts it', async function () {
+      const scope = ['some,scope,this,that'];
+      const user = { id: 123 };
+      const client = { id: 456 };
+
+      const model = {
+        async validateScope (_user, _client, _scope) {
+          // make sure the model received the correct args
+          _user.should.deep.equal(user);
+          _client.should.deep.equal(_client);
+          _scope.should.eql(scope);
+
+          return scope;
+        }
+      };
+      const handler = new AbstractGrantType({ accessTokenLifetime: 123, model, refreshTokenLifetime: 456 });
+      const validated = await handler.validateScope(user, client, scope);
+      validated.should.eql(scope);
+    });
+
+    it('throws if the model rejects the scope', async function () {
+      const scope = ['some,scope,this,that'];
+      const user = { id: 123 };
+      const client = { id: 456 };
+      const returnTypes = [undefined, null, false, 0, ''];
+
+      for (const type of returnTypes) {
+        const model = {
+          async validateScope (_user, _client, _scope) {
+            // make sure the model received the correct args
+            _user.should.deep.equal(user);
+            _client.should.deep.equal(_client);
+            _scope.should.eql(scope);
+
+            return type;
+          }
+        };
+        const handler = new AbstractGrantType({ accessTokenLifetime: 123, model, refreshTokenLifetime: 456 });
+
+        try {
+          await handler.validateScope(user, client, scope);
+          should.fail();
+        } catch (e) {
+          e.should.be.an.instanceOf(InvalidScopeError);
+          e.message.should.equal('Invalid scope: Requested scope is invalid');
+        }
+      }
     });
   });
 });

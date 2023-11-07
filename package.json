@@ -1,7 +1,7 @@
 {
   "name": "@node-oauth/oauth2-server",
   "description": "Complete, framework-agnostic, compliant and well tested module for implementing an OAuth2 Server in node.js",
-  "version": "4.3.0",
+  "version": "5.0.0",
   "keywords": [
     "oauth",
     "oauth2"
@@ -22,25 +22,24 @@
   "files": [
     "index.js",
     "index.d.ts",
-    "lib"
+    "lib",
+    "CHANGELOG.md"
   ],
   "dependencies": {
     "@node-oauth/formats": "1.0.0",
     "basic-auth": "2.0.1",
-    "bluebird": "3.7.2",
-    "promisify-any": "2.0.1",
     "type-is": "1.6.18"
   },
   "devDependencies": {
     "chai": "4.3.7",
-    "eslint": "8.42.0",
+    "eslint": "8.46.0",
     "mocha": "10.2.0",
     "nyc": "15.1.0",
-    "sinon": "15.1.0"
+    "sinon": "15.2.0"
   },
   "license": "MIT",
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=16.0.0"
   },
   "scripts": {
     "pretest": "./node_modules/.bin/eslint lib test index.js",
