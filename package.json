@@ -4,7 +4,11 @@
   "version": "5.0.0",
   "keywords": [
     "oauth",
-    "oauth2"
+    "oauth2",
+    "workflows",
+    "pkce",
+    "authorization",
+    "authentication"
   ],
   "contributors": [
     "Thom Seddon <thom@seddonmedia.co.uk>",
