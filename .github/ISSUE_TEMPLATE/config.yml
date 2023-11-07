@@ -1,0 +1,19 @@
+---
+blank_issues_enabled: false
+contact_links:
+  -
+    about: Propose new features
+    name: 💡 Feature requests
+    url: https://github.com/node-oauth/node-oauth2-server/discussions/categories/ideas
+  -
+    about: Ask a question or for help
+    name: ❓ Question
+    url: https://github.com/node-oauth/node-oauth2-server/discussions/categories/q-a
+  -
+    about: Chat on our discord
+    name: 🗯 Chat
+    url: https://discord.gg/4HTUAcTvqV
+  -
+    about: Read the documentation
+    name: 📜 Documentation
+    url: https://node-oauthoauth2-server.readthedocs.io/en/latest/
