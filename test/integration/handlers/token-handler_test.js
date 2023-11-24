@@ -329,7 +329,7 @@ describe('TokenHandler integration', function() {
     });
 
     it('should not return custom attributes in a bearer token if the allowExtendedTokenAttributes is not set', function() {
-      const token = { accessToken: 'foo', client: {}, refreshToken: 'bar', scope: ['foobar'], user: {}, foo: 'bar' };
+      const token = { accessToken: 'foo', client: {}, refreshToken: 'bar', scope: ['baz'], user: {}, foo: 'bar' };
       const model = {
         getClient: function() { return { grants: ['password'] }; },
         getUser: function() { return {}; },
@@ -344,7 +344,7 @@ describe('TokenHandler integration', function() {
           username: 'foo',
           password: 'bar',
           grant_type: 'password',
-          scope: 'baz'
+          scope: ['baz']
         },
         headers: { 'content-type': 'application/x-www-form-urlencoded', 'transfer-encoding': 'chunked' },
         method: 'POST',
@@ -357,14 +357,14 @@ describe('TokenHandler integration', function() {
           should.exist(response.body.access_token);
           should.exist(response.body.refresh_token);
           should.exist(response.body.token_type);
-          should.exist(response.body.scope);
+          response.body.scope.should.eql('baz');
           should.not.exist(response.body.foo);
         })
         .catch(should.fail);
     });
 
     it('should return custom attributes in a bearer token if the allowExtendedTokenAttributes is set', function() {
-      const token = { accessToken: 'foo', client: {}, refreshToken: 'bar', scope: ['foobar'], user: {}, foo: 'bar' };
+      const token = { accessToken: 'foo', client: {}, refreshToken: 'bar', scope: ['baz'], user: {}, foo: 'bar' };
       const model = {
         getClient: function() { return { grants: ['password'] }; },
         getUser: function() { return {}; },
@@ -392,7 +392,7 @@ describe('TokenHandler integration', function() {
           should.exist(response.body.access_token);
           should.exist(response.body.refresh_token);
           should.exist(response.body.token_type);
-          should.exist(response.body.scope);
+          response.body.scope.should.eql('baz');
           should.exist(response.body.foo);
         })
         .catch(should.fail);

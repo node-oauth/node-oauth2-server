@@ -124,7 +124,7 @@ describe('RefreshTokenGrantType Compliance', function () {
       refreshResponse.body.access_token.should.equal(token.accessToken);
       refreshResponse.body.refresh_token.should.equal(token.refreshToken);
       refreshResponse.body.expires_in.should.be.a('number');
-      refreshResponse.body.scope.should.eql(['read', 'write']);
+      refreshResponse.body.scope.should.eql('read write');
 
       token.accessToken.should.be.a('string');
       token.refreshToken.should.be.a('string');
@@ -223,7 +223,7 @@ describe('RefreshTokenGrantType Compliance', function () {
       refreshResponse.body.access_token.should.equal(token.accessToken);
       refreshResponse.body.refresh_token.should.equal(token.refreshToken);
       refreshResponse.body.expires_in.should.be.a('number');
-      refreshResponse.body.scope.should.eql(['read']);
+      refreshResponse.body.scope.should.eql('read');
     });
   });
 });

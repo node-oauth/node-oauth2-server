@@ -37,12 +37,14 @@ const client = db.saveClient({ id: 'a', secret: 'b', grants: ['password'] });
 const scope = 'read write';
 
 function createDefaultRequest () {
+  const dice = Math.random() > 0.5;
+  const currentScope = dice ? scope : scope.split(' ');
   return createRequest({
     body: {
       grant_type: 'password',
       username: user.username,
       password: user.password,
-      scope
+      scope: currentScope
     },
     headers: {
       'authorization': 'Basic ' + Buffer.from(client.id + ':' + client.secret).toString('base64'),
