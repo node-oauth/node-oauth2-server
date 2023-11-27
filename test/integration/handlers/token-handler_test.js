@@ -344,7 +344,7 @@ describe('TokenHandler integration', function() {
           username: 'foo',
           password: 'bar',
           grant_type: 'password',
-          scope: ['baz']
+          scope: 'baz'
         },
         headers: { 'content-type': 'application/x-www-form-urlencoded', 'transfer-encoding': 'chunked' },
         method: 'POST',
