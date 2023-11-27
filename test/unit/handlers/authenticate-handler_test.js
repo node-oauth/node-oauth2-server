@@ -166,7 +166,7 @@ describe('AuthenticateHandler', function() {
         getAccessToken: function() {},
         verifyScope: sinon.stub().returns(true)
       };
-      const handler = new AuthenticateHandler({ addAcceptedScopesHeader: true, addAuthorizedScopesHeader: true, model: model, scope: ['bar'] });
+      const handler = new AuthenticateHandler({ addAcceptedScopesHeader: true, addAuthorizedScopesHeader: true, model: model, scope: 'bar' });
 
       return handler.verifyScope(['foo'])
         .then(function() {
