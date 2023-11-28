@@ -93,7 +93,7 @@ describe('AuthenticateHandler integration', function() {
         addAcceptedScopesHeader: true,
         addAuthorizedScopesHeader: true,
         model: model,
-        scope: ['foobar']
+        scope: 'foobar'
       });
 
       grantType.scope.should.eql(['foobar']);
@@ -254,7 +254,7 @@ describe('AuthenticateHandler integration', function() {
           return true;
         }
       };
-      const handler = new AuthenticateHandler({ addAcceptedScopesHeader: true, addAuthorizedScopesHeader: true, model: model, scope: ['foo'] });
+      const handler = new AuthenticateHandler({ addAcceptedScopesHeader: true, addAuthorizedScopesHeader: true, model: model, scope: 'foo' });
       const request = new Request({
         body: {},
         headers: { 'Authorization': 'Bearer foo' },
@@ -522,7 +522,7 @@ describe('AuthenticateHandler integration', function() {
           return false;
         }
       };
-      const handler = new AuthenticateHandler({ addAcceptedScopesHeader: true, addAuthorizedScopesHeader: true, model: model, scope: ['foo'] });
+      const handler = new AuthenticateHandler({ addAcceptedScopesHeader: true, addAuthorizedScopesHeader: true, model: model, scope: 'foo' });
 
       return handler.verifyScope(['foo'])
         .then(should.fail)
@@ -539,7 +539,7 @@ describe('AuthenticateHandler integration', function() {
           return true;
         }
       };
-      const handler = new AuthenticateHandler({ addAcceptedScopesHeader: true, addAuthorizedScopesHeader: true, model: model, scope: ['foo'] });
+      const handler = new AuthenticateHandler({ addAcceptedScopesHeader: true, addAuthorizedScopesHeader: true, model: model, scope: 'foo' });
 
       handler.verifyScope(['foo']).should.be.an.instanceOf(Promise);
     });
@@ -551,7 +551,7 @@ describe('AuthenticateHandler integration', function() {
           return true;
         }
       };
-      const handler = new AuthenticateHandler({ addAcceptedScopesHeader: true, addAuthorizedScopesHeader: true, model: model, scope: ['foo'] });
+      const handler = new AuthenticateHandler({ addAcceptedScopesHeader: true, addAuthorizedScopesHeader: true, model: model, scope: 'foo' });
 
       handler.verifyScope(['foo']).should.be.an.instanceOf(Promise);
     });
@@ -576,7 +576,7 @@ describe('AuthenticateHandler integration', function() {
         getAccessToken: function() {},
         verifyScope: function() {}
       };
-      const handler = new AuthenticateHandler({ addAcceptedScopesHeader: true, addAuthorizedScopesHeader: false, model: model, scope: ['foo', 'bar'] });
+      const handler = new AuthenticateHandler({ addAcceptedScopesHeader: true, addAuthorizedScopesHeader: false, model: model, scope: 'foo bar' });
       const response = new Response({ body: {}, headers: {} });
 
       handler.updateResponse(response, { scope: ['foo', 'biz'] });
@@ -602,7 +602,7 @@ describe('AuthenticateHandler integration', function() {
         getAccessToken: function() {},
         verifyScope: function() {}
       };
-      const handler = new AuthenticateHandler({ addAcceptedScopesHeader: false, addAuthorizedScopesHeader: true, model: model, scope: ['foo', 'bar'] });
+      const handler = new AuthenticateHandler({ addAcceptedScopesHeader: false, addAuthorizedScopesHeader: true, model: model, scope: 'foo bar' });
       const response = new Response({ body: {}, headers: {} });
 
       handler.updateResponse(response, { scope: ['foo', 'biz'] });
