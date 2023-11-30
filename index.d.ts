@@ -148,7 +148,7 @@ declare namespace OAuth2Server {
          * Validate requested scope. Calls Model#validateScope() if implemented.
          *
          */
-        validateScope(user: User, client: Client, scope: string[]): Promise<string[] | Falsey>;
+        validateScope(user: User, client: Client, scope?: string[]): Promise<string[] | Falsey>;
 
         /**
          * Retrieve info from the request and client and return token
@@ -314,7 +314,7 @@ declare namespace OAuth2Server {
          * Invoked to check if the requested scope is valid for a particular client/user combination.
          *
          */
-        validateScope?(user: User, client: Client, scope: string[]): Promise<string[] | Falsey>;
+        validateScope?(user: User, client: Client, scope?: string[]): Promise<string[] | Falsey>;
 
         /**
          * Invoked to check if the provided `redirectUri` is valid for a particular `client`.
@@ -340,7 +340,7 @@ declare namespace OAuth2Server {
          * Invoked to check if the requested scope is valid for a particular client/user combination.
          *
          */
-        validateScope?(user: User, client: Client, scope: string[]): Promise<string[] | Falsey>;
+        validateScope?(user: User, client: Client, scope?: string[]): Promise<string[] | Falsey>;
     }
 
     interface RefreshTokenModel extends BaseModel, RequestAuthenticationModel {
@@ -374,7 +374,7 @@ declare namespace OAuth2Server {
          * Invoked to check if the requested scope is valid for a particular client/user combination.
          *
          */
-        validateScope?(user: User, client: Client, scope: string[]): Promise<string[] | Falsey>;
+        validateScope?(user: User, client: Client, scope?: string[]): Promise<string[] | Falsey>;
     }
 
     interface ExtensionModel extends BaseModel, RequestAuthenticationModel {}

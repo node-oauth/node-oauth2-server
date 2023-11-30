@@ -10,6 +10,9 @@ function createModel (db) {
   }
 
   async function saveToken (token, client, user) {
+    if (token.scope && !Array.isArray(token.scope)) {
+      throw new Error('Scope should internally be an array');
+    }
     const meta = {
       clientId: client.id,
       userId: user.id,
@@ -38,7 +41,9 @@ function createModel (db) {
     if (!meta) {
       return false;
     }
-
+    if (meta.scope && !Array.isArray(meta.scope)) {
+      throw new Error('Scope should internally be an array');
+    }
     return {
       accessToken,
       accessTokenExpiresAt: meta.accessTokenExpiresAt,
@@ -54,7 +59,9 @@ function createModel (db) {
     if (!meta) {
       return false;
     }
-
+    if (meta.scope && !Array.isArray(meta.scope)) {
+      throw new Error('Scope should internally be an array');
+    }
     return {
       refreshToken,
       refreshTokenExpiresAt: meta.refreshTokenExpiresAt,
@@ -71,6 +78,9 @@ function createModel (db) {
   }
 
   async function verifyScope (token, scope) {
+    if (!Array.isArray(scope)) {
+      throw new Error('Scope should internally be an array');
+    }
     return scope.every(s => scopes.includes(s));
   }
 

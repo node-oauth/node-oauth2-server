@@ -90,7 +90,7 @@ describe('ClientCredentials Workflow Compliance (4.4)', function () {
       response.body.token_type.should.equal('Bearer');
       response.body.access_token.should.equal(token.accessToken);
       response.body.expires_in.should.be.a('number');
-      response.body.scope.should.eql(['read', 'write']);
+      response.body.scope.should.eql('read write');
       ('refresh_token' in response.body).should.equal(false);
 
       token.accessToken.should.be.a('string');
