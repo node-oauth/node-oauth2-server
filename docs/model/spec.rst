@@ -951,7 +951,7 @@ Returns ``true`` if the access token passes, ``false`` otherwise.
       return false;
     }
     let authorizedScopes = token.scope;
-    return requestedScopes.every(s => token.scope.includes(scope));
+    return requestedScopes.every(s => authorizedScopes.includes(s));
   }
 
 --------
