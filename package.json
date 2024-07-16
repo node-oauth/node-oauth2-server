@@ -33,7 +33,7 @@
   "devDependencies": {
     "chai": "4.3.7",
     "mocha": "10.6.0",
-    "eslint": "8.57.0",
+    "eslint": "9.7.0",
     "nyc": "17.0.0",
     "sinon": "18.0.0"
   },
