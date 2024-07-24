@@ -6,11 +6,11 @@ name: Tests
 on:
   push:
     branches:
-      - master    # allthough  master is push protected we still keep it
+      - master    # although  master is push protected we still keep it
       - development
   pull_request:   # runs on all PR
     branches-ignore:
-      - release-* # on release we run an extended workflow so no need for this
+      - release-* # on release, we run an extended workflow so no need for this
 
 jobs:
   lint:
