@@ -24,14 +24,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 20
-
-      - name: cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-16-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          cache: npm
       - run: npm install
       - run: npm run lint
 
@@ -50,14 +43,7 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node }}
-
-    - name: Cache dependencies ${{ matrix.node }}
-      uses: actions/cache@v3
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-${{ matrix.node }}
+        cache: npm
     - run: npm i
     - run: npm run test:coverage
 

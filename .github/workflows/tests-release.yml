@@ -48,14 +48,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
-
-      - name: Cache dependencies ${{ matrix.node }}
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-${{ matrix.node }}
+          cache: npm
       # for this workflow we also require npm audit to pass
       - run: npm i
       - run: npm run test:coverage
@@ -96,14 +89,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
-
-      - name: Cache dependencies ${{ matrix.node }}
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ matrix.node }}-node-oauth/express-oauth-server-${{ hashFiles('github/testing/express/**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-${{ matrix.node }}-node-oauth/express-oauth-server
+          cache: npm
 
       # in order to test the adapter we need to use the current checkout
       # and install it as local dependency
