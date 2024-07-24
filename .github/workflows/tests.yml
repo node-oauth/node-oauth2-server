@@ -41,7 +41,7 @@ jobs:
     needs: [lint]
     strategy:
       matrix:
-        node: [16, 18, 20]
+        node: [16, 18, 20, 22]
     steps:
     - name: Checkout ${{ matrix.node }}
       uses: actions/checkout@v3
