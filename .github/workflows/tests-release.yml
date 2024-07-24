@@ -26,9 +26,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 20
-      # install to create local package-lock.json but don't cache the files
-      # also: no audit for dev dependencies
-      - run: npm i --package-lock-only  && npm audit --production
+      - run: npm clean-install && npm audit --production
 
   # STEP 2 - basic unit tests
 
@@ -50,7 +48,7 @@ jobs:
           node-version: ${{ matrix.node }}
           cache: npm
       # for this workflow we also require npm audit to pass
-      - run: npm i
+      - run: npm clean-install
       - run: npm run test:coverage
 
       # with the following action we enforce PRs to have a high coverage
@@ -97,7 +95,7 @@ jobs:
       # xxx: added bluebird as explicit dependency
       - run: |
           cd github/testing/express
-          npm i
+          npm install
           npm install https://github.com/node-oauth/node-oauth2-server.git#${{ github.ref_name }}
           npm run test
 
@@ -112,7 +110,7 @@ jobs:
         with:
           node-version: 16
           registry-url: https://registry.npmjs.org/
-      - run: npm i
+      - run: npm clean-install
       - run: npm publish --dry-run
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
@@ -130,7 +128,7 @@ jobs:
           # we always publish targeting the lowest supported node version
           node-version: 16
           registry-url: $registry-url(npm)
-      - run: npm i
+      - run: npm clean-install
       - run: npm publish --dry-run
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}

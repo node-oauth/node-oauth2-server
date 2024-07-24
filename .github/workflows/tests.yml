@@ -25,7 +25,7 @@ jobs:
         with:
           node-version: 20
           cache: npm
-      - run: npm install
+      - run: npm clean-install
       - run: npm run lint
 
   unittest:
@@ -44,7 +44,7 @@ jobs:
       with:
         node-version: ${{ matrix.node }}
         cache: npm
-    - run: npm i
+    - run: npm clean-install
     - run: npm run test:coverage
 
     # with the following action we enforce PRs to have a high coverage
