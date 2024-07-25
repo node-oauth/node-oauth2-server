@@ -56,7 +56,7 @@ jobs:
     # with the following action we enforce PRs to have a high coverage
     # and ensure, changes are tested well enough so that coverage won't fail
     - name: check coverage
-      uses: VeryGoodOpenSource/very_good_coverage@v1.2.0
+      uses: VeryGoodOpenSource/very_good_coverage@v3
       with:
         path: './coverage/lcov.info'
         min_coverage: 95
