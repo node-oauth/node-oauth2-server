@@ -17,8 +17,11 @@ jobs:
     name: Javascript standard lint
     runs-on: ubuntu-latest
     steps:
-      - name: checkout
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          show-progress: false
 
       - name: setup node
         uses: actions/setup-node@v4
@@ -36,8 +39,11 @@ jobs:
       matrix:
         node: [16, 18, 20, 22]
     steps:
-    - name: Checkout ${{ matrix.node }}
-      uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+        show-progress: false
 
     - name: Setup node ${{ matrix.node }}
       uses: actions/setup-node@v4
