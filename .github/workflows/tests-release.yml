@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
       - run: npm clean-install && npm audit --production
@@ -43,7 +43,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Setup node ${{ matrix.node }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
           cache: npm
@@ -84,7 +84,7 @@ jobs:
           path: github/testing/express
 
       - name: Setup node ${{ matrix.node }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
           cache: npm
@@ -106,7 +106,7 @@ jobs:
     needs: [integrationtests]
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 16
           registry-url: https://registry.npmjs.org/
@@ -123,7 +123,7 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           # we always publish targeting the lowest supported node version
           node-version: 16
