@@ -51,15 +51,15 @@ declare namespace OAuth2Server {
      */
     class Request {
         body?: any;
-        headers?: { [key: string]: string; };
+        headers?: Record<string, string>;
         method?: string;
-        query?: { [key: string]: string; };
+        query?: Record<string, string>;
 
         /**
          * Instantiates Request using the supplied options.
          *
          */
-        constructor(options?: { [key: string]: any } | http.IncomingMessage);
+        constructor(options?: Record<string, any> | http.IncomingMessage);
 
         /**
          * Returns the specified HTTP header field. The match is case-insensitive.
@@ -79,14 +79,14 @@ declare namespace OAuth2Server {
      */
     class Response {
         body?: any;
-        headers?: { [key: string]: string; };
+        headers?: Record<string, string>;
         status?: number;
 
         /**
          * Instantiates Response using the supplied options.
          *
          */
-        constructor(options?: { [key: string]: any; } | http.ServerResponse);
+        constructor(options?: Record<string, any> | http.ServerResponse);
 
         /**
          * Returns the specified HTTP header field. The match is case-insensitive.
@@ -232,7 +232,7 @@ declare namespace OAuth2Server {
         /**
          * Additional supported grant types.
          */
-        extendedGrantTypes?: { [key: string]: typeof AbstractGrantType };
+        extendedGrantTypes?: Record<string, typeof AbstractGrantType>;
     }
 
     /**
