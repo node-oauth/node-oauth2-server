@@ -17,22 +17,18 @@ jobs:
     name: Javascript standard lint
     runs-on: ubuntu-latest
     steps:
-      - name: checkout
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          show-progress: false
 
       - name: setup node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20
-
-      - name: cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-16-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-      - run: npm install
+          cache: npm
+      - run: npm clean-install
       - run: npm run lint
 
   unittest:
@@ -43,28 +39,24 @@ jobs:
       matrix:
         node: [16, 18, 20, 22]
     steps:
-    - name: Checkout ${{ matrix.node }}
-      uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+        show-progress: false
 
     - name: Setup node ${{ matrix.node }}
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node }}
-
-    - name: Cache dependencies ${{ matrix.node }}
-      uses: actions/cache@v3
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ matrix.node }}-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-${{ matrix.node }}
-    - run: npm i
+        cache: npm
+    - run: npm clean-install
     - run: npm run test:coverage
 
     # with the following action we enforce PRs to have a high coverage
     # and ensure, changes are tested well enough so that coverage won't fail
     - name: check coverage
-      uses: VeryGoodOpenSource/very_good_coverage@v1.2.0
+      uses: VeryGoodOpenSource/very_good_coverage@v3
       with:
         path: './coverage/lcov.info'
         min_coverage: 95
