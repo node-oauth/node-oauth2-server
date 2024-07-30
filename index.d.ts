@@ -168,7 +168,7 @@ declare namespace OAuth2Server {
         /**
          * The scope(s) to authenticate.
          */
-        scope?: string | undefined;
+        scope?: string[];
 
         /**
          * Set the X-Accepted-OAuth-Scopes HTTP header on response objects.
