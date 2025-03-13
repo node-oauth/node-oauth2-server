@@ -14,7 +14,7 @@ on:
 
 jobs:
   lint:
-    name: Javascript standard lint
+    name: Lint commit messages and code
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -22,14 +22,27 @@ jobs:
         with:
           persist-credentials: false
           show-progress: false
+          fetch-depth: 0
 
       - name: setup node
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
-      - run: npm clean-install
-      - run: npm run lint
+
+      - name: Install npm dependencies
+        run: npm clean-install
+
+      - name: Validate current commit (last commit) with commitlint
+        if: github.event_name == 'push'
+        run: npx commitlint --last --verbose
+
+      - name: Validate PR commits with commitlint
+        if: github.event_name == 'pull_request'
+        run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
+
+      - name: Lint code
+        run: npm run lint
 
   unittest:
     name: unit tests
