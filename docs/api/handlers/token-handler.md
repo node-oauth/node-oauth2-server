@@ -53,8 +53,14 @@ Get client credentials.
 The client credentials may be sent using the HTTP Basic authentication scheme or, alternatively,
 the `client_id` and `client_secret` can be embedded in the body.
 
+Also support the assertion framework for client authentication.
+
 **Kind**: instance method of [<code>TokenHandler</code>](#TokenHandler)  
-**See**: https://tools.ietf.org/html/rfc6749#section-2.3.1  
+**See**
+
+- https://datatracker.ietf.org/doc/html/rfc6749#section-2.3.1
+- https://datatracker.ietf.org/doc/html/rfc7521
+
 <a name="TokenHandler+handleGrantType"></a>
 
 ### tokenHandler.handleGrantType()
