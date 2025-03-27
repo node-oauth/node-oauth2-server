@@ -28,7 +28,7 @@
   "dependencies": {
     "@node-oauth/formats": "1.0.0",
     "basic-auth": "2.0.1",
-    "type-is": "1.6.18"
+    "type-is": "2.0.1"
   },
   "devDependencies": {
     "chai": "4.5.0",
