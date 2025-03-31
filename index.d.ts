@@ -235,6 +235,12 @@ declare namespace OAuth2Server {
         extendedGrantTypes?: Record<string, typeof AbstractGrantType>;
     }
 
+    interface AssertionCredential {
+        clientAssertion: string;
+        clientAssertionType: string;
+        clientId?: string;
+    }
+
     /**
      * For returning falsey parameters in cases of failure
      */
@@ -258,6 +264,16 @@ declare namespace OAuth2Server {
          *
          */
         saveToken(token: Token, client: Client, user: User): Promise<Token | Falsey>;
+
+        /**
+         * Invoked to retrieve a client using a client assertion.
+         *
+         * It is for the model to decide if it supports the assertion framework and, if so, which
+         * assertion frameworks are supported. The function can return null if no model is found or
+         * throw an `InvalidClientError` if the assertion is invalid or not supported.
+         *
+         */
+        getClientFromAssertion?(assertion: AssertionCredential): Promise<Client | Falsey>;
     }
 
     interface RequestAuthenticationModel {
