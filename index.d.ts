@@ -203,6 +203,16 @@ declare namespace OAuth2Server {
         authorizationCodeLifetime?: number;
     }
 
+    interface TokenRequest {
+        grant_type: string;
+        client_assertion?: string;
+        client_assertion_type?: string;
+        client_id?: string;
+        client_secret?: string;
+        code_verifier?: string;
+        scope?: string;
+    }
+
     interface TokenOptions {
         /**
          * Lifetime of generated access tokens in seconds (default = 1 hour)
@@ -233,6 +243,11 @@ declare namespace OAuth2Server {
          * Additional supported grant types.
          */
         extendedGrantTypes?: Record<string, typeof AbstractGrantType>;
+
+        /**
+         * Request processor
+         */
+        requestProcessor?: ((request: Request) => TokenRequest)
     }
 
     interface AssertionCredential {
