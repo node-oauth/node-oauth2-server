@@ -203,6 +203,16 @@ declare namespace OAuth2Server {
         authorizationCodeLifetime?: number;
     }
 
+    interface TokenRequest {
+        grant_type: string;
+        client_assertion?: string;
+        client_assertion_type?: string;
+        client_id?: string;
+        client_secret?: string;
+        code_verifier?: string;
+        scope?: string;
+    }
+
     interface TokenOptions {
         /**
          * Lifetime of generated access tokens in seconds (default = 1 hour)
@@ -233,6 +243,17 @@ declare namespace OAuth2Server {
          * Additional supported grant types.
          */
         extendedGrantTypes?: Record<string, typeof AbstractGrantType>;
+
+        /**
+         * Request processor
+         */
+        requestProcessor?: ((request: Request) => TokenRequest)
+    }
+
+    interface AssertionCredential {
+        clientAssertion: string;
+        clientAssertionType: string;
+        clientId?: string;
     }
 
     /**
@@ -258,6 +279,16 @@ declare namespace OAuth2Server {
          *
          */
         saveToken(token: Token, client: Client, user: User): Promise<Token | Falsey>;
+
+        /**
+         * Invoked to retrieve a client using a client assertion.
+         *
+         * It is for the model to decide if it supports the assertion framework and, if so, which
+         * assertion frameworks are supported. The function can return null if no model is found or
+         * throw an `InvalidClientError` if the assertion is invalid or not supported.
+         *
+         */
+        getClientFromAssertion?(assertion: AssertionCredential): Promise<Client | Falsey>;
     }
 
     interface RequestAuthenticationModel {
