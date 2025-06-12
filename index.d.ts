@@ -222,7 +222,7 @@ declare namespace OAuth2Server {
         /**
          * Require a client secret. Defaults to true for all grant types.
          */
-        requireClientAuthentication?: {};
+        requireClientAuthentication?: Record<string, boolean>;
 
         /**
          * Always revoke the used refresh token and issue a new one for the refresh_token grant.
