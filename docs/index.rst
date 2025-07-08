@@ -55,6 +55,7 @@ Contents
    :maxdepth: 1
    :caption: User Documentation
 
+   docs/about
    docs/getting-started
    docs/adapters
 
