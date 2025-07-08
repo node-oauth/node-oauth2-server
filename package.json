@@ -32,10 +32,10 @@
   },
   "devDependencies": {
     "chai": "4.5.0",
-    "mocha": "11.1.0",
+    "mocha": "11.7.1",
     "eslint": "8.57.1",
     "nyc": "17.1.0",
-    "sinon": "20.0.0"
+    "sinon": "21.0.0"
   },
   "license": "MIT",
   "engines": {
