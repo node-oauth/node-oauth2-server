@@ -57,6 +57,7 @@ Contents
 
    docs/about
    docs/getting-started
+   docs/arch
    docs/adapters
 
 .. toctree::
