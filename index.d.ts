@@ -59,7 +59,12 @@ declare namespace OAuth2Server {
          * Instantiates Request using the supplied options.
          *
          */
-        constructor(options?: Record<string, any> | http.IncomingMessage);
+        constructor(options: {
+            headers: Record<string, string>,
+            method: string,
+            query: Record<string, string>,
+            body?: any
+        } & Record<string, any> | http.IncomingMessage);
 
         /**
          * Returns the specified HTTP header field. The match is case-insensitive.
@@ -222,7 +227,7 @@ declare namespace OAuth2Server {
         /**
          * Require a client secret. Defaults to true for all grant types.
          */
-        requireClientAuthentication?: {};
+        requireClientAuthentication?: Record<string, boolean>;
 
         /**
          * Always revoke the used refresh token and issue a new one for the refresh_token grant.
