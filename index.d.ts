@@ -59,12 +59,7 @@ declare namespace OAuth2Server {
          * Instantiates Request using the supplied options.
          *
          */
-        constructor(options: {
-            headers: Record<string, string>,
-            method: string,
-            query: Record<string, string>,
-            body?: any
-        } & Record<string, any> | http.IncomingMessage);
+        constructor(options?: Record<string, any> | http.IncomingMessage);
 
         /**
          * Returns the specified HTTP header field. The match is case-insensitive.
