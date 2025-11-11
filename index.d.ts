@@ -12,6 +12,8 @@ import * as http from 'http';
 declare class OAuth2Server {
     static OAuth2Server: typeof OAuth2Server;
 
+    options: OAuth2Server.ServerOptions;
+
     /**
      * Instantiates OAuth2Server using the supplied model
      */
