@@ -29,7 +29,7 @@ jobs:
           show-progress: false
       - uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 24
       - run: npm clean-install && npm audit --production
 
   # STEP 2 - basic unit tests
@@ -41,7 +41,7 @@ jobs:
     needs: [audit]
     strategy:
       matrix:
-        node: [16, 18, 20]
+        node: [20, 22, 24]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -64,7 +64,7 @@ jobs:
         uses: VeryGoodOpenSource/very_good_coverage@v3
         with:
           path: './coverage/lcov.info'
-          min_coverage: 95
+          min_coverage: 98
 
   # STEP 3 - Integration tests
 
@@ -124,7 +124,7 @@ jobs:
           show-progress: false
       - uses: actions/setup-node@v6
         with:
-          node-version: 16
+          node-version: 24
           registry-url: https://registry.npmjs.org/
       - run: npm clean-install
       - run: npm publish --dry-run
@@ -146,7 +146,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           # we always publish targeting the lowest supported node version
-          node-version: 16
+          node-version: 24
           registry-url: $registry-url(npm)
       - run: npm clean-install
       - run: npm publish --dry-run
