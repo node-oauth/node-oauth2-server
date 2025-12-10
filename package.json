@@ -31,17 +31,17 @@
     "type-is": "2.0.1"
   },
   "devDependencies": {
-    "@tsconfig/node16": "^16.1.4",
-    "@types/node": "^24.2.1",
-    "chai": "4.5.0",
+    "@tsconfig/node16": "^16.1.8",
+    "@types/node": "^24.10.2",
+    "chai": "^5.3.3",
     "eslint": "8.57.1",
-    "express": "^5.1.0",
-    "mocha": "11.7.1",
-    "nyc": "17.1.0",
-    "sinon": "21.0.0",
+    "express": "^5.2.1",
+    "mocha": "^11.7.5",
+    "nyc": "^17.1.0",
+    "sinon": "^21.0.0",
     "tsd": "^0.33.0",
-    "typescript": "^5.9.2",
-    "undici": "^7.13.0"
+    "typescript": "^5.9.3",
+    "undici": "^7.16.0"
   },
   "license": "MIT",
   "engines": {
