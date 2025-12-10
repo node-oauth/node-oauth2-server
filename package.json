@@ -31,11 +31,17 @@
     "type-is": "2.0.1"
   },
   "devDependencies": {
-    "chai": "4.5.0",
-    "mocha": "11.7.5",
+    "@tsconfig/node16": "^16.1.8",
+    "@types/node": "^24.10.2",
+    "chai": "^5.3.3",
     "eslint": "8.57.1",
-    "nyc": "17.1.0",
-    "sinon": "21.0.0"
+    "express": "^5.2.1",
+    "mocha": "^11.7.5",
+    "nyc": "^17.1.0",
+    "sinon": "^21.0.0",
+    "tsd": "^0.33.0",
+    "typescript": "^5.9.3",
+    "undici": "^7.16.0"
   },
   "license": "MIT",
   "engines": {
@@ -47,6 +53,7 @@
     "test-debug": "NODE_ENV=test ./node_modules/.bin/mocha  --inspect --debug-brk 'test/**/*_test.js'",
     "test:watch": "NODE_ENV=test ./node_modules/.bin/mocha --watch 'test/**/*_test.js'",
     "test:coverage": "NODE_ENV=test nyc --reporter=html --reporter=lcov --reporter=text ./node_modules/.bin/mocha 'test/**/*_test.js'",
+    "test:types": "NODE_ENV=test tsd .",
     "lint": "npx eslint .",
     "lint:fix": "npx eslint . --fix"
   },
