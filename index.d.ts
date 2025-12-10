@@ -45,6 +45,14 @@ declare class OAuth2Server {
         response: OAuth2Server.Response,
         options?: OAuth2Server.TokenOptions
     ): Promise<OAuth2Server.Token>;
+
+    /**
+     * Revokes a token (RFC 7009).
+     */
+    revoke(
+        request: OAuth2Server.Request,
+        response: OAuth2Server.Response,
+    ): Promise<void>;
 }
 
 declare namespace OAuth2Server {
@@ -265,6 +273,12 @@ declare namespace OAuth2Server {
          *
          */
         saveToken(token: Token, client: Client, user: User): Promise<Token | Falsey>;
+
+        /**
+         * Invoked to revoke a token.
+         *
+         */
+        revokeToken(token: Token | RefreshToken): Promise<boolean>;
     }
 
     interface RequestAuthenticationModel {
@@ -362,12 +376,6 @@ declare namespace OAuth2Server {
          *
          */
         getRefreshToken(refreshToken: string): Promise<RefreshToken | Falsey>;
-
-        /**
-         * Invoked to revoke a refresh token.
-         *
-         */
-        revokeToken(token: RefreshToken): Promise<boolean>;
     }
 
     interface ClientCredentialsModel extends BaseModel, RequestAuthenticationModel {
