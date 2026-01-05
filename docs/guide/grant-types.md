@@ -14,8 +14,6 @@ scenario of use cases.
 An authorization code is a credential representing the resource owner's authorization
 (to access its protected resources) which is used by the client to obtain an access token.
 
-TODO: overview of the workflow with functions involved
-
 ## Refresh Token Grant Type
 
 **Defined in:** [Section 6 of RFC 6749](https://www.rfc-editor.org/rfc/rfc6749#section-6).
@@ -24,8 +22,6 @@ TODO: overview of the workflow with functions involved
 
 If the authorization server issued a refresh token to the client,
 the client can request a refresh of their authorization token.
-
-TODO: overview of the workflow with functions involved
 
 ## Password Grant Type
 
