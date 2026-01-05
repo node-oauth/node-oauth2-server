@@ -10,7 +10,8 @@ First things first:
 This project has strong security implications, and we appreciate every help to
 improve security.
 
-**However, please read our [security policy](./SECURITY.md), before taking actions.**
+**However, please read our [security policy](https://github.com/node-oauth/node-oauth2-server/security/policy),
+before taking actions.**
 
 
 

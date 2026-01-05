@@ -79,7 +79,7 @@ Get scope from the request body.
 
 ### abstractGrantType.validateScope(user, client, scope) ⇒ <code>string</code>
 Validate requested scope.
-Delegates validation to [Model#validateScope](Model#validateScope),
+Delegates validation to the Model's `validateScope` method,
 if the model implements this method.
 Otherwise, treats given scope as valid.
 

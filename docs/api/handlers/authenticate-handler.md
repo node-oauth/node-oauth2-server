@@ -20,7 +20,7 @@
 ### new AuthenticateHandler(options)
 **Throws**:
 
-- <code>InvalidArgumentError</code> if {model} is missing or does not implement [Model#getAccessToken](Model#getAccessToken)
+- <code>InvalidArgumentError</code> if {model} is missing or does not implement `getAccessToken`
 
 
 | Param | Type | Default | Description |

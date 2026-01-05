@@ -90,7 +90,3 @@ DB, Caching) and client management.
 
 Note, that different workflows require different models.
 Read the [model overview](./model.md) of what is required for the model in context of specific grant types.
-
-## Next steps
-
-You should get familiar with grant types and t

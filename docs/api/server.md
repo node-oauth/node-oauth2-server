@@ -54,8 +54,8 @@ const OAuth2Server = require('@node-oauth/oauth2-server');
 Authenticates a request.
 
 **Kind**: instance method of [<code>OAuth2Server</code>](#OAuth2Server)  
-**Returns**: <code>Promise.&lt;object&gt;</code> - A `Promise` that resolves to the access token object returned from [Model#getAccessToken](Model#getAccessToken).
-  In case of an error, the promise rejects with one of the error types derived from [OAuthError](OAuthError).  
+**Returns**: <code>Promise.&lt;object&gt;</code> - A `Promise` that resolves to the access token object returned from the model's `getAccessToken`.
+  In case of an error, the promise rejects with one of the error types derived from `OAuthError`.  
 **Throws**:
 
 - <code>UnauthorizedRequestError</code> The protected resource request failed authentication.
@@ -92,7 +92,7 @@ function authenticateHandler(options) {
 Authorizes a token request.
 **Remarks:**
 
-If `request.query.allowed` equals the string `'false'` the access request is denied and the returned promise is rejected with an [AccessDeniedError](AccessDeniedError).
+If `request.query.allowed` equals the string `'false'` the access request is denied and the returned promise is rejected with an `AccessDeniedError`.
 
 In order to retrieve the user associated with the request, `options.authenticateHandler` should be supplied.
 The `authenticateHandler` has to be an object implementing a `handle(request, response)` function that returns a user object.
@@ -115,8 +115,8 @@ let authenticateHandler = {
 ```
 
 **Kind**: instance method of [<code>OAuth2Server</code>](#OAuth2Server)  
-**Returns**: <code>Promise.&lt;object&gt;</code> - A `Promise` that resolves to the authorization code object returned from [Model#saveAuthorizationCode](Model#saveAuthorizationCode)
-  In case of an error, the promise rejects with one of the error types derived from [OAuthError](OAuthError).  
+**Returns**: <code>Promise.&lt;object&gt;</code> - A `Promise` that resolves to the authorization code object returned from model's `saveAuthorizationCode`
+  In case of an error, the promise rejects with one of the error types derived from `OAuthError`.  
 **Throws**:
 
 - <code>AccessDeniedError</code> The resource owner denied the access request (i.e. `request.query.allow` was `'false'`).
@@ -177,8 +177,8 @@ let options = {
 For information on how to implement a handler for a custom grant type see the extension grants.
 
 **Kind**: instance method of [<code>OAuth2Server</code>](#OAuth2Server)  
-**Returns**: <code>Promise.&lt;object&gt;</code> - A `Promise` that resolves to the token object returned from [Model#saveToken](Model#saveToken).
-  In case of an error, the promise rejects with one of the error types derived from [OAuthError](OAuthError).  
+**Returns**: <code>Promise.&lt;object&gt;</code> - A `Promise` that resolves to the token object returned from the model's `saveToken` method.
+  In case of an error, the promise rejects with one of the error types derived from `OAuthError`.  
 **Throws**:
 
 - <code>InvalidGrantError</code> The access token request was invalid or not authorized.
