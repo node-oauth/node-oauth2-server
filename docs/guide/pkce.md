@@ -1,31 +1,33 @@
 # PKCE Support
 
-Starting with release [4.3.0](https://github.com/node-oauth/node-oauth2-server/releases/tag/v4.3.0) this library supports PKCE (Proof Key for Code Exchange by OAuth Public Clients) as
-defined in `7636`.
+Starting with release [4.3.0](https://github.com/node-oauth/node-oauth2-server/releases/tag/v4.3.0) this library 
+supports PKCE (Proof Key for Code Exchange by OAuth Public Clients) as defined in [RFC 7636](https://datatracker.ietf.org/doc/html/rfc7636).
 
 The PKCE integrates only with the `authorization code <AuthorizationCodeGrant>`. The abstract workflow looks like
 the following:
 
-    +-------------------+
-    |   Authz Server    |
-    +--------+                                | +---------------+ |
-    |        |--(A)- Authorization Request ---->|               | |
-    |        |       + t(code_verifier), t_m  | | Authorization | |
-    |        |                                | |    Endpoint   | |
-    |        |<-(B)---- Authorization Code -----|               | |
-    |        |                                | +---------------+ |
-    | Client |                                |                   |
-    |        |                                | +---------------+ |
-    |        |--(C)-- Access Token Request ---->|               | |
-    |        |          + code_verifier       | |    Token      | |
-    |        |                                | |   Endpoint    | |
-    |        |<-(D)------ Access Token ---------|               | |
-    +--------+                                | +---------------+ |
-    +-------------------+
+```
++-------------------+
+|   Authz Server    |
++--------+                                | +---------------+ |
+|        |--(A)- Authorization Request ---->|               | |
+|        |       + t(code_verifier), t_m  | | Authorization | |
+|        |                                | |    Endpoint   | |
+|        |<-(B)---- Authorization Code -----|               | |
+|        |                                | +---------------+ |
+| Client |                                |                   |
+|        |                                | +---------------+ |
+|        |--(C)-- Access Token Request ---->|               | |
+|        |          + code_verifier       | |    Token      | |
+|        |                                | |   Endpoint    | |
+|        |<-(D)------ Access Token ---------|               | |
++--------+                                | +---------------+ |
++-------------------+
 
-    Figure 2: Abstract Protocol Flow
+Figure 2: Abstract Protocol Flow
+```
 
-See `Section 1 of RFC 7636 <7636#section-1.1>`.
+See [Section 1 of RFC 7636](https://datatracker.ietf.org/doc/html/rfc7636#section-1.1).
 
 ## 1. Authorization request
 

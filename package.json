@@ -52,9 +52,10 @@
     "lint": "npx eslint .",
     "lint:fix": "npx eslint . --fix",
     "docs:dev": "vitepress dev docs",
-    "docs:build": "vitepress build docs",
+    "docs:build": "npm run docs:api && vitepress build docs",
     "docs:preview": "vitepress preview docs",
-    "docs:api": ""
+    "docs:api": "node docs/build-api.js lib docs/api",
+    "docs:setup": "cd docs/guide && ln -sf ../../CONTRIBUTING.md contributing.md"
   },
   "repository": {
     "type": "git",

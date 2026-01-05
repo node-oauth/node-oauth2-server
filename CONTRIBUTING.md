@@ -165,3 +165,30 @@ Finally your PR needs to pass the review process:
 #### After merge
 
 Please delete your branch after merge.
+
+## Documentation
+
+We use Vitepress+Markdown for our documentation.
+If you want to contribute to the docs, please get familiar with Vitepress: https://vitepress.dev
+
+### Setting up docs
+
+You need NPM to setup the docs using the following:
+
+```shell
+npm install
+npm run docs:setup
+```
+
+You can then edit the `guide` section manually.
+
+### API Docs
+
+**DO NOT** edit the `api` section, as API docs are automatically
+generated from our internal JSDoc comments.
+
+Instead, update the comments directly within the code and run `npm run docs:api`
+to generate the api docs.
+
+### Building the docs
+

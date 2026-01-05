@@ -1,9 +1,14 @@
 # Getting started with @node-oauth/oauth2-server
 
-OAuth2 is a well-defined authorization protocol.
-Getting familiar with the several RFCs is crucial for
-understanding the standard and for correct implementation.
-Therefore, we highly encourage you to read the following
+## Preface
+This library implements the OAuth 2.0 standard but leaves
+room to custom implementation details where the standard
+is either vague or explicitly states, if a detail is up to the implementation.
+
+Therefore, getting familiar with the several RFCs is fundamental for
+understanding the standard and for a correct implementation.
+
+We highly encourage you to read the following
 resources, before starting to operate your own authorization server:
 
 - [RFC 6749 - The OAuth 2.0 Authorization Framework](https://www.rfc-editor.org/rfc/rfc6749)
@@ -11,16 +16,18 @@ resources, before starting to operate your own authorization server:
 - [RFC 6819 - Threat Model and Security Considerations](https://www.rfc-editor.org/rfc/rfc6819)
 - [RFC 7009 - Token Revocation](https://www.rfc-editor.org/rfc/rfc7009)
 - [RFC 7636 - Proof Key for Code Exchange (PKCE)](https://www.rfc-editor.org/rfc/rfc7636)
+- [RFC 9700 - Best Current Practice for OAuth 2.0 Security](https://www.rfc-editor.org/rfc/rfc9700)
 - [OWASP OAuth2 cheatsheet](https://cheatsheetseries.owasp.org/cheatsheets/OAuth2_Cheat_Sheet.html)
 
 ## Features
 
-- Supports `authorization code <AuthorizationCodeGrant>`, `client credentials <ClientCredentialsGrant>`, `refresh token <RefreshTokenGrant>` and `password <PasswordGrant>` grant, as well as `extension grants <ExtensionGrants>`, with scopes.
+- Supports `authorization code`, `client credentials`,
+  `refresh token` and `password` (deprecated) grant, as well as
+  `extension grants`, with scopes.
 - Can be used with *promises*, *ES6 generators* and *async*/*await*.
 - Fully `6749` and `6750` compliant.
 - Implicitly supports any form of storage, e.g. *PostgreSQL*, *MySQL*, *MongoDB*, *Redis*, etc.
 - Complete [test suite](https://github.com/node-oauth/node-oauth2-server/tree/master/test).
-
 
 ## Installation
 
@@ -39,9 +46,11 @@ We also highly encourage you to use supported/maintained Node.js versions.
 
 ## Usage
 
-The *@node-oauth/oauth2-server* module is framework-agnostic but there are several officially supported adapters available for popular HTTP server frameworks such as [Express](https://www.npmjs.com/package/@node-oauth/express-oauth-server) and [Koa](https://npmjs.org/package/koa-oauth-server). If you're using one of those frameworks it is strongly recommended to use the respective adapter module instead of rolling your own.
-
-
+The *@node-oauth/oauth2-server* module is framework-agnostic but there are several officially supported adapters
+available for popular HTTP server frameworks such
+as [Express](https://www.npmjs.com/package/@node-oauth/express-oauth-server)
+and [Koa](https://npmjs.org/package/koa-oauth-server). If you're using one of those frameworks it is strongly
+recommended to use the respective adapter module instead of rolling your own.
 
 Consider the following minimal example, which you can use as a foundation for
 further development:
@@ -72,13 +81,16 @@ oauth.authenticate(request, response)
     });
 ```
 
-The crucial part in this setup is the `model`, which acts as the bridge
-between the OAuth2 server library and your system.
+The most crucial part in this setup is the `model`.
+It acts as the bridge between the OAuth2 server library and your system.
 
-As a rule of thumb, the library handles the overall OAuth2 workflows,
+> As a rule of thumb, the library handles the overall OAuth2 workflows,
 while you can leverage the `model` to implement storage locations (In-Memory,
 DB, Caching) and client management.
 
 Note, that different workflows require different models.
-See the [model specs](./model/spec.md) of what is required from the model passed to the
-[oauth2-server instance](./api/oauth2-server.md).
+Read the [model overview](./model.md) of what is required for the model in context of specific grant types.
+
+## Next steps
+
+You should get familiar with grant types and t

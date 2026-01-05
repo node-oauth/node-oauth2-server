@@ -1,107 +1,69 @@
-# Response
+<a name="Response"></a>
 
-Represents an outgoing HTTP response.
+## Response
+Wrapper for webserver's response object.
+Used to decouple this package from the webserver's
+response signature.
 
-    const Response = require('@node-oauth/oauth2-server').Response;
+**Kind**: global class  
 
-------------------------------------------------------------------------
+* [Response](#Response)
+    * [new Response(headers, method, [body], ...otherOptions)](#new_Response_new)
+    * [.get(field)](#Response+get) ⇒ <code>string</code> \| <code>undefined</code>
+    * [.redirect(url)](#Response+redirect)
+    * [.set(field, value)](#Response+set)
 
-## `new Response(options)`
+<a name="new_Response_new"></a>
 
-Instantiates `Response` using the supplied options.
+### new Response(headers, method, [body], ...otherOptions)
+Create a new Response instance.
 
-**Arguments:**
 
-| Name                | Type   | Description                                                   |
-|---------------------|--------|---------------------------------------------------------------|
-| options             | Object | Response options.                                             |
-| options.headers     | Object | The response's HTTP header fields.                            |
-| \[options.body={}\] | Object | Key-value pairs of data to be submitted in the response body. |
+| Param | Type | Description |
+| --- | --- | --- |
+| headers | <code>object</code> | key-value object of headers |
+| method | <code>string</code> | the HTTP method |
+| [body] | <code>object</code> | optional key-value object of body parameters |
+| ...otherOptions | <code>object</code> | any other properties that should be assigned to the request by your webserver |
 
-All additional own properties are copied to the new `Response` object as well.
+**Example**  
+```js
+function (req, res, next) {
+  // most webservers follow a similar structure
+  const response = new Response(res);
+}
+```
+<a name="Response+get"></a>
 
-**Return value:**
+### response.get(field) ⇒ <code>string</code> \| <code>undefined</code>
+Get a response header.
 
-A new `Response` instance.
+**Kind**: instance method of [<code>Response</code>](#Response)  
 
-**Remarks:**
+| Param | Type | Description |
+| --- | --- | --- |
+| field | <code>string</code> | the field to access, case-insensitive |
 
-The names of HTTP header fields passed in as `options.headers` are converted to lower case.
+<a name="Response+redirect"></a>
 
-To convert [Express' response](https://expressjs.com/en/4x/api.html#res) to a `Response` simply pass `res` as `options`:
+### response.redirect(url)
+Redirect response.
 
-    function(req, res, next) {
-      let response = new Response(res);
-      // ...
-    }
+**Kind**: instance method of [<code>Response</code>](#Response)  
 
-------------------------------------------------------------------------
+| Param | Type | Description |
+| --- | --- | --- |
+| url | <code>string</code> | the url to redirect to |
 
-## `get(field)`
+<a name="Response+set"></a>
 
-Returns the specified HTTP header field. The match is case-insensitive.
+### response.set(field, value)
+Set a response header.
 
-**Arguments:**
+**Kind**: instance method of [<code>Response</code>](#Response)  
 
-| Name  | Type   | Description            |
-|-------|--------|------------------------|
-| field | String | The header field name. |
+| Param | Type | Description |
+| --- | --- | --- |
+| field | <code>string</code> | the name of the header field, case-insensitive |
+| value | <code>string</code> | the new value of the header field |
 
-**Return value:**
-
-The value of the header field or `undefined` if the field does not exist.
-
-------------------------------------------------------------------------
-
-## `set(field, value)`
-
-Sets the specified HTTP header field. The match is case-insensitive.
-
-**Arguments:**
-
-| Name  | Type   | Description             |
-|-------|--------|-------------------------|
-| field | String | The header field name.  |
-| value | String | The header field value. |
-
-**Return value:**
-
-None.
-
-------------------------------------------------------------------------
-
-## `redirect(url)`
-
-Redirects to the specified URL using `302 Found`.
-
-**Arguments:**
-
-| Name | Type   | Description             |
-|------|--------|-------------------------|
-| url  | String | The URL to redirect to. |
-
-**Return value:**
-
-None.
-
-**Remarks:**
-
-This is essentially a convenience function that sets `status` to `302` and the `Location` header to the provided URL.
-
-------------------------------------------------------------------------
-
-## `status`
-
-The HTTP status of the response (default = `200`).
-
-------------------------------------------------------------------------
-
-## `headers`
-
-The response's HTTP header fields. Prefer `Response#get() <Response#get>`/`Response#set() <Response#set>` over accessing this object directly.
-
-------------------------------------------------------------------------
-
-## `body`
-
-Key-value pairs of data to be submitted in the response body.

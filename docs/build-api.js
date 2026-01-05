@@ -4,28 +4,39 @@ const { execFileSync } = require('child_process');
 const glob = require('glob');
 
 (async function () {
-    const srcRoot = 'src';
-    // allow optional output folder as first CLI arg: node scripts/build-docs-cli.js build/docs
-    const outRoot = process.argv[2] || 'api';
-    const pattern = `${srcRoot}/**/*.{js,ts}`;
-    const files = glob.sync(pattern, { nodir: true });
+  // Usage:
+  //   node scripts/build-docs-cli.js [srcRoot] [outRoot]
+  // Examples:
+  //   node scripts/build-docs-cli.js               -> src: "src", out: "docs"
+  //   node scripts/build-docs-cli.js lib           -> src: "lib", out: "docs"
+  //   node scripts/build-docs-cli.js lib build/docs -> src: "lib", out: "build/docs"
 
-    for (const src of files) {
-        const rel = path.relative(srcRoot, src);
-        const outPath = path.join(outRoot, rel).replace(/\.(js|ts)$/, '.md');
+  const srcRoot = process.argv[2] || 'lib/';
+  const outRoot = process.argv[3] || 'docs/api/';
+  const pattern = `${srcRoot.replace(/\\/g, '/')}/**/*.js`;
+  const files = glob.sync(pattern, { nodir: true });
 
-        await fs.mkdir(path.dirname(outPath), { recursive: true });
+  if (files.length === 0) {
+    console.error(`No files found for pattern: ${pattern}`);
+    process.exit(1);
+  }
 
-        try {
-            const md = execFileSync(
-                process.platform === 'win32' ? 'npx.cmd' : 'npx',
-                ['jsdoc-to-markdown', src],
-                { encoding: 'utf8' }
-            );
-            await fs.writeFile(outPath, md, 'utf8');
-            console.log('Wrote', outPath);
-        } catch (err) {
-            console.error('Failed:', src, err.message);
-        }
+  for (const src of files) {
+    const rel = path.relative(srcRoot, src);
+    const outPath = path.join(outRoot, rel).replace(/\.(js|ts)$/, '.md');
+
+    await fs.mkdir(path.dirname(outPath), { recursive: true });
+
+    try {
+      const md = execFileSync(
+        process.platform === 'win32' ? 'npx.cmd' : 'npx',
+        ['jsdoc-to-markdown', src],
+        { encoding: 'utf8' }
+      );
+      await fs.writeFile(outPath, md, 'utf8');
+      console.log('Wrote', outPath);
+    } catch (err) {
+      console.error('Failed:', src, err.message);
     }
+  }
 })();

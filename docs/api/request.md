@@ -1,94 +1,61 @@
-# Request
+<a name="Request"></a>
 
-Represents an incoming HTTP request.
+## Request
+Wrapper for webserver's request.
+Used to decouple this package from the webserver's
+request signature.
 
-    const Request = require('@node-oauth/oauth2-server').Request;
+**Kind**: global class  
 
-------------------------------------------------------------------------
+* [Request](#Request)
+    * [new Request(headers, method, query, [body], ...otherOptions)](#new_Request_new)
+    * [.get(field)](#Request+get) ⇒ <code>string</code>
+    * [.is(...types)](#Request+is) ⇒ <code>boolean</code>
 
-## `new Request(options)`
+<a name="new_Request_new"></a>
 
-Instantiates `Request` using the supplied options.
+### new Request(headers, method, query, [body], ...otherOptions)
+Creates a new request instance
 
-**Arguments:**
+**Throws**:
 
-| Name                | Type   | Description                                            |
-|---------------------|--------|--------------------------------------------------------|
-| options             | Object | Request options.                                       |
-| options.method      | String | The HTTP method of the request.                        |
-| options.query       | Object | The request's query string parameters.                 |
-| options.headers     | Object | The request's HTTP header fields.                      |
-| \[options.body={}\] | Object | Key-value pairs of data submitted in the request body. |
+- <code>InvalidArgumentError</code> if one of headers, method or query are missing.
 
-All additional own properties are copied to the new `Request` object as well.
 
-**Return value:**
+| Param | Type | Description |
+| --- | --- | --- |
+| headers | <code>object</code> | key-value object of headers |
+| method | <code>string</code> | the HTTP method |
+| query | <code>object</code> | key-value object of query parameters |
+| [body] | <code>object</code> | optional key-value object of body parameters |
+| ...otherOptions | <code>object</code> | any other properties that should be assigned to the request by your webserver |
 
-A new `Request` instance.
+**Example**  
+```js
+function (req, res, next) {
+  // most webservers follow a similar structure
+  const response = new Request(req);
+}
+```
+<a name="Request+get"></a>
 
-**Remarks:**
+### request.get(field) ⇒ <code>string</code>
+Get a request header (case-insensitive).
 
-The names of HTTP header fields passed in as `options.headers` are converted to lower case.
+**Kind**: instance method of [<code>Request</code>](#Request)  
 
-To convert [Express' request](https://expressjs.com/en/4x/api.html#req) to a `Request` simply pass `req` as `options`:
+| Param | Type |
+| --- | --- |
+| field | <code>String</code> | 
 
-    function(req, res, next) {
-      let request = new Request(req);
-      // ...
-    }
+<a name="Request+is"></a>
 
-------------------------------------------------------------------------
+### request.is(...types) ⇒ <code>boolean</code>
+Check if the content-type matches any of the given mime types.
 
-## `get(field)`
+**Kind**: instance method of [<code>Request</code>](#Request)  
 
-Returns the specified HTTP header field. The match is case-insensitive.
+| Param | Type |
+| --- | --- |
+| ...types | <code>Array.&lt;string&gt;</code> | 
 
-**Arguments:**
-
-| Name  | Type   | Description            |
-|-------|--------|------------------------|
-| field | String | The header field name. |
-
-**Return value:**
-
-The value of the header field or `undefined` if the field does not exist.
-
-------------------------------------------------------------------------
-
-## `is(types)`
-
-Checks if the request's `Content-Type` HTTP header matches any of the given MIME types.
-
-**Arguments:**
-
-| Name  | Type                    | Description                       |
-|-------|-------------------------|-----------------------------------|
-| types | Array\<String\>\|String | The MIME type(s) to test against. |
-
-**Return value:**
-
-Returns the matching MIME type or `false` if there was no match.
-
-------------------------------------------------------------------------
-
-## `method`
-
-The HTTP method of the request (`'GET'`, `'POST'`, `'PUT'`, ...).
-
-------------------------------------------------------------------------
-
-## `query`
-
-The request's query string parameters.
-
-------------------------------------------------------------------------
-
-## `headers`
-
-The request's HTTP header fields. Prefer `Request#get() <Request#get>` over accessing this object directly.
-
-------------------------------------------------------------------------
-
-## `body`
-
-Key-value pairs of data submitted in the request body.

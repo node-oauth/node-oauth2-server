@@ -1,67 +1,15 @@
-# InvalidArgumentError
+<a name="InvalidArgumentError"></a>
 
-An invalid argument was encountered.
+## InvalidArgumentError
+"An argument to a function or constructor is missing or of wrong type"
 
-    const InvalidArgumentError = require('@node-oauth/oauth2-server/lib/errors/invalid-argument-error');
+**Kind**: global class  
+<a name="new_InvalidArgumentError_new"></a>
 
-<div class="note">
+### new InvalidArgumentError(message, [properties])
 
-<div class="title">
+| Param | Type |
+| --- | --- |
+| message | <code>string</code> | 
+| [properties] | <code>object</code> | 
 
-Note
-
-</div>
-
-This error indicates that the module is used incorrectly (i.e., there is a programming error) and should never be seen because of external errors (like invalid data sent by a client).
-
-</div>
-
-------------------------------------------------------------------------
-
-## `new InvalidArgumentError(message, properties)`
-
-Instantiates an `InvalidArgumentError`.
-
-**Arguments:**
-
-| Name                                   | Type          | Description                                                 |
-|----------------------------------------|---------------|-------------------------------------------------------------|
-| \[message=undefined\]                  | String\|Error | See `OAuthError#constructor`.                               |
-| \[properties={}\]                      | Object        | See `OAuthError#constructor`.                               |
-| \[properties.code=500\]                | Object        | See `OAuthError#constructor`.                               |
-| \[properties.name='invalid_argument'\] | String        | The error name used in responses generated from this error. |
-
-**Return value:**
-
-A new instance of `InvalidArgumentError`.
-
-**Remarks:**
-
-    const err = new InvalidArgumentError();
-    // err.message === 'Internal Server Error'
-    // err.code === 500
-    // err.name === 'invalid_argument'
-
-------------------------------------------------------------------------
-
-## `message`
-
-See `OAuthError#message <OAuthError#message>`.
-
-------------------------------------------------------------------------
-
-## `code`
-
-Typically `500`. See `OAuthError#code <OAuthError#code>`.
-
-------------------------------------------------------------------------
-
-## `inner`
-
-See `OAuthError#inner <OAuthError#inner>`.
-
-------------------------------------------------------------------------
-
-## `name`
-
-Typically `'invalid_argument'`. See `OAuthError#name <OAuthError#name>`.
