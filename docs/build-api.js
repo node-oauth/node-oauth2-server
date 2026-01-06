@@ -1,6 +1,6 @@
-const { promises: fs } = require('fs');
-const path = require('path');
-const { execFileSync } = require('child_process');
+const { promises: fs } = require('node:fs');
+const path = require('node:path');
+const { execFileSync } = require('node:child_process');
 const glob = require('glob');
 
 (async function () {
