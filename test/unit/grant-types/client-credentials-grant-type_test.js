@@ -5,6 +5,7 @@
  */
 
 const ClientCredentialsGrantType = require('../../../lib/grant-types/client-credentials-grant-type');
+const Model = require('../../../lib/model');
 const sinon = require('sinon');
 const should = require('chai').should();
 
@@ -15,10 +16,10 @@ const should = require('chai').should();
 describe('ClientCredentialsGrantType', function() {
   describe('getUserFromClient()', function() {
     it('should call `model.getUserFromClient()`', function() {
-      const model = {
+      const model = Model.from({
         getUserFromClient: sinon.stub().returns(true),
         saveToken: function() {}
-      };
+      });
       const handler = new ClientCredentialsGrantType({ accessTokenLifetime: 120, model: model });
       const client = {};
 
@@ -37,10 +38,10 @@ describe('ClientCredentialsGrantType', function() {
     it('should call `model.saveToken()`', function() {
       const client = {};
       const user = {};
-      const model = {
+      const model = Model.from({
         getUserFromClient: function() {},
         saveToken: sinon.stub().returns(true)
-      };
+      });
       const handler = new ClientCredentialsGrantType({ accessTokenLifetime: 120, model: model });
 
       sinon.stub(handler, 'validateScope').returns(['foobar']);

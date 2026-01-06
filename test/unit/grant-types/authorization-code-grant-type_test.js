@@ -8,6 +8,7 @@ const AuthorizationCodeGrantType = require('../../../lib/grant-types/authorizati
 const InvalidGrantError = require('../../../lib/errors/invalid-grant-error');
 const ServerError  = require('../../../lib/errors/server-error');
 const Request = require('../../../lib/request');
+const Model = require('../../../lib/model');
 const sinon = require('sinon');
 const should = require('chai').should();
 const stringUtil = require('../../../lib/utils/string-util');
@@ -20,11 +21,11 @@ const crypto = require('crypto');
 describe('AuthorizationCodeGrantType', function() {
   describe('getAuthorizationCode()', function() {
     it('should call `model.getAuthorizationCode()`', function() {
-      const model = {
+      const model = Model.from({
         getAuthorizationCode: sinon.stub().returns({ authorizationCode: 12345, client: {}, expiresAt: new Date(new Date() * 2), user: {} }),
         revokeAuthorizationCode: function() {},
         saveToken: function() {}
-      };
+      });
       const handler = new AuthorizationCodeGrantType({ accessTokenLifetime: 120, model: model });
       const request = new Request({ body: { code: 12345 }, headers: {}, method: {}, query: {} });
       const client = {};
@@ -42,11 +43,11 @@ describe('AuthorizationCodeGrantType', function() {
 
   describe('revokeAuthorizationCode()', function() {
     it('should call `model.revokeAuthorizationCode()`', function() {
-      const model = {
+      const model = Model.from({
         getAuthorizationCode: function() {},
         revokeAuthorizationCode: sinon.stub().returns(true),
         saveToken: function() {}
-      };
+      });
       const handler = new AuthorizationCodeGrantType({ accessTokenLifetime: 120, model: model });
       const authorizationCode = {};
 
@@ -65,11 +66,11 @@ describe('AuthorizationCodeGrantType', function() {
     it('should call `model.saveToken()`', function() {
       const client = {};
       const user = {};
-      const model = {
+      const model = Model.from({
         getAuthorizationCode: function() {},
         revokeAuthorizationCode: function() {},
         saveToken: sinon.stub().returns(true)
-      };
+      });
       const handler = new AuthorizationCodeGrantType({ accessTokenLifetime: 120, model: model });
 
       sinon.stub(handler, 'validateScope').returns(['foobiz']);
@@ -103,11 +104,11 @@ describe('AuthorizationCodeGrantType', function() {
         codeChallenge: stringUtil.base64URLEncode(crypto.createHash('sha256').update(codeVerifier).digest())
       };
       const client = { id: 'foobar', isPublic: true };
-      const model = {
+      const model = Model.from({
         getAuthorizationCode: function() { return authorizationCode; },
         revokeAuthorizationCode: function() {},
         saveToken: function() {}
-      };
+      });
       const grantType = new AuthorizationCodeGrantType({ accessTokenLifetime: 123, model: model });
       const request = new Request({ body: { code: 12345, code_verifier: 'foo' }, headers: {}, method: {}, query: {} });
 
@@ -130,11 +131,11 @@ describe('AuthorizationCodeGrantType', function() {
         codeChallenge: stringUtil.base64URLEncode(crypto.createHash('sha256').update(codeVerifier).digest())
       };
       const client = { id: 'foobar', isPublic: true };
-      const model = {
+      const model = Model.from({
         getAuthorizationCode: function() { return authorizationCode; },
         revokeAuthorizationCode: function() {},
         saveToken: function() {}
-      };
+      });
       const grantType = new AuthorizationCodeGrantType({ accessTokenLifetime: 123, model: model });
       const request = new Request({ body: { code: 12345, code_verifier: codeVerifier }, headers: {}, method: {}, query: {} });
 
@@ -158,11 +159,11 @@ describe('AuthorizationCodeGrantType', function() {
       };
       // fixme: The isPublic option is not used, as a result any client which allows authorization_code grant also accepts PKCE requests.
       const client = { id: 'foobar', isPublic: true };
-      const model = {
+      const model = Model.from({
         getAuthorizationCode: function() { return authorizationCode; },
         revokeAuthorizationCode: function() {},
         saveToken: function() {}
-      };
+      });
       const grantType = new AuthorizationCodeGrantType({ accessTokenLifetime: 123, model: model });
       const request = new Request({ body: { code: 12345, code_verifier: 'foo' }, headers: {}, method: {}, query: {} });
 
@@ -185,11 +186,11 @@ describe('AuthorizationCodeGrantType', function() {
         codeChallenge: stringUtil.base64URLEncode(crypto.createHash('sha256').update(codeVerifier).digest())
       };
       const client = { id: 'foobar', isPublic: true };
-      const model = {
+      const model = Model.from({
         getAuthorizationCode: function() { return authorizationCode; },
         revokeAuthorizationCode: function() {},
         saveToken: function() {}
-      };
+      });
       const grantType = new AuthorizationCodeGrantType({ accessTokenLifetime: 123, model: model });
       const request = new Request({ body: { code: 12345, code_verifier: codeVerifier }, headers: {}, method: {}, query: {} });
 
@@ -211,11 +212,11 @@ describe('AuthorizationCodeGrantType', function() {
         codeChallenge: codeVerifier
       };
       const client = { id: 'foobar', isPublic: true };
-      const model = {
+      const model = Model.from({
         getAuthorizationCode: function() { return authorizationCode; },
         revokeAuthorizationCode: function() {},
         saveToken: function() {}
-      };
+      });
       const grantType = new AuthorizationCodeGrantType({ accessTokenLifetime: 123, model: model });
       const request = new Request({ body: { code: 12345, code_verifier: codeVerifier }, headers: {}, method: {}, query: {} });
 

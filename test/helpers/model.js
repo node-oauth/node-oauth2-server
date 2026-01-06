@@ -1,3 +1,4 @@
+const Model = require('../../lib/model');
 const scopes = ['read', 'write'];
 
 function createModel (db) {
@@ -84,7 +85,7 @@ function createModel (db) {
     return scope.every(s => scopes.includes(s));
   }
 
-  return  {
+  return  Model.from({
     getUser,
     getClient,
     saveToken,
@@ -92,7 +93,7 @@ function createModel (db) {
     getRefreshToken,
     revokeToken,
     verifyScope
-  };
+  });
 }
 
 module.exports = createModel;

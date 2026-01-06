@@ -10,6 +10,7 @@ const InvalidArgumentError = require('../../../lib/errors/invalid-argument-error
 const InvalidRequestError = require('../../../lib/errors/invalid-request-error');
 const InsufficientScopeError = require('../../../lib/errors/insufficient-scope-error');
 const InvalidTokenError = require('../../../lib/errors/invalid-token-error');
+const Model = require('../../../lib/model');
 const Request = require('../../../lib/request');
 const Response = require('../../../lib/response');
 const ServerError = require('../../../lib/errors/server-error');
@@ -78,17 +79,17 @@ describe('AuthenticateHandler integration', function() {
     });
 
     it('should set the `model`', function() {
-      const model = { getAccessToken: function() {} };
+      const model = Model.from({ getAccessToken: function() {} });
       const grantType = new AuthenticateHandler({ model: model });
 
       grantType.model.should.equal(model);
     });
 
     it('should set the `scope`', function() {
-      const model = {
+      const model = Model.from({
         getAccessToken: function() {},
         verifyScope: function() {}
-      };
+      });
       const grantType = new AuthenticateHandler({
         addAcceptedScopesHeader: true,
         addAuthorizedScopesHeader: true,
@@ -137,11 +138,11 @@ describe('AuthenticateHandler integration', function() {
     });
 
     it('should set the `WWW-Authenticate` header if an unauthorized request error is thrown', async function() {
-      const model = {
+      const model = Model.from({
         getAccessToken: function() {
           throw new UnauthorizedRequestError();
         }
-      };
+      });
       const handler = new AuthenticateHandler({ model: model });
       const request = new Request({ body: {}, headers: { 'Authorization': 'Bearer foo' }, method: {}, query: {} });
       const response = new Response({ body: {}, headers: {} });
@@ -155,11 +156,11 @@ describe('AuthenticateHandler integration', function() {
     });
 
     it('should set the `WWW-Authenticate` header if an InvalidRequestError is thrown', function() {
-      const model = {
+      const model = Model.from({
         getAccessToken: function() {
           throw new InvalidRequestError();
         }
-      };
+      });
       const handler = new AuthenticateHandler({ model: model });
       const request = new Request({ body: {}, headers: { 'Authorization': 'Bearer foo' }, method: {}, query: {} });
       const response = new Response({ body: {}, headers: {} });
@@ -172,11 +173,11 @@ describe('AuthenticateHandler integration', function() {
     });
 
     it('should set the `WWW-Authenticate` header if an InvalidTokenError is thrown', function() {
-      const model = {
+      const model = Model.from({
         getAccessToken: function() {
           throw new InvalidTokenError();
         }
-      };
+      });
       const handler = new AuthenticateHandler({ model: model });
       const request = new Request({ body: {}, headers: { 'Authorization': 'Bearer foo' }, method: {}, query: {} });
       const response = new Response({ body: {}, headers: {} });
@@ -189,11 +190,11 @@ describe('AuthenticateHandler integration', function() {
     });
 
     it('should set the `WWW-Authenticate` header if an InsufficientScopeError is thrown', function() {
-      const model = {
+      const model = Model.from({
         getAccessToken: function() {
           throw new InsufficientScopeError();
         }
-      };
+      });
       const handler = new AuthenticateHandler({ model: model });
       const request = new Request({ body: {}, headers: { 'Authorization': 'Bearer foo' }, method: {}, query: {} });
       const response = new Response({ body: {}, headers: {} });
@@ -206,11 +207,11 @@ describe('AuthenticateHandler integration', function() {
     });
 
     it('should throw the error if an oauth error is thrown', function() {
-      const model = {
+      const model = Model.from({
         getAccessToken: function() {
           throw new AccessDeniedError('Cannot request this access token');
         }
-      };
+      });
       const handler = new AuthenticateHandler({ model: model });
       const request = new Request({ body: {}, headers: { 'Authorization': 'Bearer foo' }, method: {}, query: {} });
       const response = new Response({ body: {}, headers: {} });
@@ -224,11 +225,11 @@ describe('AuthenticateHandler integration', function() {
     });
 
     it('should throw a server error if a non-oauth error is thrown', function() {
-      const model = {
+      const model = Model.from({
         getAccessToken: function() {
           throw new Error('Unhandled exception');
         }
-      };
+      });
       const handler = new AuthenticateHandler({ model: model });
       const request = new Request({ body: {}, headers: { 'Authorization': 'Bearer foo' }, method: {}, query: {} });
       const response = new Response({ body: {}, headers: {} });
@@ -246,14 +247,14 @@ describe('AuthenticateHandler integration', function() {
         user: {},
         accessTokenExpiresAt: new Date(new Date().getTime() + 10000)
       };
-      const model = {
+      const model = Model.from({
         getAccessToken: function() {
           return accessToken;
         },
         verifyScope: function() {
           return true;
         }
-      };
+      });
       const handler = new AuthenticateHandler({ addAcceptedScopesHeader: true, addAuthorizedScopesHeader: true, model: model, scope: ['foo'] });
       const request = new Request({
         body: {},
@@ -275,14 +276,14 @@ describe('AuthenticateHandler integration', function() {
         user: {},
         accessTokenExpiresAt: new Date(new Date().getTime() + 10000)
       };
-      const model = {
+      const model = Model.from({
         getAccessToken: function() {
           return accessToken;
         },
         verifyScope: function() {
           return true;
         }
-      };
+      });
       const handler = new AuthenticateHandler({ addAcceptedScopesHeader: true, addAuthorizedScopesHeader: true, model: model, scope: 'foo' });
       const request = new Request({
         body: {},
@@ -449,9 +450,9 @@ describe('AuthenticateHandler integration', function() {
 
   describe('getAccessToken()', function() {
     it('should throw an error if `accessToken` is missing', function() {
-      const model = {
+      const model = Model.from({
         getAccessToken: function() {}
-      };
+      });
       const handler = new AuthenticateHandler({ model: model });
 
       return handler.getAccessToken('foo')
@@ -463,11 +464,11 @@ describe('AuthenticateHandler integration', function() {
     });
 
     it('should throw an error if `accessToken.user` is missing', function() {
-      const model = {
+      const model = Model.from({
         getAccessToken: function() {
           return {};
         }
-      };
+      });
       const handler = new AuthenticateHandler({ model: model });
 
       return handler.getAccessToken('foo')
@@ -480,11 +481,11 @@ describe('AuthenticateHandler integration', function() {
 
     it('should return an access token', function() {
       const accessToken = { user: {} };
-      const model = {
+      const model = Model.from({
         getAccessToken: function() {
           return accessToken;
         }
-      };
+      });
       const handler = new AuthenticateHandler({ model: model });
 
       return handler.getAccessToken('foo')
@@ -495,22 +496,22 @@ describe('AuthenticateHandler integration', function() {
     });
 
     it('should support promises', function() {
-      const model = {
+      const model = Model.from({
         getAccessToken: async function() {
           return { user: {} };
         }
-      };
+      });
       const handler = new AuthenticateHandler({ model: model });
 
       handler.getAccessToken('foo').should.be.an.instanceOf(Promise);
     });
 
     it('should support non-promises', function() {
-      const model = {
+      const model = Model.from({
         getAccessToken: function() {
           return { user: {} };
         }
-      };
+      });
       const handler = new AuthenticateHandler({ model: model });
 
       handler.getAccessToken('foo').should.be.an.instanceOf(Promise);
@@ -545,12 +546,12 @@ describe('AuthenticateHandler integration', function() {
 
   describe('verifyScope()', function() {
     it('should throw an error if `scope` is insufficient (deprecated)', function() {
-      const model = {
+      const model = Model.from({
         getAccessToken: function() {},
         verifyScope: function() {
           return false;
         }
-      };
+      });
       const handler = new AuthenticateHandler({ addAcceptedScopesHeader: true, addAuthorizedScopesHeader: true, model: model, scope: 'foo' });
 
       return handler.verifyScope(['foo'])
@@ -562,12 +563,12 @@ describe('AuthenticateHandler integration', function() {
     });
 
     it('should throw an error if `scope` is insufficient', function() {
-      const model = {
+      const model = Model.from({
         getAccessToken: function() {},
         verifyScope: function() {
           return false;
         }
-      };
+      });
       const handler = new AuthenticateHandler({ addAcceptedScopesHeader: true, addAuthorizedScopesHeader: true, model: model, scope: ['foo'] });
 
       return handler.verifyScope(['foo'])
@@ -579,48 +580,48 @@ describe('AuthenticateHandler integration', function() {
     });
 
     it('should support promises (deprecated)', function() {
-      const model = {
+      const model = Model.from({
         getAccessToken: function() {},
         verifyScope: function() {
           return true;
         }
-      };
+      });
       const handler = new AuthenticateHandler({ addAcceptedScopesHeader: true, addAuthorizedScopesHeader: true, model: model, scope: 'foo' });
 
       handler.verifyScope(['foo']).should.be.an.instanceOf(Promise);
     });
 
     it('should support promises', function() {
-      const model = {
+      const model = Model.from({
         getAccessToken: function() {},
         verifyScope: function() {
           return true;
         }
-      };
+      });
       const handler = new AuthenticateHandler({ addAcceptedScopesHeader: true, addAuthorizedScopesHeader: true, model: model, scope: ['foo'] });
 
       handler.verifyScope(['foo']).should.be.an.instanceOf(Promise);
     });
 
     it('should support non-promises (deprecated)', function() {
-      const model = {
+      const model = Model.from({
         getAccessToken: function() {},
         verifyScope: function() {
           return true;
         }
-      };
+      });
       const handler = new AuthenticateHandler({ addAcceptedScopesHeader: true, addAuthorizedScopesHeader: true, model: model, scope: 'foo' });
 
       handler.verifyScope(['foo']).should.be.an.instanceOf(Promise);
     });
 
     it('should support non-promises', function() {
-      const model = {
+      const model = Model.from({
         getAccessToken: function() {},
         verifyScope: function() {
           return true;
         }
-      };
+      });
       const handler = new AuthenticateHandler({ addAcceptedScopesHeader: true, addAuthorizedScopesHeader: true, model: model, scope: ['foo'] });
 
       handler.verifyScope(['foo']).should.be.an.instanceOf(Promise);
@@ -629,10 +630,10 @@ describe('AuthenticateHandler integration', function() {
 
   describe('updateResponse()', function() {
     it('should not set the `X-Accepted-OAuth-Scopes` header if `scope` is not specified', function() {
-      const model = {
+      const model = Model.from({
         getAccessToken: function() {},
         verifyScope: function() {}
-      };
+      });
       const handler = new AuthenticateHandler({ addAcceptedScopesHeader: true, addAuthorizedScopesHeader: false, model: model });
       const response = new Response({ body: {}, headers: {} });
 
@@ -642,10 +643,10 @@ describe('AuthenticateHandler integration', function() {
     });
 
     it('should set the `X-Accepted-OAuth-Scopes` header if `scope` is specified (deprecated)', function() {
-      const model = {
+      const model = Model.from({
         getAccessToken: function() {},
         verifyScope: function() {}
-      };
+      });
       const handler = new AuthenticateHandler({ addAcceptedScopesHeader: true, addAuthorizedScopesHeader: false, model: model, scope: 'foo bar' });
       const response = new Response({ body: {}, headers: {} });
 
@@ -655,10 +656,10 @@ describe('AuthenticateHandler integration', function() {
     });
 
     it('should set the `X-Accepted-OAuth-Scopes` header if `scope` is specified', function() {
-      const model = {
+      const model = Model.from({
         getAccessToken: function() {},
         verifyScope: function() {}
-      };
+      });
       const handler = new AuthenticateHandler({ addAcceptedScopesHeader: true, addAuthorizedScopesHeader: false, model: model, scope: ['foo', 'bar'] });
       const response = new Response({ body: {}, headers: {} });
 
@@ -668,10 +669,10 @@ describe('AuthenticateHandler integration', function() {
     });
 
     it('should not set the `X-Authorized-OAuth-Scopes` header if `scope` is not specified', function() {
-      const model = {
+      const model = Model.from({
         getAccessToken: function() {},
         verifyScope: function() {}
-      };
+      });
       const handler = new AuthenticateHandler({ addAcceptedScopesHeader: false, addAuthorizedScopesHeader: true, model: model });
       const response = new Response({ body: {}, headers: {} });
 
@@ -681,10 +682,10 @@ describe('AuthenticateHandler integration', function() {
     });
 
     it('should set the `X-Authorized-OAuth-Scopes` header (deprecated)', function() {
-      const model = {
+      const model = Model.from({
         getAccessToken: function() {},
         verifyScope: function() {}
-      };
+      });
       const handler = new AuthenticateHandler({ addAcceptedScopesHeader: false, addAuthorizedScopesHeader: true, model: model, scope: 'foo bar' });
       const response = new Response({ body: {}, headers: {} });
 
@@ -694,10 +695,10 @@ describe('AuthenticateHandler integration', function() {
     });
 
     it('should set the `X-Authorized-OAuth-Scopes` header', function() {
-      const model = {
+      const model = Model.from({
         getAccessToken: function() {},
         verifyScope: function() {}
-      };
+      });
       const handler = new AuthenticateHandler({ addAcceptedScopesHeader: false, addAuthorizedScopesHeader: true, model: model, scope: ['foo', 'bar'] });
       const response = new Response({ body: {}, headers: {} });
 

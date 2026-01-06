@@ -5,7 +5,7 @@ const should = require('chai').should();
  * Test `Server`.
  */
 
-describe('Model', function() {
+describe('TokenModel', function() {
   describe('constructor()', function() {
     it('throws, if data is empty', function () {
       try {
