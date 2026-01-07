@@ -7,6 +7,7 @@
 const InvalidArgumentError = require('../../../lib/errors/invalid-argument-error');
 const InvalidGrantError = require('../../../lib/errors/invalid-grant-error');
 const InvalidRequestError = require('../../../lib/errors/invalid-request-error');
+const InvalidScopeError = require('../../../lib/errors/invalid-scope-error');
 const RefreshTokenGrantType = require('../../../lib/grant-types/refresh-token-grant-type');
 const Request = require('../../../lib/request');
 const ServerError = require('../../../lib/errors/server-error');
@@ -181,6 +182,34 @@ describe('RefreshTokenGrantType integration', function() {
       const request = new Request({ body: { refresh_token: 'foobar' }, headers: {}, method: {}, query: {} });
 
       grantType.handle(request, client).should.be.an.instanceOf(Promise);
+    });
+
+    it('should throw an error if extra `scope` is requested', async function() {
+      const client = { id: 123 };
+      const token = {
+        accessToken: 'foo',
+        client: { id: 123 },
+        user: { name: 'foo' },
+        refreshTokenExpiresAt: new Date(new Date() * 2)
+      };
+      const model = {
+        getRefreshToken: async function() {
+          return token;
+        },
+        revokeToken: () => should.fail(),
+        saveToken: () => should.fail()
+      };
+      const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 123, model });
+      const request = new Request({ body: { refresh_token: 'foobar', scope: 'read' }, headers: {}, method: {}, query: {} });
+
+      try {
+        await grantType.handle(request, client);
+
+        should.fail();
+      } catch (e) {
+        e.should.be.an.instanceOf(InvalidScopeError);
+        e.message.should.equal('Invalid scope: Unable to add extra scopes');
+      }
     });
   });
 
