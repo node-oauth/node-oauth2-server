@@ -4,7 +4,7 @@ import {defineConfig} from 'vitepress'
 export default defineConfig({
     title: "@node-oauth/oauth2-server",
     description: "OAuth2 server for Node.js",
-    base: '/node-oauth/',
+    base: '/node-oauth2-server/',
     head: [['link', { rel: 'icon', href: '/images/favicon.ico' }]],
     themeConfig: {
         // https://vitepress.dev/reference/default-theme-config
