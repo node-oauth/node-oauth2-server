@@ -7,18 +7,18 @@ in order to get your pull requests accepted.
 ## Disclose security vulnerabilities
 
 First things first:
-This project has strong security implications and we appreciate every help to
+This project has strong security implications, and we appreciate every help to
 improve security.
 
-**However, please read our [security policy](./SECURITY.md), before taking 
-actions.**
+**However, please read our [security policy](https://github.com/node-oauth/node-oauth2-server/security/policy),
+before taking actions.**
 
 
 
 ## Guiding principles
 
 Before contributing to this project it is important to understand how this 
-project and it's collaborators views itself regarding it's scope and purpose.
+project and it's collaborators views itself regarding its scope and purpose.
 
 ### OAuth2 standard compliance
 
@@ -38,7 +38,7 @@ Extended readings:
 - [RFC 7636 - Proof Key for Code Exchange by OAuth Public Clients](https://datatracker.ietf.org/doc/html/rfc7636)
 - [RFC 7591 - OAuth 2.0 Dynamic Client Registration Protocol](https://datatracker.ietf.org/doc/html/rfc7591)
 
-### Framework agnostic
+### Framework-agnostic
 
 Design decisions and implementations are always done with keeping in mind, that
 there are multiple frameworks out there that use this project.
@@ -47,8 +47,7 @@ there are multiple frameworks out there that use this project.
 
 ## Development
 
-If you want to fix bugs or add new features, **please read this chapter and it's 
-sections carefully!**
+If you want to fix bugs or add new features, **please read this chapter and it's sections carefully!**
 
 ### No PR without issue
 
@@ -60,24 +59,24 @@ and discuss, whether this is a useful addition to the project.
 First, clone and install this project from source via
 
 ```bash
-$ git clone git@github.com:node-oauth/node-oauth2-server.git
-$ cd node-oauth2-server
-$ git checkout development # important! do not work on master!
-$ npm install
+git clone git@github.com:node-oauth/node-oauth2-server.git
+cd node-oauth2-server
+git checkout development # important! do not work on master!
+npm install
 ```
 
 From here you can run several scripts for development purposes:
 
 ```bash
-$ npm run test           # runs the tests once
-$ npm run test:coverage  # runs the tests including coverage
-$ npm run docs           # generates the API docs
+npm run test           # runs the tests once
+npm run test:coverage  # runs the tests including coverage
+npm run docs           # generates the API docs
 ```
 
 To work on a new feature or a fix please create a new branch:
 
 ```bash
-$ git checkout -b feature-xyz # or fix-xyz
+git checkout -b feature-xyz # or fix-xyz
 ```
 
 ### Coding rules
@@ -93,8 +92,9 @@ with ticket number at the end of summary:
 ```
 <type>(<scope>): <short summary> #<issue number>
 ```
+
 Summary in present tense. Not capitalized. No period at the end.
-The <type> and <summary> fields are mandatory, the (<scope>) and #<number> field is optional.
+The `<type>` and `<summary>` fields are mandatory, the `(<scope>)` and `#<number>` fields are optional.
 
 ### Run the tests before committing
 
@@ -105,13 +105,13 @@ the history with commits, that are solely targeting lint fixes.
 You can run the tests via
 
 ```bash
-$ npm run test
+npm run test
 ```
 
 or  
 
 ```bash
-$ npm run test:coverage
+npm run test:coverage
 ```
 
 to see your coverage.
@@ -152,7 +152,7 @@ Also make sure, to comply with the following list:
 
 #### Review process
 
-Finally your PR needs to pass the review process:
+Finally, your PR needs to pass the review process:
 
 - A certain amount of maintainers needs to review and accept your PR
 - Please **expect change requests**! They will occur and are intended to improve
@@ -165,3 +165,31 @@ Finally your PR needs to pass the review process:
 #### After merge
 
 Please delete your branch after merge.
+
+## Documentation
+
+We use Vitepress+Markdown for our documentation.
+If you want to contribute to the docs, please get familiar with Vitepress: https://vitepress.dev
+
+### Setting up docs
+
+You need NPM to set up the docs using the following:
+
+```shell
+npm install
+npm run docs:setup
+```
+
+You can then edit the `guide` section manually.
+
+### API Docs
+
+**DO NOT** edit the `api` section, as API docs are automatically
+generated from our internal JSDoc comments.
+
+Instead, update the comments directly within the code and run `npm run docs:api`
+to generate the api docs.
+
+### Building the docs
+
+Run `npm run docs:build` to build the docs.

@@ -5,6 +5,7 @@
  */
 
 const InvalidArgumentError = require('../../lib/errors/invalid-argument-error');
+const Model = require('../../lib/model');
 const Request = require('../../lib/request');
 const Response = require('../../lib/response');
 const Server = require('../../lib/server');
@@ -30,7 +31,7 @@ describe('Server integration', function() {
     });
 
     it('should set the `model`', function() {
-      const model = {};
+      const model = Model.from({});
       const server = new Server({ model: model });
 
       server.options.model.should.equal(model);
@@ -39,14 +40,14 @@ describe('Server integration', function() {
 
   describe('authenticate()', function() {
     it('should set the default `options`', async function() {
-      const model = {
+      const model = Model.from({
         getAccessToken: function() {
           return {
             user: {},
             accessTokenExpiresAt: new Date(new Date().getTime() + 10000)
           };
         }
-      };
+      });
       const server = new Server({ model: model });
       const request = new Request({ body: {}, headers: { 'Authorization': 'Bearer foo' }, method: {}, query: {} });
       const response = new Response({ body: {}, headers: {} });
@@ -62,14 +63,14 @@ describe('Server integration', function() {
     });
 
     it('should return a promise', function() {
-      const model = {
+      const model = Model.from({
         getAccessToken: async function(token) {
           return {
             user: {},
             accessTokenExpiresAt: new Date(new Date().getTime() + 10000)
           };
         }
-      };
+      });
       const server = new Server({ model: model });
       const request = new Request({ body: {}, headers: { 'Authorization': 'Bearer foo' }, method: {}, query: {} });
       const response = new Response({ body: {}, headers: {} });
@@ -81,7 +82,7 @@ describe('Server integration', function() {
 
   describe('authorize()', function() {
     it('should set the default `options`', async function() {
-      const model = {
+      const model = Model.from({
         getAccessToken: function() {
           return {
             user: {},
@@ -94,7 +95,7 @@ describe('Server integration', function() {
         saveAuthorizationCode: function() {
           return { authorizationCode: 123 };
         }
-      };
+      });
       const server = new Server({ model: model });
       const request = new Request({ body: { client_id: 1234, client_secret: 'secret', response_type: 'code' }, headers: { 'Authorization': 'Bearer foo' }, method: {}, query: { state: 'foobar' } });
       const response = new Response({ body: {}, headers: {} });
@@ -109,7 +110,7 @@ describe('Server integration', function() {
     });
 
     it('should return a promise', function() {
-      const model = {
+      const model = Model.from({
         getAccessToken: function() {
           return {
             user: {},
@@ -122,7 +123,7 @@ describe('Server integration', function() {
         saveAuthorizationCode: function() {
           return { authorizationCode: 123 };
         }
-      };
+      });
       const server = new Server({ model: model });
       const request = new Request({ body: { client_id: 1234, client_secret: 'secret', response_type: 'code' }, headers: { 'Authorization': 'Bearer foo' }, method: {}, query: { state: 'foobar' } });
       const response = new Response({ body: {}, headers: {} });
@@ -134,7 +135,7 @@ describe('Server integration', function() {
 
   describe('token()', function() {
     it('should set the default `options`', async function() {
-      const model = {
+      const model = Model.from({
         getClient: function() {
           return { grants: ['password'] };
         },
@@ -145,7 +146,7 @@ describe('Server integration', function() {
           return { accessToken: 1234, client: {}, user: {} };
         },
         validateScope: function() { return ['foo']; }
-      };
+      });
       const server = new Server({ model: model });
       const request = new Request({ body: { client_id: 1234, client_secret: 'secret', grant_type: 'password', username: 'foo', password: 'pass', scope: 'foo' }, headers: { 'content-type': 'application/x-www-form-urlencoded', 'transfer-encoding': 'chunked' }, method: 'POST', query: {} });
       const response = new Response({ body: {}, headers: {} });
@@ -160,7 +161,7 @@ describe('Server integration', function() {
     });
 
     it('should return a promise', function() {
-      const model = {
+      const model = Model.from({
         getClient: function() {
           return { grants: ['password'] };
         },
@@ -170,7 +171,7 @@ describe('Server integration', function() {
         saveToken: function() {
           return { accessToken: 1234, client: {}, user: {} };
         }
-      };
+      });
       const server = new Server({ model: model });
       const request = new Request({ body: { client_id: 1234, client_secret: 'secret', grant_type: 'password', username: 'foo', password: 'pass' }, headers: { 'content-type': 'application/x-www-form-urlencoded', 'transfer-encoding': 'chunked' }, method: 'POST', query: {} });
       const response = new Response({ body: {}, headers: {} });

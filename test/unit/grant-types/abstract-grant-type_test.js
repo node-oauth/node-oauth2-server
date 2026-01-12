@@ -5,6 +5,7 @@
  */
 
 const AbstractGrantType = require('../../../lib/grant-types/abstract-grant-type');
+const Model = require('../../../lib/model');
 const sinon = require('sinon');
 const should = require('chai').should();
 
@@ -15,9 +16,9 @@ const should = require('chai').should();
 describe('AbstractGrantType', function() {
   describe('generateAccessToken()', function() {
     it('should call `model.generateAccessToken()`', function() {
-      const model = {
+      const model = Model.from({
         generateAccessToken: sinon.stub().returns({ client: {}, expiresAt: new Date(), user: {} })
-      };
+      });
       const handler = new AbstractGrantType({ accessTokenLifetime: 120, model: model });
 
       return handler.generateAccessToken()
@@ -31,9 +32,9 @@ describe('AbstractGrantType', function() {
 
   describe('generateRefreshToken()', function() {
     it('should call `model.generateRefreshToken()`', function() {
-      const model = {
+      const model = Model.from({
         generateRefreshToken: sinon.stub().returns({ client: {}, expiresAt: new Date(new Date() / 2), user: {} })
-      };
+      });
       const handler = new AbstractGrantType({ accessTokenLifetime: 120, model: model });
 
       return handler.generateRefreshToken()
