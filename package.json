@@ -1,7 +1,7 @@
 {
   "name": "@node-oauth/oauth2-server",
   "description": "Complete, framework-agnostic, compliant and well tested module for implementing an OAuth2 Server in node.js",
-  "version": "5.1.0",
+  "version": "5.2.0",
   "keywords": [
     "oauth",
     "oauth2"
@@ -28,21 +28,21 @@
   "dependencies": {
     "@node-oauth/formats": "1.0.0",
     "basic-auth": "2.0.1",
-    "type-is": "1.6.18"
+    "type-is": "2.0.1"
   },
   "devDependencies": {
-    "chai": "4.3.7",
-    "eslint": "8.54.0",
-    "mocha": "10.2.0",
-    "nyc": "15.1.0",
-    "sinon": "15.2.0"
+    "chai": "6.2.2",
+    "mocha": "11.7.5",
+    "eslint": "8.57.1",
+    "nyc": "17.1.0",
+    "sinon": "21.0.1"
   },
   "license": "MIT",
   "engines": {
     "node": ">=16.0.0"
   },
   "scripts": {
-    "pretest": "./node_modules/.bin/eslint lib test index.js",
+    "pretest": "eslint lib test index.js",
     "test": "NODE_ENV=test ./node_modules/.bin/mocha 'test/**/*_test.js'",
     "test-debug": "NODE_ENV=test ./node_modules/.bin/mocha  --inspect --debug-brk 'test/**/*_test.js'",
     "test:watch": "NODE_ENV=test ./node_modules/.bin/mocha --watch 'test/**/*_test.js'",

@@ -12,6 +12,8 @@ import * as http from 'http';
 declare class OAuth2Server {
     static OAuth2Server: typeof OAuth2Server;
 
+    options: OAuth2Server.ServerOptions;
+
     /**
      * Instantiates OAuth2Server using the supplied model
      */
@@ -51,15 +53,20 @@ declare namespace OAuth2Server {
      */
     class Request {
         body?: any;
-        headers?: { [key: string]: string; } | undefined;
-        method?: string | undefined;
-        query?: { [key: string]: string; } | undefined;
+        headers?: Record<string, string>;
+        method?: string;
+        query?: Record<string, string>;
 
         /**
          * Instantiates Request using the supplied options.
          *
          */
-        constructor(options?: { [key: string]: any } | http.IncomingMessage);
+        constructor(options: {
+            headers: Record<string, string>,
+            method: string,
+            query: Record<string, string>,
+            body?: any
+        } & Record<string, any> | http.IncomingMessage);
 
         /**
          * Returns the specified HTTP header field. The match is case-insensitive.
@@ -79,14 +86,14 @@ declare namespace OAuth2Server {
      */
     class Response {
         body?: any;
-        headers?: { [key: string]: string; } | undefined;
-        status?: number | undefined;
+        headers?: Record<string, string>;
+        status?: number;
 
         /**
          * Instantiates Response using the supplied options.
          *
          */
-        constructor(options?: { [key: string]: any; } | http.ServerResponse);
+        constructor(options?: Record<string, any> | http.ServerResponse);
 
         /**
          * Returns the specified HTTP header field. The match is case-insensitive.
@@ -168,71 +175,71 @@ declare namespace OAuth2Server {
         /**
          * The scope(s) to authenticate.
          */
-        scope?: string[] | undefined;
+        scope?: string[];
 
         /**
          * Set the X-Accepted-OAuth-Scopes HTTP header on response objects.
          */
-        addAcceptedScopesHeader?: boolean | undefined;
+        addAcceptedScopesHeader?: boolean;
 
         /**
          * Set the X-OAuth-Scopes HTTP header on response objects.
          */
-        addAuthorizedScopesHeader?: boolean | undefined;
+        addAuthorizedScopesHeader?: boolean;
 
         /**
          * Allow clients to pass bearer tokens in the query string of a request.
          */
-        allowBearerTokensInQueryString?: boolean | undefined;
+        allowBearerTokensInQueryString?: boolean;
     }
 
     interface AuthorizeOptions {
         /**
          * The authenticate handler
          */
-        authenticateHandler?: {} | undefined;
+        authenticateHandler?: {};
 
         /**
          * Allow clients to specify an empty state
          */
-        allowEmptyState?: boolean | undefined;
+        allowEmptyState?: boolean;
 
         /**
          * Lifetime of generated authorization codes in seconds (default = 5 minutes).
          */
-        authorizationCodeLifetime?: number | undefined;
+        authorizationCodeLifetime?: number;
     }
 
     interface TokenOptions {
         /**
          * Lifetime of generated access tokens in seconds (default = 1 hour)
          */
-        accessTokenLifetime?: number | undefined;
+        accessTokenLifetime?: number;
 
         /**
          * Lifetime of generated refresh tokens in seconds (default = 2 weeks)
          */
-        refreshTokenLifetime?: number | undefined;
+        refreshTokenLifetime?: number;
 
         /**
          * Allow extended attributes to be set on the returned token
          */
-        allowExtendedTokenAttributes?: boolean | undefined;
+        allowExtendedTokenAttributes?: boolean;
 
         /**
          * Require a client secret. Defaults to true for all grant types.
          */
-        requireClientAuthentication?: {} | undefined;
+        requireClientAuthentication?: Record<string, boolean>;
 
         /**
          * Always revoke the used refresh token and issue a new one for the refresh_token grant.
          */
-        alwaysIssueNewRefreshToken?: boolean | undefined;
+        alwaysIssueNewRefreshToken?: boolean;
 
         /**
          * Additional supported grant types.
          */
-        extendedGrantTypes?: { [key: string]: typeof AbstractGrantType } | undefined;
+        extendedGrantTypes?: Record<string, typeof AbstractGrantType>;
     }
 
     /**
@@ -392,10 +399,10 @@ declare namespace OAuth2Server {
      */
     interface Client {
         id: string;
-        redirectUris?: string | string[] | undefined;
+        redirectUris?: string | string[];
         grants: string | string[];
-        accessTokenLifetime?: number | undefined;
-        refreshTokenLifetime?: number | undefined;
+        accessTokenLifetime?: number;
+        refreshTokenLifetime?: number;
         [key: string]: any;
     }
 
@@ -406,7 +413,7 @@ declare namespace OAuth2Server {
         authorizationCode: string;
         expiresAt: Date;
         redirectUri: string;
-        scope?: string[] | undefined;
+        scope?: string[];
         client: Client;
         user: User;
         codeChallenge?: string;
@@ -419,10 +426,10 @@ declare namespace OAuth2Server {
      */
     interface Token {
         accessToken: string;
-        accessTokenExpiresAt?: Date | undefined;
-        refreshToken?: string | undefined;
-        refreshTokenExpiresAt?: Date | undefined;
-        scope?: string[] | undefined;
+        accessTokenExpiresAt?: Date;
+        refreshToken?: string;
+        refreshTokenExpiresAt?: Date;
+        scope?: string[];
         client: Client;
         user: User;
         [key: string]: any;
@@ -433,8 +440,8 @@ declare namespace OAuth2Server {
      */
     interface RefreshToken {
         refreshToken: string;
-        refreshTokenExpiresAt?: Date | undefined;
-        scope?: string[] | undefined;
+        refreshTokenExpiresAt?: Date;
+        scope?: string[];
         client: Client;
         user: User;
         [key: string]: any;

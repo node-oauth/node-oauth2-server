@@ -87,7 +87,7 @@ Please carefully consult the documentation while updating.
 * fix: Changed 'hasOwnProperty' call in Response
 * docs: Ensure accessTokenExpiresAt is required
 * docs: Add missing notice of breaking change for accessExpireLifetime to migration guide
-* docs: Correct tokens time scale for 2.x to 3.x  migration guide
+* docs: Correct tokens time scale for 2.x to 3.x migration guide
 * readme: Update Slack badge and link
 * readme: Fix link to RFC6750 standard
 
