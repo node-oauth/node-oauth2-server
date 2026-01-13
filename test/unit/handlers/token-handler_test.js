@@ -5,6 +5,7 @@
  */
 
 const Request = require('../../../lib/request');
+const Model = require('../../../lib/model');
 const TokenHandler = require('../../../lib/handlers/token-handler');
 const sinon = require('sinon');
 const should = require('chai').should();
@@ -16,10 +17,10 @@ const should = require('chai').should();
 describe('TokenHandler', function() {
   describe('getClient()', function() {
     it('should call `model.getClient()`', function() {
-      const model = {
+      const model = Model.from({
         getClient: sinon.stub().returns({ grants: ['password'] }),
         saveToken: function() {}
-      };
+      });
       const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
       const request = new Request({ body: { client_id: 12345, client_secret: 'secret' }, headers: {}, method: {}, query: {} });
 

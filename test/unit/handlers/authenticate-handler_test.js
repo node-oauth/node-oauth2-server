@@ -7,6 +7,7 @@
 const AuthenticateHandler = require('../../../lib/handlers/authenticate-handler');
 const InvalidRequestError = require('../../../lib/errors/invalid-request-error');
 const Request = require('../../../lib/request');
+const Model = require('../../../lib/model');
 const sinon = require('sinon');
 const should = require('chai').should();
 const ServerError = require('../../../lib/errors/server-error');
@@ -107,9 +108,9 @@ describe('AuthenticateHandler', function() {
 
   describe('getAccessToken()', function() {
     it('should call `model.getAccessToken()`', function() {
-      const model = {
+      const model = Model.from({
         getAccessToken: sinon.stub().returns({ user: {} })
-      };
+      });
       const handler = new AuthenticateHandler({ model: model });
 
       return handler.getAccessToken('foo')
@@ -125,9 +126,9 @@ describe('AuthenticateHandler', function() {
 
   describe('validateAccessToken()', function() {
     it('should fail if token has no valid `accessTokenExpiresAt` date', function() {
-      const model = {
+      const model = Model.from({
         getAccessToken: function() {}
-      };
+      });
       const handler = new AuthenticateHandler({ model: model });
 
       let failed = false;
@@ -144,9 +145,9 @@ describe('AuthenticateHandler', function() {
     });
 
     it('should succeed if token has valid `accessTokenExpiresAt` date', function() {
-      const model = {
+      const model = Model.from({
         getAccessToken: function() {}
-      };
+      });
       const handler = new AuthenticateHandler({ model: model });
       try {
         handler.validateAccessToken({
@@ -162,10 +163,10 @@ describe('AuthenticateHandler', function() {
 
   describe('verifyScope()', function() {
     it('should call `model.getAccessToken()` if scope is defined', function() {
-      const model = {
+      const model = Model.from({
         getAccessToken: function() {},
         verifyScope: sinon.stub().returns(true)
-      };
+      });
       const handler = new AuthenticateHandler({ addAcceptedScopesHeader: true, addAuthorizedScopesHeader: true, model: model, scope: 'bar' });
 
       return handler.verifyScope(['foo'])
