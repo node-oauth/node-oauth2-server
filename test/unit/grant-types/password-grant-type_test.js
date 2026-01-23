@@ -6,6 +6,7 @@
 
 const PasswordGrantType = require('../../../lib/grant-types/password-grant-type');
 const Request = require('../../../lib/request');
+const Model = require('../../../lib/model');
 const sinon = require('sinon');
 const should = require('chai').should();
 
@@ -16,10 +17,10 @@ const should = require('chai').should();
 describe('PasswordGrantType', function() {
   describe('getUser()', function() {
     it('should call `model.getUser()`', function() {
-      const model = {
+      const model = Model.from({
         getUser: sinon.stub().returns(true),
         saveToken: function() {}
-      };
+      });
       const client = { id: 'foobar' };
       const handler = new PasswordGrantType({ accessTokenLifetime: 120, model: model });
       const request = new Request({ body: { username: 'foo', password: 'bar' }, headers: {}, method: {}, query: {} });
@@ -40,10 +41,10 @@ describe('PasswordGrantType', function() {
     it('should call `model.saveToken()`', function() {
       const client = {};
       const user = {};
-      const model = {
+      const model = Model.from({
         getUser: function() {},
         saveToken: sinon.stub().returns(true)
-      };
+      });
       const handler = new PasswordGrantType({ accessTokenLifetime: 120, model: model });
 
       sinon.stub(handler, 'validateScope').returns(['foobar']);
