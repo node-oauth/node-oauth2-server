@@ -112,10 +112,10 @@ describe('RefreshTokenGrantType integration', function() {
     });
 
     it('should return a token', async function() {
-      const client = { id: 123 };
+      const client = { id: '123' };
       const token = {
         accessToken: 'foo',
-        client: { id: 123 },
+        client: { id: '123' },
         user: { name: 'foo' },
         scope: ['read', 'write'],
         refreshTokenExpiresAt: new Date( new Date() * 2)
@@ -131,19 +131,19 @@ describe('RefreshTokenGrantType integration', function() {
         },
         generateAccessToken: async function (_client, _user, _scope) {
           _user.should.deep.equal({ name: 'foo' });
-          _client.should.deep.equal({ id: 123 });
+          _client.should.deep.equal({ id: '123' });
           _scope.should.eql(['read', 'write']);
           return 'new-access-token';
         },
         generateRefreshToken: async function (_client, _user, _scope) {
           _user.should.deep.equal({ name: 'foo' });
-          _client.should.deep.equal({ id: 123 });
+          _client.should.deep.equal({ id: '123' });
           _scope.should.eql(['read', 'write']);
           return 'new-refresh-token';
         },
         saveToken: async function(_token, _client, _user) {
           _user.should.deep.equal({ name: 'foo' });
-          _client.should.deep.equal({ id: 123 });
+          _client.should.deep.equal({ id: '123' });
           _token.accessToken.should.equal('new-access-token');
           _token.refreshToken.should.equal('new-refresh-token');
           _token.accessTokenExpiresAt.should.be.instanceOf(Date);
@@ -159,9 +159,9 @@ describe('RefreshTokenGrantType integration', function() {
     });
 
     it('should support promises', function() {
-      const client = { id: 123 };
+      const client = { id: '123' };
       const model = Model.from({
-        getRefreshToken: async function() { return { accessToken: 'foo', client: { id: 123 }, user: {} }; },
+        getRefreshToken: async function() { return { accessToken: 'foo', client: { id: '123' }, user: {} }; },
         revokeToken: async function() { return { accessToken: 'foo', client: {}, refreshTokenExpiresAt: new Date(new Date() / 2), user: {} }; },
         saveToken: async function() { return { accessToken: 'foo', client: {}, user: {} }; }
       });
@@ -172,9 +172,9 @@ describe('RefreshTokenGrantType integration', function() {
     });
 
     it('should support non-promises', function() {
-      const client = { id: 123 };
+      const client = { id: '123' };
       const model = Model.from({
-        getRefreshToken: async function() { return { accessToken: 'foo', client: { id: 123 }, user: {} }; },
+        getRefreshToken: async function() { return { accessToken: 'foo', client: { id: '123' }, user: {} }; },
         revokeToken: async function() { return { accessToken: 'foo', client: {}, refreshTokenExpiresAt: new Date(new Date() / 2), user: {} }; },
         saveToken: async function() { return { accessToken: 'foo', client: {}, user: {} }; }
       });
@@ -207,7 +207,7 @@ describe('RefreshTokenGrantType integration', function() {
     });
 
     it('should throw an error if `refreshToken` is not found', async function() {
-      const client = { id: 123 };
+      const client = { id: '123' };
       const model = Model.from({
         getRefreshToken: async function() {} ,
         revokeToken: () => should.fail(),
@@ -234,7 +234,7 @@ describe('RefreshTokenGrantType integration', function() {
         saveToken: () => should.fail()
       });
       const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 120, model });
-      const request = new Request({ body: { refresh_token: 12345 }, headers: {}, method: {}, query: {} });
+      const request = new Request({ body: { refresh_token: '12345' }, headers: {}, method: {}, query: {} });
 
       try {
         await grantType.getRefreshToken(request, client);
@@ -256,7 +256,7 @@ describe('RefreshTokenGrantType integration', function() {
         saveToken: () => should.fail()
       });
       const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 120, model });
-      const request = new Request({ body: { refresh_token: 12345 }, headers: {}, method: {}, query: {} });
+      const request = new Request({ body: { refresh_token: '12345' }, headers: {}, method: {}, query: {} });
 
       try {
         await grantType.getRefreshToken(request, client);
@@ -269,16 +269,16 @@ describe('RefreshTokenGrantType integration', function() {
     });
 
     it('should throw an error if the client id does not match', async function() {
-      const client = { id: 123 };
+      const client = { id: '123' };
       const model = Model.from({
         getRefreshToken: async function() {
-          return { accessToken: 'foo', client: { id: 456 }, user: {} };
+          return { accessToken: 'foo', client: { id: '456' }, user: {} };
         },
         revokeToken: () => should.fail(),
         saveToken: () => should.fail()
       });
       const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 120, model });
-      const request = new Request({ body: { refresh_token: 12345 }, headers: {}, method: {}, query: {} });
+      const request = new Request({ body: { refresh_token: '12345' }, headers: {}, method: {}, query: {} });
 
       try {
         await grantType.getRefreshToken(request, client);
@@ -294,7 +294,7 @@ describe('RefreshTokenGrantType integration', function() {
       const client = {};
       const model = Model.from({
         getRefreshToken: async function() {
-          return { client: { id: 456 }, user: {} };
+          return { client: { id: '456' }, user: {} };
         },
         revokeToken: () => should.fail(),
         saveToken: () => should.fail()
@@ -316,13 +316,13 @@ describe('RefreshTokenGrantType integration', function() {
       const client = {};
       const model = Model.from({
         getRefreshToken: async function() {
-          return { accessToken: 'foo', client: { id: 456 }, user: {} };
+          return { accessToken: 'foo', client: { id: '456' }, user: {} };
         },
         revokeToken: () => should.fail(),
         saveToken: () => should.fail()
       });
       const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 120, model });
-      const request = new Request({ body: { refresh_token: 12345 }, headers: {}, method: {}, query: {} });
+      const request = new Request({ body: { refresh_token: '12345' }, headers: {}, method: {}, query: {} });
 
       try {
         await grantType.getRefreshToken(request, client);
@@ -335,17 +335,17 @@ describe('RefreshTokenGrantType integration', function() {
     });
 
     it('should throw an error if `refresh_token` is expired', async function() {
-      const client = { id: 123 };
+      const client = { id: '123' };
       const date = new Date(new Date() / 2);
       const model = Model.from({
         getRefreshToken: async function() {
-          return { accessToken: 'foo', client: { id: 123 }, refreshTokenExpiresAt: date, user: {} };
+          return { accessToken: 'foo', client: { id: '123' }, refreshTokenExpiresAt: date, user: {} };
         },
         revokeToken: () => should.fail(),
         saveToken: () => should.fail()
       });
       const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 120, model });
-      const request = new Request({ body: { refresh_token: 12345 }, headers: {}, method: {}, query: {} });
+      const request = new Request({ body: { refresh_token: '12345' }, headers: {}, method: {}, query: {} });
 
       try {
         await grantType.getRefreshToken(request, client);
@@ -358,16 +358,16 @@ describe('RefreshTokenGrantType integration', function() {
     });
 
     it('should throw an error if `refreshTokenExpiresAt` is not a date value', async function() {
-      const client = { id: 123 };
+      const client = { id: '123' };
       const model = Model.from({
         getRefreshToken: async function() {
-          return { accessToken: 'foo', client: { id: 123 }, refreshTokenExpiresAt: 'stringvalue', user: {} };
+          return { accessToken: 'foo', client: { id: '123' }, refreshTokenExpiresAt: 'stringvalue', user: {} };
         },
         revokeToken: () => should.fail(),
         saveToken: () => should.fail()
       });
       const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 120, model });
-      const request = new Request({ body: { refresh_token: 12345 }, headers: {}, method: {}, query: {} });
+      const request = new Request({ body: { refresh_token: '12345' }, headers: {}, method: {}, query: {} });
 
       try {
         await grantType.getRefreshToken(request, client);
@@ -380,8 +380,8 @@ describe('RefreshTokenGrantType integration', function() {
     });
 
     it('should return a token', async function() {
-      const client = { id: 123 };
-      const token = { accessToken: 'foo', client: { id: 123 }, user: { name: 'foobar' } };
+      const client = { id: '123' };
+      const token = { accessToken: 'foo', client: { id: '123' }, user: { name: 'foobar' } };
       const model = Model.from({
         getRefreshToken: async function(_refreshToken) {
           _refreshToken.should.equal('foobar_refresh');
@@ -409,8 +409,8 @@ describe('RefreshTokenGrantType integration', function() {
     });
 
     it('should support promises', function() {
-      const client = { id: 123 };
-      const token = { accessToken: 'foo', client: { id: 123 }, user: {} };
+      const client = { id: '123' };
+      const token = { accessToken: 'foo', client: { id: '123' }, user: {} };
       const model = Model.from({
         getRefreshToken: async function() { return token; },
         revokeToken: async function() {},
@@ -423,8 +423,8 @@ describe('RefreshTokenGrantType integration', function() {
     });
 
     it('should support non-promises', function() {
-      const client = { id: 123 };
-      const token = { accessToken: 'foo', client: { id: 123 }, user: {} };
+      const client = { id: '123' };
+      const token = { accessToken: 'foo', client: { id: '123' }, user: {} };
       const model = Model.from({
         getRefreshToken: async function() { return token; },
         revokeToken: async function() {},
@@ -499,7 +499,7 @@ describe('RefreshTokenGrantType integration', function() {
   describe('saveToken()', function() {
     it('should save the token', async function() {
       const user = { name: 'foo' };
-      const client = { id: 123465 };
+      const client = { id: '123465' };
       const scope = ['foo', 'bar'];
       const model = Model.from({
         getRefreshToken: () => should.fail(),
