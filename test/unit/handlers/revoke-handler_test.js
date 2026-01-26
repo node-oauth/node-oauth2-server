@@ -8,8 +8,8 @@ const Model = require('../../../lib/model');
 const RevokeHandler = require('../../../lib/handlers/revoke-handler');
 const sinon = require('sinon');
 const InvalidArgumentError = require('../../../lib/errors/invalid-argument-error');
-const InvalidClientError = require('../../../lib/errors/invalid-client-error')
-const InvalidRequestError = require('../../../lib/errors/invalid-request-error')
+const InvalidClientError = require('../../../lib/errors/invalid-client-error');
+const InvalidRequestError = require('../../../lib/errors/invalid-request-error');
 const should = require('chai').should();
 
 /**
