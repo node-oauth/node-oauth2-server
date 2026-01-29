@@ -73,7 +73,7 @@ const auth = new OAuth2Server({
 });
 
 const user = db.saveUser({ id: 1, username: 'test', password: 'test'});
-const client = db.saveClient({ id: 'a', secret: 'b', grants: ['password', 'refresh_token'] });
+const client = db.saveClient({ id: 1, secret: 'b', grants: ['password', 'refresh_token'] });
 const scope = 'read write';
 
 function createLoginRequest () {
