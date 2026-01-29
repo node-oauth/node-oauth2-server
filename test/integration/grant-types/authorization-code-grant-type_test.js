@@ -112,7 +112,7 @@ describe('AuthorizationCodeGrantType integration', function() {
       }
     });
 
-    it('should throw an error if `client` is missing', function() {
+    it('should throw an error if `client` is missing', async function () {
       const model = Model.from({
         getAuthorizationCode: () => should.fail(),
         revokeAuthorizationCode: () => should.fail(),
@@ -120,13 +120,55 @@ describe('AuthorizationCodeGrantType integration', function() {
       });
       const grantType = new AuthorizationCodeGrantType({ accessTokenLifetime: 123, model: model });
       const request = new Request({ body: { code: '12345' }, headers: {}, method: {}, query: {} });
-
-      try {
-        grantType.handle(request, null);
+      const values = [null, undefined, '', 0, false];
+      for (const client of values) {
+        try {
+          await grantType.handle(request, client);
+          should.fail();
+        } catch (e) {
+          e.should.be.an.instanceOf(InvalidArgumentError);
+          e.message.should.equal('Missing parameter: `client`');
+        }
       }
-      catch (e) {
-        e.should.be.an.instanceOf(InvalidArgumentError);
-        e.message.should.equal('Missing parameter: `client`');
+    });
+
+    it('should throw an error if `code` is missing', async function() {
+      const model = Model.from({
+        getAuthorizationCode: () => should.fail(),
+        revokeAuthorizationCode: () => should.fail(),
+        saveToken: () => should.fail()
+      });
+      const grantType = new AuthorizationCodeGrantType({ accessTokenLifetime: 123, model: model });
+      const values = [null, undefined, '', 0, false];
+      for (const code of values) {
+        const request = new Request({ body: { code }, headers: {}, method: {}, query: {} });
+        try {
+          await grantType.handle(request, { id: 'foobar' });
+          should.fail();
+        } catch (e) {
+          e.should.be.an.instanceOf(InvalidRequestError);
+          e.message.should.equal('Missing parameter: `code`');
+        }
+      }
+    });
+
+    it('should throw an error if `code` is of invalid format', async function() {
+      const model = Model.from({
+        getAuthorizationCode: () => should.fail(),
+        revokeAuthorizationCode: () => should.fail(),
+        saveToken: () => should.fail()
+      });
+      const grantType = new AuthorizationCodeGrantType({ accessTokenLifetime: 123, model: model });
+      const values = ['øå€£‰', {}, () => {}, [], Symbol('foo')];
+      for (const code of values) {
+        const request = new Request({ body: { code }, headers: {}, method: {}, query: {} });
+        try {
+          await grantType.handle(request, { id: 'foobar' });
+          should.fail();
+        } catch (e) {
+          e.should.be.an.instanceOf(InvalidRequestError);
+          e.message.should.equal('Invalid parameter: `code`');
+        }
       }
     });
 
@@ -141,55 +183,60 @@ describe('AuthorizationCodeGrantType integration', function() {
         user,
         scope
       };
-      const model = Model.from({
-        getAuthorizationCode: async function (code) {
-          code.should.equal('code-1234');
 
-          return codeDoc;
-        },
-        revokeAuthorizationCode: async function (_codeDoc) {
-          _codeDoc.should.deep.equal(codeDoc);
-          return true;
-        },
-        validateScope: async function (_user, _client, _scope) {
-          _user.should.deep.equal(user);
-          _client.should.deep.equal(client);
-          _scope.should.eql(scope);
-          return scope;
-        },
-        generateAccessToken: async function (_client, _user, _scope) {
-          _user.should.deep.equal(user);
-          _client.should.deep.equal(client);
-          _scope.should.eql(scope);
-          return 'long-access-token-hash';
-        },
-        generateRefreshToken: async function (_client, _user, _scope) {
-          _user.should.deep.equal(user);
-          _client.should.deep.equal(client);
-          _scope.should.eql(scope);
-          return 'long-refresh-token-hash';
-        },
-        saveToken: async function (_token, _client, _user) {
-          _user.should.deep.equal(user);
-          _client.should.deep.equal(client);
-          _token.accessToken.should.equal('long-access-token-hash');
-          _token.refreshToken.should.equal('long-refresh-token-hash');
-          _token.authorizationCode.should.equal(codeDoc.authorizationCode);
-          _token.accessTokenExpiresAt.should.be.instanceOf(Date);
-          _token.refreshTokenExpiresAt.should.be.instanceOf(Date);
-          return _token;
-        },
-      });
+      const values = ['1234', 1234];
+      for (const code of values) {
 
-      const grantType = new AuthorizationCodeGrantType({ accessTokenLifetime: 123, model: model });
-      const request = new Request({ body: { code: 'code-1234' }, headers: {}, method: {}, query: {} });
+        const model = Model.from({
+          getAuthorizationCode: async function (_code) {
+            _code.should.equal(code);
 
-      const token = await grantType.handle(request, client);
-      token.accessToken.should.equal('long-access-token-hash');
-      token.refreshToken.should.equal('long-refresh-token-hash');
-      token.authorizationCode.should.equal(codeDoc.authorizationCode);
-      token.accessTokenExpiresAt.should.be.instanceOf(Date);
-      token.refreshTokenExpiresAt.should.be.instanceOf(Date);
+            return codeDoc;
+          },
+          revokeAuthorizationCode: async function (_codeDoc) {
+            _codeDoc.should.deep.equal(codeDoc);
+            return true;
+          },
+          validateScope: async function (_user, _client, _scope) {
+            _user.should.deep.equal(user);
+            _client.should.deep.equal(client);
+            _scope.should.eql(scope);
+            return scope;
+          },
+          generateAccessToken: async function (_client, _user, _scope) {
+            _user.should.deep.equal(user);
+            _client.should.deep.equal(client);
+            _scope.should.eql(scope);
+            return 'long-access-token-hash';
+          },
+          generateRefreshToken: async function (_client, _user, _scope) {
+            _user.should.deep.equal(user);
+            _client.should.deep.equal(client);
+            _scope.should.eql(scope);
+            return 'long-refresh-token-hash';
+          },
+          saveToken: async function (_token, _client, _user) {
+            _user.should.deep.equal(user);
+            _client.should.deep.equal(client);
+            _token.accessToken.should.equal('long-access-token-hash');
+            _token.refreshToken.should.equal('long-refresh-token-hash');
+            _token.authorizationCode.should.equal(codeDoc.authorizationCode);
+            _token.accessTokenExpiresAt.should.be.instanceOf(Date);
+            _token.refreshTokenExpiresAt.should.be.instanceOf(Date);
+            return _token;
+          },
+        });
+
+        const grantType = new AuthorizationCodeGrantType({ accessTokenLifetime: 123, model: model });
+        const request = new Request({ body: { code }, headers: {}, method: {}, query: {} });
+
+        const token = await grantType.handle(request, client);
+        token.accessToken.should.equal('long-access-token-hash');
+        token.refreshToken.should.equal('long-refresh-token-hash');
+        token.authorizationCode.should.equal(codeDoc.authorizationCode);
+        token.accessTokenExpiresAt.should.be.instanceOf(Date);
+        token.refreshTokenExpiresAt.should.be.instanceOf(Date);
+      }
     });
 
     it('should support promises', function() {
