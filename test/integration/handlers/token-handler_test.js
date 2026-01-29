@@ -246,7 +246,7 @@ describe('TokenHandler integration', function() {
       const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
       const request = new Request({
         body: {
-          client_id: 12345,
+          client_id: '12345',
           client_secret: 'secret',
           grant_type: 'password',
           password: 'bar',
@@ -278,7 +278,7 @@ describe('TokenHandler integration', function() {
       const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
       const request = new Request({
         body: {
-          client_id: 12345,
+          client_id: '12345',
           client_secret: 'secret',
           grant_type: 'password',
           password: 'bar',
@@ -309,7 +309,7 @@ describe('TokenHandler integration', function() {
       const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
       const request = new Request({
         body: {
-          client_id: 12345,
+          client_id: '12345',
           client_secret: 'secret',
           username: 'foo',
           password: 'bar',
@@ -340,7 +340,7 @@ describe('TokenHandler integration', function() {
       const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
       const request = new Request({
         body: {
-          client_id: 12345,
+          client_id: '12345',
           client_secret: 'secret',
           username: 'foo',
           password: 'bar',
@@ -375,7 +375,7 @@ describe('TokenHandler integration', function() {
       const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120, allowExtendedTokenAttributes: true });
       const request = new Request({
         body: {
-          client_id: 12345,
+          client_id: '12345',
           client_secret: 'secret',
           username: 'foo',
           password: 'bar',
@@ -444,7 +444,7 @@ describe('TokenHandler integration', function() {
         saveToken: function() {}
       });
       const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
-      const request = new Request({ body: { client_id: 12345, client_secret: 'secret' }, headers: {}, method: {}, query: {} });
+      const request = new Request({ body: { client_id: '12345', client_secret: 'secret' }, headers: {}, method: {}, query: {} });
 
       return handler.getClient(request)
         .then(should.fail)
@@ -460,7 +460,7 @@ describe('TokenHandler integration', function() {
         saveToken: function() {}
       });
       const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
-      const request = new Request({ body: { client_id: 12345, client_secret: 'secret' }, headers: {}, method: {}, query: {} });
+      const request = new Request({ body: { client_id: '12345', client_secret: 'secret' }, headers: {}, method: {}, query: {} });
 
       return handler.getClient(request)
         .then(should.fail)
@@ -476,7 +476,7 @@ describe('TokenHandler integration', function() {
         saveToken: function() {}
       });
       const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
-      const request = new Request({ body: { client_id: 12345, client_secret: 'secret' }, headers: {}, method: {}, query: {} });
+      const request = new Request({ body: { client_id: '12345', client_secret: 'secret' }, headers: {}, method: {}, query: {} });
 
       return handler.getClient(request)
         .then(should.fail)
@@ -512,13 +512,13 @@ describe('TokenHandler integration', function() {
     });
 
     it('should return a client', function() {
-      const client = { id: 12345, grants: [] };
+      const client = { id: '12345', grants: [] };
       const model = Model.from({
         getClient: function() { return client; },
         saveToken: function() {}
       });
       const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
-      const request = new Request({ body: { client_id: 12345, client_secret: 'secret' }, headers: {}, method: {}, query: {} });
+      const request = new Request({ body: { client_id: '12345', client_secret: 'secret' }, headers: {}, method: {}, query: {} });
 
       return handler.getClient(request)
         .then(function(data) {
@@ -530,7 +530,7 @@ describe('TokenHandler integration', function() {
     describe('with `password` grant type and `requireClientAuthentication` is false', function() {
 
       it('should return a client ', function() {
-        const client = { id: 12345, grants: [] };
+        const client = { id: '12345', grants: [] };
         const model = Model.from({
           getClient: function() { return client; },
           saveToken: function() {}
@@ -557,7 +557,7 @@ describe('TokenHandler integration', function() {
     describe('with `password` grant type and `requireClientAuthentication` is false and Authorization header', function() {
 
       it('should return a client ', function() {
-        const client = { id: 12345, grants: [] };
+        const client = { id: '12345', grants: [] };
         const model = Model.from({
           getClient: function() { return client; },
           saveToken: function() {}
@@ -592,7 +592,7 @@ describe('TokenHandler integration', function() {
         saveToken: function() {}
       });
       const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
-      const request = new Request({ body: { client_id: 12345, client_secret: 'secret' }, headers: {}, method: {}, query: {} });
+      const request = new Request({ body: { client_id: '12345', client_secret: 'secret' }, headers: {}, method: {}, query: {} });
 
       handler.getClient(request).should.be.an.instanceOf(Promise);
     });
@@ -603,7 +603,7 @@ describe('TokenHandler integration', function() {
         saveToken: function() {}
       });
       const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
-      const request = new Request({ body: { client_id: 12345, client_secret: 'secret' }, headers: {}, method: {}, query: {} });
+      const request = new Request({ body: { client_id: '12345', client_secret: 'secret' }, headers: {}, method: {}, query: {} });
 
       handler.getClient(request).should.be.an.instanceOf(Promise);
     });
@@ -793,16 +793,16 @@ describe('TokenHandler integration', function() {
         const client = { id: 'foobar', grants: ['authorization_code'] };
         const token = {};
         const model = Model.from({
-          getAuthorizationCode: function() { return { authorizationCode: 12345, client: { id: 'foobar' }, expiresAt: new Date(new Date() * 2), user: {} }; },
+          getAuthorizationCode: function() { return { authorizationCode: '12345', client: { id: 'foobar' }, expiresAt: new Date(new Date() * 2), user: {} }; },
           getClient: function() {},
           saveToken: function() { return token; },
           validateScope: function() { return ['foo']; },
-          revokeAuthorizationCode: function() { return { authorizationCode: 12345, client: { id: 'foobar' }, expiresAt: new Date(new Date() / 2), user: {} }; }
+          revokeAuthorizationCode: function() { return { authorizationCode: '12345', client: { id: 'foobar' }, expiresAt: new Date(new Date() / 2), user: {} }; }
         });
         const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
         const request = new Request({
           body: {
-            code: 12345,
+            code: '12345',
             grant_type: 'authorization_code'
           },
           headers: {},
@@ -822,7 +822,7 @@ describe('TokenHandler integration', function() {
       it('should return a token when code verifier is valid using S256 code challenge method', function() {
         const codeVerifier = stringUtil.base64URLEncode(crypto.randomBytes(32));
         const authorizationCode = {
-          authorizationCode: 12345,
+          authorizationCode: '12345',
           client: { id: 'foobar' },
           expiresAt: new Date(new Date().getTime() * 2),
           user: {},
@@ -841,7 +841,7 @@ describe('TokenHandler integration', function() {
         const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
         const request = new Request({
           body: {
-            code: 12345,
+            code: '12345',
             grant_type: 'authorization_code',
             code_verifier: codeVerifier
           },
@@ -860,7 +860,7 @@ describe('TokenHandler integration', function() {
       it('should return a token when code verifier is valid using plain code challenge method', function() {
         const codeVerifier = stringUtil.base64URLEncode(crypto.randomBytes(32));
         const authorizationCode = {
-          authorizationCode: 12345,
+          authorizationCode: '12345',
           client: { id: 'foobar' },
           expiresAt: new Date(new Date().getTime() * 2),
           user: {},
@@ -879,7 +879,7 @@ describe('TokenHandler integration', function() {
         const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
         const request = new Request({
           body: {
-            code: 12345,
+            code: '12345',
             grant_type: 'authorization_code',
             code_verifier: codeVerifier
           },
@@ -898,7 +898,7 @@ describe('TokenHandler integration', function() {
       it('should throw an invalid grant error when code verifier is invalid', function() {
         const codeVerifier = stringUtil.base64URLEncode(crypto.randomBytes(32));
         const authorizationCode = {
-          authorizationCode: 12345,
+          authorizationCode: '12345',
           client: { id: 'foobar' },
           expiresAt: new Date(new Date().getTime() * 2),
           user: {},
@@ -917,7 +917,7 @@ describe('TokenHandler integration', function() {
         const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
         const request = new Request({
           body: {
-            code: 12345,
+            code: '12345',
             grant_type: 'authorization_code',
             code_verifier: '123123123123123123123123123123123123123123123'
           },
@@ -937,7 +937,7 @@ describe('TokenHandler integration', function() {
       it('should throw an invalid grant error when code verifier is missing', function() {
         const codeVerifier = stringUtil.base64URLEncode(crypto.randomBytes(32));
         const authorizationCode = {
-          authorizationCode: 12345,
+          authorizationCode: '12345',
           client: { id: 'foobar' },
           expiresAt: new Date(new Date().getTime() * 2),
           user: {},
@@ -956,7 +956,7 @@ describe('TokenHandler integration', function() {
         const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
         const request = new Request({
           body: {
-            code: 12345,
+            code: '12345',
             grant_type: 'authorization_code'
           },
           headers: {},
@@ -974,7 +974,7 @@ describe('TokenHandler integration', function() {
 
       it('should throw an invalid grant error when code verifier is present but code challenge is missing', function() {
         const authorizationCode = {
-          authorizationCode: 12345,
+          authorizationCode: '12345',
           client: { id: 'foobar' },
           expiresAt: new Date(new Date().getTime() * 2),
           user: {}
@@ -991,7 +991,7 @@ describe('TokenHandler integration', function() {
         const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
         const request = new Request({
           body: {
-            code: 12345,
+            code: '12345',
             grant_type: 'authorization_code',
             code_verifier: '123123123123123123123123123123123123123123123'
           },
@@ -1051,7 +1051,7 @@ describe('TokenHandler integration', function() {
         const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
         const request = new Request({
           body: {
-            client_id: 12345,
+            client_id: '12345',
             client_secret: 'secret',
             grant_type: 'password',
             password: 'bar',
@@ -1085,7 +1085,7 @@ describe('TokenHandler integration', function() {
         const request = new Request({
           body: {
             grant_type: 'refresh_token',
-            refresh_token: 12345
+            refresh_token: '12345'
           },
           headers: {},
           method: {},
