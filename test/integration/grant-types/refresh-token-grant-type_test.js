@@ -193,16 +193,43 @@ describe('RefreshTokenGrantType integration', function() {
         revokeToken: () => should.fail(),
         saveToken: () => should.fail()
       });
+      const values = [null, undefined];
+
+      for (const value of values) {
+        const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 120, model });
+        const request = new Request({ body: { refresh_token: value }, headers: {}, method: {}, query: {} });
+
+        try {
+          await grantType.getRefreshToken(request, client);
+
+          should.fail();
+        } catch (e) {
+          e.should.be.an.instanceOf(InvalidRequestError);
+          e.message.should.equal('Missing parameter: `refresh_token`');
+        }
+      }
+    });
+
+    it('should throw an error if `refreshToken` is not a valid format', async () => {
+      const client = {};
+      const model = Model.from({
+        getRefreshToken: () => should.fail(),
+        revokeToken: () => should.fail(),
+        saveToken: () => should.fail()
+      });
       const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 120, model });
-      const request = new Request({ body: {}, headers: {}, method: {}, query: {} });
+      const values = ['toke😇n', () => {}, [], Symbol('test')];
 
-      try {
-        await grantType.getRefreshToken(request, client);
+      for (const value of values) {
+        const request = new Request({ body: { refresh_token: value }, headers: {}, method: {}, query: {} });
+        try {
+          await grantType.getRefreshToken(request, client);
 
-        should.fail();
-      } catch (e) {
-        e.should.be.an.instanceOf(InvalidRequestError);
-        e.message.should.equal('Missing parameter: `refresh_token`');
+          should.fail();
+        } catch (e) {
+          e.should.be.an.instanceOf(InvalidRequestError);
+          e.message.should.equal('Invalid parameter: `refresh_token`');
+        }
       }
     });
 
@@ -233,6 +260,7 @@ describe('RefreshTokenGrantType integration', function() {
         revokeToken: () => should.fail(),
         saveToken: () => should.fail()
       });
+
       const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 120, model });
       const request = new Request({ body: { refresh_token: '12345' }, headers: {}, method: {}, query: {} });
 
@@ -255,16 +283,20 @@ describe('RefreshTokenGrantType integration', function() {
         revokeToken: () => should.fail(),
         saveToken: () => should.fail()
       });
-      const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 120, model });
-      const request = new Request({ body: { refresh_token: '12345' }, headers: {}, method: {}, query: {} });
 
-      try {
-        await grantType.getRefreshToken(request, client);
+      const values = [12345, '12345'];
+      for (const value of values) {
+        const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 120, model });
+        const request = new Request({ body: { refresh_token: value }, headers: {}, method: {}, query: {} });
 
-        should.fail();
-      } catch (e) {
-        e.should.be.an.instanceOf(ServerError);
-        e.message.should.equal('Server error: `getRefreshToken()` did not return a `user` object');
+        try {
+          await grantType.getRefreshToken(request, client);
+
+          should.fail();
+        } catch (e) {
+          e.should.be.an.instanceOf(ServerError);
+          e.message.should.equal('Server error: `getRefreshToken()` did not return a `user` object');
+        }
       }
     });
 
