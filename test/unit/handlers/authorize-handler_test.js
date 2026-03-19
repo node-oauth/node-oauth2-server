@@ -43,13 +43,13 @@ describe('AuthorizeHandler', function() {
         saveAuthorizationCode: function() {}
       });
       const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
-      const request = new Request({ body: { client_id: 12345, client_secret: 'secret' }, headers: {}, method: {}, query: {} });
+      const request = new Request({ body: { client_id: '12345', client_secret: 'secret' }, headers: {}, method: {}, query: {} });
 
       return handler.getClient(request)
         .then(function() {
           model.getClient.callCount.should.equal(1);
           model.getClient.firstCall.args.should.have.length(2);
-          model.getClient.firstCall.args[0].should.equal(12345);
+          model.getClient.firstCall.args[0].should.equal('12345');
           model.getClient.firstCall.thisValue.should.equal(model);
         })
         .catch(should.fail);
@@ -131,13 +131,13 @@ describe('AuthorizeHandler', function() {
         validateRedirectUri: sinon.stub().returns(true)
       });
       const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
-      const request = new Request({ body: { client_id: 12345, client_secret: 'secret', redirect_uri }, headers: {}, method: {}, query: {} });
+      const request = new Request({ body: { client_id: '12345', client_secret: 'secret', redirect_uri }, headers: {}, method: {}, query: {} });
 
       return handler.getClient(request)
         .then(function() {
           model.getClient.callCount.should.equal(1);
           model.getClient.firstCall.args.should.have.length(2);
-          model.getClient.firstCall.args[0].should.equal(12345);
+          model.getClient.firstCall.args[0].should.equal('12345');
           model.getClient.firstCall.thisValue.should.equal(model);
 
           model.validateRedirectUri.callCount.should.equal(1);
@@ -162,7 +162,7 @@ describe('AuthorizeHandler', function() {
       });
 
       const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
-      const request = new Request({ body: { client_id: 12345, client_secret: 'secret', redirect_uri }, headers: {}, method: {}, query: {} });
+      const request = new Request({ body: { client_id: '12345', client_secret: 'secret', redirect_uri }, headers: {}, method: {}, query: {} });
 
       return handler.getClient(request)
         .then((client) => {
@@ -183,7 +183,7 @@ describe('AuthorizeHandler', function() {
       });
 
       const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model: model });
-      const request = new Request({ body: { client_id: 12345, client_secret: 'secret', redirect_uri }, headers: {}, method: {}, query: {} });
+      const request = new Request({ body: { client_id: '12345', client_secret: 'secret', redirect_uri }, headers: {}, method: {}, query: {} });
 
       return handler.getClient(request)
         .then(() => {

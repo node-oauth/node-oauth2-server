@@ -31,9 +31,9 @@ class DB {
   findClient (clientId, clientSecret) {
     return this.clients.find(client => {
       if (clientSecret) {
-        return client.id === clientId && client.secret === clientSecret;
+        return client.id == clientId && client.secret === clientSecret;
       } else {
-        return client.id === clientId;
+        return client.id == clientId;
       }
     });
   }

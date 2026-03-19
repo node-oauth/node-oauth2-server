@@ -93,11 +93,11 @@ describe('Server integration', function() {
           return { grants: ['authorization_code'], redirectUris: ['http://example.com/cb'] };
         },
         saveAuthorizationCode: function() {
-          return { authorizationCode: 123 };
+          return { authorizationCode: '123' };
         }
       });
       const server = new Server({ model: model });
-      const request = new Request({ body: { client_id: 1234, client_secret: 'secret', response_type: 'code' }, headers: { 'Authorization': 'Bearer foo' }, method: {}, query: { state: 'foobar' } });
+      const request = new Request({ body: { client_id: '1234', client_secret: 'secret', response_type: 'code' }, headers: { 'Authorization': 'Bearer foo' }, method: {}, query: { state: 'foobar' } });
       const response = new Response({ body: {}, headers: {} });
 
       try {
@@ -121,11 +121,11 @@ describe('Server integration', function() {
           return { grants: ['authorization_code'], redirectUris: ['http://example.com/cb'] };
         },
         saveAuthorizationCode: function() {
-          return { authorizationCode: 123 };
+          return { authorizationCode: '123' };
         }
       });
       const server = new Server({ model: model });
-      const request = new Request({ body: { client_id: 1234, client_secret: 'secret', response_type: 'code' }, headers: { 'Authorization': 'Bearer foo' }, method: {}, query: { state: 'foobar' } });
+      const request = new Request({ body: { client_id: '1234', client_secret: 'secret', response_type: 'code' }, headers: { 'Authorization': 'Bearer foo' }, method: {}, query: { state: 'foobar' } });
       const response = new Response({ body: {}, headers: {} });
       const handler = server.authorize(request, response);
 
@@ -143,12 +143,12 @@ describe('Server integration', function() {
           return {};
         },
         saveToken: function() {
-          return { accessToken: 1234, client: {}, user: {} };
+          return { accessToken: '1234', client: {}, user: {} };
         },
         validateScope: function() { return ['foo']; }
       });
       const server = new Server({ model: model });
-      const request = new Request({ body: { client_id: 1234, client_secret: 'secret', grant_type: 'password', username: 'foo', password: 'pass', scope: 'foo' }, headers: { 'content-type': 'application/x-www-form-urlencoded', 'transfer-encoding': 'chunked' }, method: 'POST', query: {} });
+      const request = new Request({ body: { client_id: '1234', client_secret: 'secret', grant_type: 'password', username: 'foo', password: 'pass', scope: 'foo' }, headers: { 'content-type': 'application/x-www-form-urlencoded', 'transfer-encoding': 'chunked' }, method: 'POST', query: {} });
       const response = new Response({ body: {}, headers: {} });
 
       try {
@@ -169,11 +169,11 @@ describe('Server integration', function() {
           return {};
         },
         saveToken: function() {
-          return { accessToken: 1234, client: {}, user: {} };
+          return { accessToken: '1234', client: {}, user: {} };
         }
       });
       const server = new Server({ model: model });
-      const request = new Request({ body: { client_id: 1234, client_secret: 'secret', grant_type: 'password', username: 'foo', password: 'pass' }, headers: { 'content-type': 'application/x-www-form-urlencoded', 'transfer-encoding': 'chunked' }, method: 'POST', query: {} });
+      const request = new Request({ body: { client_id: '1234', client_secret: 'secret', grant_type: 'password', username: 'foo', password: 'pass' }, headers: { 'content-type': 'application/x-www-form-urlencoded', 'transfer-encoding': 'chunked' }, method: 'POST', query: {} });
       const response = new Response({ body: {}, headers: {} });
       const handler = server.token(request, response);
 
