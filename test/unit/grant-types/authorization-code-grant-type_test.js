@@ -5,8 +5,6 @@
  */
 
 const AuthorizationCodeGrantType = require('../../../lib/grant-types/authorization-code-grant-type');
-const InvalidGrantError = require('../../../lib/errors/invalid-grant-error');
-const ServerError  = require('../../../lib/errors/server-error');
 const Request = require('../../../lib/request');
 const Model = require('../../../lib/model');
 const sinon = require('sinon');
@@ -93,87 +91,8 @@ describe('AuthorizationCodeGrantType', function() {
   });
 
   describe('with PKCE', function() {
-    it('should throw an error if the `code_verifier` is invalid with S256 code challenge method', function() {
-      const codeVerifier = stringUtil.base64URLEncode(crypto.randomBytes(32));
-      const authorizationCode = {
-        authorizationCode: 12345,
-        client: { id: 'foobar' },
-        expiresAt: new Date(new Date().getTime() * 2),
-        user: {},
-        codeChallengeMethod: 'S256',
-        codeChallenge: stringUtil.base64URLEncode(crypto.createHash('sha256').update(codeVerifier).digest())
-      };
-      const client = { id: 'foobar', isPublic: true };
-      const model = Model.from({
-        getAuthorizationCode: function() { return authorizationCode; },
-        revokeAuthorizationCode: function() {},
-        saveToken: function() {}
-      });
-      const grantType = new AuthorizationCodeGrantType({ accessTokenLifetime: 123, model: model });
-      const request = new Request({ body: { code: 12345, code_verifier: 'foo' }, headers: {}, method: {}, query: {} });
-
-      return grantType.getAuthorizationCode(request, client)
-        .then(should.fail)
-        .catch(function(e) {
-          e.should.be.an.instanceOf(InvalidGrantError);
-          e.message.should.equal('Invalid grant: code verifier is invalid');
-        });
-    });
-
-    it('should throw an error in getAuthorizationCode if an invalid code challenge method has been saved', function () {
-      const codeVerifier = stringUtil.base64URLEncode(crypto.randomBytes(32));
-      const authorizationCode = {
-        authorizationCode: 12345,
-        client: { id: 'foobar', isPublic: true },
-        expiresAt: new Date(new Date().getTime() * 2),
-        user: {},
-        codeChallengeMethod: 'foobar', // assume this bypassed validation
-        codeChallenge: stringUtil.base64URLEncode(crypto.createHash('sha256').update(codeVerifier).digest())
-      };
-      const client = { id: 'foobar', isPublic: true };
-      const model = Model.from({
-        getAuthorizationCode: function() { return authorizationCode; },
-        revokeAuthorizationCode: function() {},
-        saveToken: function() {}
-      });
-      const grantType = new AuthorizationCodeGrantType({ accessTokenLifetime: 123, model: model });
-      const request = new Request({ body: { code: 12345, code_verifier: codeVerifier }, headers: {}, method: {}, query: {} });
-
-      return grantType.getAuthorizationCode(request, client)
-        .then(should.fail)
-        .catch(function(e) {
-          e.should.be.an.instanceOf(ServerError);
-          e.message.should.equal('Server error: `getAuthorizationCode()` did not return a valid `codeChallengeMethod` property');
-        });
-    });
-
-    it('should throw an error if the `code_verifier` is invalid with plain code challenge method', function() {
-      const codeVerifier = stringUtil.base64URLEncode(crypto.randomBytes(32));
-      const authorizationCode = {
-        authorizationCode: 12345,
-        client: { id: 'foobar' },
-        expiresAt: new Date(new Date().getTime() * 2),
-        user: {},
-        codeChallengeMethod: 'plain',
-        codeChallenge: codeVerifier
-      };
-      // fixme: The isPublic option is not used, as a result any client which allows authorization_code grant also accepts PKCE requests.
-      const client = { id: 'foobar', isPublic: true };
-      const model = Model.from({
-        getAuthorizationCode: function() { return authorizationCode; },
-        revokeAuthorizationCode: function() {},
-        saveToken: function() {}
-      });
-      const grantType = new AuthorizationCodeGrantType({ accessTokenLifetime: 123, model: model });
-      const request = new Request({ body: { code: 12345, code_verifier: 'foo' }, headers: {}, method: {}, query: {} });
-
-      return grantType.getAuthorizationCode(request, client)
-        .then(should.fail)
-        .catch(function(e) {
-          e.should.be.an.instanceOf(InvalidGrantError);
-          e.message.should.equal('Invalid grant: code verifier is invalid');
-        });
-    });
+    // xxx: the tests for `getAuthorizationCode` are removed, because PKCE is now validated
+    // in the handle method to ensure token revocation is performed before PKCE validation.
 
     it('should return an auth code when `code_verifier` is valid with S256 code challenge method', function() {
       const codeVerifier = stringUtil.base64URLEncode(crypto.randomBytes(32));
