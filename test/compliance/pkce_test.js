@@ -45,6 +45,7 @@ const { base64URLEncode } = require('../../lib/utils/string-util');
 const { createHash } = require('../../lib/utils/crypto-util');
 const { InvalidRequestError } = require('../../index');
 const ServerError = require('../../lib/errors/server-error');
+const InvalidGrantError = require('../../lib/errors/invalid-grant-error')
 require('chai').should();
 
 /**
@@ -194,7 +195,8 @@ describe('PKCE Compliance (RFC 7636)', function () {
         await oAuth2Server.token(request, response);
         tokenIssued = true;
       } catch (e) {
-        // expected once fixed
+        e.should.be.instanceOf(InvalidRequestError);
+        e.message.should.equal('Invalid parameter: `code_verifier`');
       }
 
       // This assertion documents the a token IS issued
@@ -222,7 +224,8 @@ describe('PKCE Compliance (RFC 7636)', function () {
         await oAuth2Server.token(request, response);
         tokenIssued = true;
       } catch (e) {
-        // expected once fixed
+        e.should.be.instanceOf(InvalidRequestError);
+        e.message.should.equal('Invalid parameter: `code_verifier`');
       }
 
       if (tokenIssued) {
@@ -247,7 +250,8 @@ describe('PKCE Compliance (RFC 7636)', function () {
         await oAuth2Server.token(request, response);
         tokenIssued = true;
       } catch (e) {
-        // expected once fixed
+        e.should.be.instanceOf(InvalidRequestError);
+        e.message.should.equal('Invalid parameter: `code_verifier`');
       }
 
       if (tokenIssued) {
@@ -272,7 +276,8 @@ describe('PKCE Compliance (RFC 7636)', function () {
         await oAuth2Server.token(request, response);
         tokenIssued = true;
       } catch (e) {
-        // expected once fixed
+        e.should.be.instanceOf(InvalidRequestError);
+        e.message.should.equal('Invalid parameter: `code_verifier`');
       }
 
       if (tokenIssued) {
@@ -315,10 +320,15 @@ describe('PKCE Compliance (RFC 7636)', function () {
       const badRequest = tokenRequest(code.authorizationCode, 'a');
       const badResponse = new Response();
 
+      // before
+      const codeExists = db.authorizationCodes.has(code.authorizationCode);
+      codeExists.should.equal(true, 'Precondition failed: seeded authorization code should exist in DB');
+
       try {
         await oAuth2Server.token(badRequest, badResponse);
       } catch (e) {
-        // Expected: invalid_grant because hash doesn't match
+        e.should.be.instanceOf(InvalidRequestError);
+        e.message.should.equal('Invalid parameter: `code_verifier`');
       }
 
       // After a failed PKCE attempt the authorization code should have
@@ -382,10 +392,12 @@ describe('PKCE Compliance (RFC 7636)', function () {
       try {
         await oAuth2Server.token(wrongRequest, wrongResponse);
       } catch (e) {
-        // expected failure
+        // Wrong verifier rejected
+        e.should.be.instanceOf(InvalidGrantError);
+        e.message.should.equal('Invalid grant: code verifier is invalid');
       }
 
-      // Attempt 2: correct verifier – should fail if code was revoked
+      // Attempt 2: correct verifier but should fail because code was revoked
       const correctRequest = tokenRequest(code.authorizationCode, validVerifier);
       const correctResponse = new Response();
 
@@ -397,7 +409,9 @@ describe('PKCE Compliance (RFC 7636)', function () {
           tokenIssued = true;
         }
       } catch (e) {
-        // This is the correct behaviour after fix: code was revoked
+        // This is the correct behaviour after fix: code was revoked and is invalid now
+        e.should.be.instanceOf(InvalidGrantError);
+        e.message.should.equal('Invalid grant: authorization code is invalid');
       }
 
       if (tokenIssued) {
@@ -473,6 +487,8 @@ describe('PKCE Compliance (RFC 7636)', function () {
         tokenIssued = true;
       } catch (e) {
         // would be expected if plain were rejected
+        e.should.be.instanceOf(InvalidRequestError);
+        e.message.should.equal('Invalid request: `code_challenge_method` "plain" is not allowed; use "S256"');
       }
 
       // Note: accepting "plain" is RFC 7636-compliant (§4.3 says the
