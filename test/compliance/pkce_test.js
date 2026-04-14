@@ -45,7 +45,7 @@ const { base64URLEncode } = require('../../lib/utils/string-util');
 const { createHash } = require('../../lib/utils/crypto-util');
 const { InvalidRequestError } = require('../../index');
 const ServerError = require('../../lib/errors/server-error');
-const InvalidGrantError = require('../../lib/errors/invalid-grant-error')
+const InvalidGrantError = require('../../lib/errors/invalid-grant-error');
 require('chai').should();
 
 /**
