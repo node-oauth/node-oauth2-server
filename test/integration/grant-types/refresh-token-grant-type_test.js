@@ -218,7 +218,7 @@ describe('RefreshTokenGrantType integration', function() {
         saveToken: () => should.fail()
       });
       const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 120, model });
-      const values = ['toke😇n', () => {}, [], Symbol('test')];
+      const values = ['toke😇n', () => {}, [], Symbol('test'), true, {}];
 
       for (const value of values) {
         const request = new Request({ body: { refresh_token: value }, headers: {}, method: {}, query: {} });

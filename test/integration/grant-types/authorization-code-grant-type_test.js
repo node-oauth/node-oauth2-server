@@ -415,15 +415,25 @@ describe('AuthorizationCodeGrantType integration', function() {
         revokeAuthorizationCode: () => should.fail(),
         saveToken: () => should.fail()
       });
-      const grantType = new AuthorizationCodeGrantType({ accessTokenLifetime: 123, model: model });
-      const request = new Request({ body: { code: '12345' }, headers: {}, method: {}, query: {} });
 
-      try {
-        await grantType.getAuthorizationCode(request, client);
-        should.fail();
-      } catch (e) {
-        e.should.be.an.instanceOf(InvalidGrantError);
-        e.message.should.equal('Invalid grant: authorization code has expired');
+      const variations = [
+        [123, '12345'],
+        [123, 12345],
+        ['123', '12345'],
+        ['123', 12345],
+      ];
+
+      for (const [accessTokenLifetime, code] of variations) {
+        const grantType = new AuthorizationCodeGrantType({ accessTokenLifetime, model: model });
+        const request = new Request({ body: { code }, headers: {}, method: {}, query: {} });
+
+        try {
+          await grantType.getAuthorizationCode(request, client);
+          should.fail();
+        } catch (e) {
+          e.should.be.an.instanceOf(InvalidGrantError);
+          e.message.should.equal('Invalid grant: authorization code has expired');
+        }
       }
     });
 
