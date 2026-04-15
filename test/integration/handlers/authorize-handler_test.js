@@ -1416,6 +1416,37 @@ describe('AuthorizeHandler integration', function() {
   });
 
   describe('getCodeChallengeMethod()', function() {
+    it('should throw if the code challenge method is not supported', async function () {
+      const methods = ['plain', 'foo', ' ', '0', true, {}, []];
+
+      for (const method of methods) {
+        const model = Model.from({
+          getAccessToken: function () {
+          },
+          getClient: function () {
+          },
+          saveAuthorizationCode: function () {
+          }
+        });
+        const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model });
+        const request = new Request({ body: { code_challenge_method: method }, headers: {}, method: {}, query: {} });
+
+        try {
+          await handler.getCodeChallengeMethod(request);
+          should.fail();
+        } catch (e) {
+          if (method === 'plain') {
+            e.should.be.an.instanceOf(InvalidRequestError);
+            e.message.should.equal('Invalid request: `code_challenge_method` "plain" is not allowed; use "S256"');
+          }
+          else {
+            e.should.be.an.instanceOf(InvalidRequestError);
+            e.message.should.equal(`Invalid request: transform algorithm '${method}' not supported`);
+          }
+        }
+      }
+    });
+
     it('should get code challenge method', function() {
       const model = Model.from({
         getAccessToken: function() {},
@@ -1449,13 +1480,26 @@ describe('AuthorizeHandler integration', function() {
       }
     });
 
-    it('should get default code challenge method plain if missing', function() {
+    it('should get default code challenge method S256 if missing (default)', function() {
       const model = Model.from({
         getAccessToken: function() {},
         getClient: function() {},
         saveAuthorizationCode: function() {}
       });
       const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model });
+      const request = new Request({ body: {}, headers: {}, method: {}, query: {} });
+
+      const codeChallengeMethod  = handler.getCodeChallengeMethod(request);
+      codeChallengeMethod.should.equal('S256');
+    });
+
+    it('should get default code challenge method plain if missing and plain PKCE is enabled', function() {
+      const model = Model.from({
+        getAccessToken: function() {},
+        getClient: function() {},
+        saveAuthorizationCode: function() {}
+      });
+      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, enablePlainPKCE: true,  model });
       const request = new Request({ body: {}, headers: {}, method: {}, query: {} });
 
       const codeChallengeMethod  = handler.getCodeChallengeMethod(request);
