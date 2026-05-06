@@ -13,6 +13,7 @@ exports.Response = require('./lib/response');
  */
 
 exports.AbstractGrantType = require('./lib/grant-types/abstract-grant-type');
+exports.JwtBearerGrantType = require('./lib/grant-types/jwt-bearer-grant-type');
 
 /**
  * Export error classes.

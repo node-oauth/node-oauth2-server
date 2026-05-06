@@ -114,6 +114,23 @@ declare namespace OAuth2Server {
         redirect(url: string): void;
     }
 
+    /**
+     * JWT Bearer grant type (RFC 7523 / ID-JAG Cross App Access).
+     *
+     * Accepts a JWT Bearer assertion — typically an ID-JAG issued by an upstream
+     * Identity Provider — and exchanges it for a standard Bearer access token.
+     *
+     * Register via extendedGrantTypes:
+     *   extendedGrantTypes: {
+     *     'urn:ietf:params:oauth:grant-type:jwt-bearer': JwtBearerGrantType
+     *   }
+     *
+     * Required model methods: getUserFromJwtBearer, saveToken
+     */
+    class JwtBearerGrantType extends AbstractGrantType {
+        handle(request: Request, client: Client): Promise<Token | Falsey>;
+    }
+
     abstract class AbstractGrantType {
         /**
          * Instantiates AbstractGrantType using the supplied options.
@@ -385,6 +402,34 @@ declare namespace OAuth2Server {
     }
 
     interface ExtensionModel extends BaseModel, RequestAuthenticationModel {}
+
+    /**
+     * Model interface for the JWT Bearer grant type (RFC 7523 / ID-JAG).
+     *
+     * Used with the `urn:ietf:params:oauth:grant-type:jwt-bearer` grant to
+     * implement the Resource AS role in Cross App Access flows.
+     */
+    interface JwtBearerModel extends BaseModel, RequestAuthenticationModel {
+        /**
+         * Invoked to validate a JWT Bearer assertion and return the associated user.
+         *
+         * The model is responsible for all cryptographic validation, including:
+         *   - For ID-JAG assertions (typ: "oauth-id-jag+jwt"):
+         *     - Verify `aud` claim matches this authorization server
+         *     - Verify `client_id` claim matches the authenticated `client.id`
+         *     - Verify IdP signature using the IdP's public keys
+         *     - Verify `exp`, `iat`, `jti` claims per RFC 7519
+         *   - For general RFC 7523 assertions: standard JWT validation
+         *
+         * Return the user object on success, or a falsy value to reject the grant.
+         */
+        getUserFromJwtBearer(assertion: string, client: Client): Promise<User | Falsey>;
+
+        /**
+         * Invoked to check if the requested scope is valid for the user/client pair.
+         */
+        validateScope?(user: User, client: Client, scope?: string[]): Promise<string[] | Falsey>;
+    }
 
     /**
      * An interface representing the user.
