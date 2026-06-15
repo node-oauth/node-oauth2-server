@@ -14,7 +14,6 @@
  *         resource owner.
  */
 
-
 /**
  * Response
  * @see https://datatracker.ietf.org/doc/html/rfc6749#section-5.1
@@ -57,173 +56,186 @@
  *         information about the error, used to provide the client
  *         developer with additional information about the error.
  */
-const OAuth2Server = require('../..');
-const DB = require('../helpers/db');
-const createModel = require('../helpers/model');
-const createRequest = require('../helpers/request');
-const Response = require('../../lib/response');
-const should = require('chai').should();
+const OAuth2Server = require("../..");
+const DB = require("../helpers/db");
+const createModel = require("../helpers/model");
+const createRequest = require("../helpers/request");
+const Response = require("../../lib/response");
+const should = require("chai").should();
 
-require('chai').should();
+require("chai").should();
 
 const db = new DB();
 
 const auth = new OAuth2Server({
-  model: createModel(db)
+	model: createModel(db),
 });
 
-const user = db.saveUser({ id: 1, username: 'test', password: 'test'});
-const client = db.saveClient({ id: 'a', secret: 'b', grants: ['password', 'refresh_token'] });
-const scope = 'read write';
+const user = db.saveUser({ id: 1, username: "test", password: "test" });
+const client = db.saveClient({
+	id: "a",
+	secret: "b",
+	grants: ["password", "refresh_token"],
+});
+const scope = "read write";
 
-function createLoginRequest () {
-  return createRequest({
-    body: {
-      grant_type: 'password',
-      username: user.username,
-      password: user.password,
-      scope
-    },
-    headers: {
-      'authorization': 'Basic ' + Buffer.from(client.id + ':' + client.secret).toString('base64'),
-      'content-type': 'application/x-www-form-urlencoded'
-    },
-    method: 'POST',
-  });
+function createLoginRequest() {
+	return createRequest({
+		body: {
+			grant_type: "password",
+			username: user.username,
+			password: user.password,
+			scope,
+		},
+		headers: {
+			authorization:
+				"Basic " +
+				Buffer.from(client.id + ":" + client.secret).toString("base64"),
+			"content-type": "application/x-www-form-urlencoded",
+		},
+		method: "POST",
+	});
 }
 
-function createRefreshRequest (refresh_token) {
-  return createRequest({
-    method: 'POST',
-    body: {
-      grant_type: 'refresh_token',
-      refresh_token,
-      scope
-    },
-    headers: {
-      'authorization': 'Basic ' + Buffer.from(client.id + ':' + client.secret).toString('base64'),
-      'content-type': 'application/x-www-form-urlencoded'
-    }
-  });
+function createRefreshRequest(refresh_token) {
+	return createRequest({
+		method: "POST",
+		body: {
+			grant_type: "refresh_token",
+			refresh_token,
+			scope,
+		},
+		headers: {
+			authorization:
+				"Basic " +
+				Buffer.from(client.id + ":" + client.secret).toString("base64"),
+			"content-type": "application/x-www-form-urlencoded",
+		},
+	});
 }
 
-describe('RefreshTokenGrantType Compliance', function () {
-  describe('With scope', function () {
-    it('Should generate token response', async function () {
-      const request = createLoginRequest();
-      const response = new Response({});
+describe("RefreshTokenGrantType Compliance", function () {
+	describe("With scope", function () {
+		it("Should generate token response", async function () {
+			const request = createLoginRequest();
+			const response = new Response({});
 
-      const credentials = await auth.token(request, response, {});
+			const credentials = await auth.token(request, response, {});
 
-      const refreshRequest = createRefreshRequest(credentials.refreshToken);
-      const refreshResponse = new Response({});
+			const refreshRequest = createRefreshRequest(credentials.refreshToken);
+			const refreshResponse = new Response({});
 
-      const token = await auth.token(refreshRequest, refreshResponse, {});
+			const token = await auth.token(refreshRequest, refreshResponse, {});
 
-      refreshResponse.body.token_type.should.equal('Bearer');
-      refreshResponse.body.access_token.should.equal(token.accessToken);
-      refreshResponse.body.refresh_token.should.equal(token.refreshToken);
-      refreshResponse.body.expires_in.should.be.a('number');
-      refreshResponse.body.scope.should.eql('read write');
+			refreshResponse.body.token_type.should.equal("Bearer");
+			refreshResponse.body.access_token.should.equal(token.accessToken);
+			refreshResponse.body.refresh_token.should.equal(token.refreshToken);
+			refreshResponse.body.expires_in.should.be.a("number");
+			refreshResponse.body.scope.should.eql("read write");
 
-      token.accessToken.should.be.a('string');
-      token.refreshToken.should.be.a('string');
-      token.accessTokenExpiresAt.should.be.a('date');
-      token.refreshTokenExpiresAt.should.be.a('date');
-      token.scope.should.eql(['read', 'write']);
+			token.accessToken.should.be.a("string");
+			token.refreshToken.should.be.a("string");
+			token.accessTokenExpiresAt.should.be.a("date");
+			token.refreshTokenExpiresAt.should.be.a("date");
+			token.scope.should.eql(["read", "write"]);
 
-      db.accessTokens.has(token.accessToken).should.equal(true);
-      db.refreshTokens.has(token.refreshToken).should.equal(true);
-    });
+			db.accessTokens.has(token.accessToken).should.equal(true);
+			db.refreshTokens.has(token.refreshToken).should.equal(true);
+		});
 
-    it('Should throw invalid_grant error', async function () {
-      const request = createRefreshRequest('invalid');
-      const response = new Response({});
+		it("Should throw invalid_grant error", async function () {
+			const request = createRefreshRequest("invalid");
+			const response = new Response({});
 
-      await auth.token(request, response, {})
-        .then(() => {
-          throw Error('Should not reach this');
-        }).catch(err => {
-          err.name.should.equal('invalid_grant');
-        });
-    });
+			await auth
+				.token(request, response, {})
+				.then(() => {
+					throw Error("Should not reach this");
+				})
+				.catch((err) => {
+					err.name.should.equal("invalid_grant");
+				});
+		});
 
-    it('Should throw invalid_scope error', async function () {
-      const request = createLoginRequest();
-      const response = new Response({});
+		it("Should throw invalid_scope error", async function () {
+			const request = createLoginRequest();
+			const response = new Response({});
 
-      const credentials = await auth.token(request, response, {});
+			const credentials = await auth.token(request, response, {});
 
-      const refreshRequest = createRefreshRequest(credentials.refreshToken);
-      const refreshResponse = new Response({});
+			const refreshRequest = createRefreshRequest(credentials.refreshToken);
+			const refreshResponse = new Response({});
 
-      refreshRequest.body.scope = 'invalid';
+			refreshRequest.body.scope = "invalid";
 
-      await auth.token(refreshRequest, refreshResponse, {})
-        .then(should.fail)
-        .catch(err => {
-          err.name.should.equal('invalid_scope');
-        });
-    });
+			await auth
+				.token(refreshRequest, refreshResponse, {})
+				.then(should.fail)
+				.catch((err) => {
+					err.name.should.equal("invalid_scope");
+				});
+		});
 
-    it('Should throw error if requested scope is greater than original scope', async function () {
-      const request = createLoginRequest();
-      const response = new Response({});
+		it("Should throw error if requested scope is greater than original scope", async function () {
+			const request = createLoginRequest();
+			const response = new Response({});
 
-      request.body.scope = 'read';
+			request.body.scope = "read";
 
-      const credentials = await auth.token(request, response, {});
+			const credentials = await auth.token(request, response, {});
 
-      const refreshRequest = createRefreshRequest(credentials.refreshToken);
-      const refreshResponse = new Response({});
+			const refreshRequest = createRefreshRequest(credentials.refreshToken);
+			const refreshResponse = new Response({});
 
-      refreshRequest.scope = 'read write';
+			refreshRequest.scope = "read write";
 
-      await auth.token(refreshRequest, refreshResponse, {})
-        .then(should.fail)
-        .catch(err => {
-          err.name.should.equal('invalid_scope');
-        });
-    });
+			await auth
+				.token(refreshRequest, refreshResponse, {})
+				.then(should.fail)
+				.catch((err) => {
+					err.name.should.equal("invalid_scope");
+				});
+		});
 
-    it('Should throw error if a scope is requested without a previous scope', async function () {
-      const request = createLoginRequest();
-      const response = new Response({});
+		it("Should throw error if a scope is requested without a previous scope", async function () {
+			const request = createLoginRequest();
+			const response = new Response({});
 
-      delete request.body.scope;
+			delete request.body.scope;
 
-      const credentials = await auth.token(request, response, {});
+			const credentials = await auth.token(request, response, {});
 
-      const refreshRequest = createRefreshRequest(credentials.refreshToken);
-      const refreshResponse = new Response({});
+			const refreshRequest = createRefreshRequest(credentials.refreshToken);
+			const refreshResponse = new Response({});
 
-      refreshRequest.scope = 'read write';
+			refreshRequest.scope = "read write";
 
-      await auth.token(refreshRequest, refreshResponse, {})
-        .then(should.fail)
-        .catch(err => {
-          err.name.should.equal('invalid_scope');
-        });
-    });
+			await auth
+				.token(refreshRequest, refreshResponse, {})
+				.then(should.fail)
+				.catch((err) => {
+					err.name.should.equal("invalid_scope");
+				});
+		});
 
-    it('Should create refresh token with smaller scope', async function () {
-      const request = createLoginRequest();
-      const response = new Response({});
+		it("Should create refresh token with smaller scope", async function () {
+			const request = createLoginRequest();
+			const response = new Response({});
 
-      const credentials = await auth.token(request, response, {});
+			const credentials = await auth.token(request, response, {});
 
-      const refreshRequest = createRefreshRequest(credentials.refreshToken);
-      const refreshResponse = new Response({});
+			const refreshRequest = createRefreshRequest(credentials.refreshToken);
+			const refreshResponse = new Response({});
 
-      refreshRequest.body.scope = 'read';
+			refreshRequest.body.scope = "read";
 
-      const token = await auth.token(refreshRequest, refreshResponse, {});
+			const token = await auth.token(refreshRequest, refreshResponse, {});
 
-      refreshResponse.body.token_type.should.equal('Bearer');
-      refreshResponse.body.access_token.should.equal(token.accessToken);
-      refreshResponse.body.refresh_token.should.equal(token.refreshToken);
-      refreshResponse.body.expires_in.should.be.a('number');
-      refreshResponse.body.scope.should.eql('read');
-    });
-  });
+			refreshResponse.body.token_type.should.equal("Bearer");
+			refreshResponse.body.access_token.should.equal(token.accessToken);
+			refreshResponse.body.refresh_token.should.equal(token.refreshToken);
+			refreshResponse.body.expires_in.should.be.a("number");
+			refreshResponse.body.scope.should.eql("read");
+		});
+	});
 });
