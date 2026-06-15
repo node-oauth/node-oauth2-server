@@ -53,7 +53,7 @@ describe("OAuthError", function () {
 			e.stack.should.not.be.null;
 			e.stack.should.not.be.undefined;
 			e.stack.should.include("oauth-error_test.js");
-			e.stack.should.include("40"); //error lineNUmber
+			e.stack.should.include("41"); //error lineNUmber
 		}
 	});
 });
