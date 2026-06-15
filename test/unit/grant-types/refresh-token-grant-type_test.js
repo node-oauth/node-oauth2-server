@@ -25,14 +25,12 @@ describe("RefreshTokenGrantType", function () {
 				saveToken: function () {
 					return { accessToken: "bar", client: {}, user: {} };
 				},
-				revokeToken: sinon
-					.stub()
-					.returns({
-						accessToken: "foo",
-						client: {},
-						refreshTokenExpiresAt: new Date(new Date() / 2),
-						user: {},
-					}),
+				revokeToken: sinon.stub().returns({
+					accessToken: "foo",
+					client: {},
+					refreshTokenExpiresAt: new Date(new Date() / 2),
+					user: {},
+				}),
 			});
 			const handler = new RefreshTokenGrantType({
 				accessTokenLifetime: 120,
@@ -95,14 +93,12 @@ describe("RefreshTokenGrantType", function () {
 		it("should call `model.revokeToken()`", function () {
 			const model = Model.from({
 				getRefreshToken: function () {},
-				revokeToken: sinon
-					.stub()
-					.returns({
-						accessToken: "foo",
-						client: {},
-						refreshTokenExpiresAt: new Date(new Date() / 2),
-						user: {},
-					}),
+				revokeToken: sinon.stub().returns({
+					accessToken: "foo",
+					client: {},
+					refreshTokenExpiresAt: new Date(new Date() / 2),
+					user: {},
+				}),
 				saveToken: function () {},
 			});
 			const handler = new RefreshTokenGrantType({
@@ -125,14 +121,12 @@ describe("RefreshTokenGrantType", function () {
 		it("should not call `model.revokeToken()`", function () {
 			const model = Model.from({
 				getRefreshToken: function () {},
-				revokeToken: sinon
-					.stub()
-					.returns({
-						accessToken: "foo",
-						client: {},
-						refreshTokenExpiresAt: new Date(new Date() / 2),
-						user: {},
-					}),
+				revokeToken: sinon.stub().returns({
+					accessToken: "foo",
+					client: {},
+					refreshTokenExpiresAt: new Date(new Date() / 2),
+					user: {},
+				}),
 				saveToken: function () {},
 			});
 			const handler = new RefreshTokenGrantType({
@@ -153,14 +147,12 @@ describe("RefreshTokenGrantType", function () {
 		it("should not call `model.revokeToken()`", function () {
 			const model = Model.from({
 				getRefreshToken: function () {},
-				revokeToken: sinon
-					.stub()
-					.returns({
-						accessToken: "foo",
-						client: {},
-						refreshTokenExpiresAt: new Date(new Date() / 2),
-						user: {},
-					}),
+				revokeToken: sinon.stub().returns({
+					accessToken: "foo",
+					client: {},
+					refreshTokenExpiresAt: new Date(new Date() / 2),
+					user: {},
+				}),
 				saveToken: function () {},
 			});
 			const handler = new RefreshTokenGrantType({

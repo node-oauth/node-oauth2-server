@@ -45,12 +45,10 @@ describe("AuthorizeHandler", function () {
 		it("should call `model.getClient()`", function () {
 			const model = Model.from({
 				getAccessToken: function () {},
-				getClient: sinon
-					.stub()
-					.returns({
-						grants: ["authorization_code"],
-						redirectUris: ["http://example.com/cb"],
-					}),
+				getClient: sinon.stub().returns({
+					grants: ["authorization_code"],
+					redirectUris: ["http://example.com/cb"],
+				}),
 				saveAuthorizationCode: function () {},
 			});
 			const handler = new AuthorizeHandler({

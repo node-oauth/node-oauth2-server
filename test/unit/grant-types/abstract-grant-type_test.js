@@ -39,13 +39,11 @@ describe("AbstractGrantType", function () {
 	describe("generateRefreshToken()", function () {
 		it("should call `model.generateRefreshToken()`", function () {
 			const model = Model.from({
-				generateRefreshToken: sinon
-					.stub()
-					.returns({
-						client: {},
-						expiresAt: new Date(new Date() / 2),
-						user: {},
-					}),
+				generateRefreshToken: sinon.stub().returns({
+					client: {},
+					expiresAt: new Date(new Date() / 2),
+					user: {},
+				}),
 			});
 			const handler = new AbstractGrantType({
 				accessTokenLifetime: 120,

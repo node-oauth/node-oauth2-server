@@ -20,14 +20,12 @@ describe("AuthorizationCodeGrantType", function () {
 	describe("getAuthorizationCode()", function () {
 		it("should call `model.getAuthorizationCode()`", function () {
 			const model = Model.from({
-				getAuthorizationCode: sinon
-					.stub()
-					.returns({
-						authorizationCode: 12345,
-						client: {},
-						expiresAt: new Date(new Date() * 2),
-						user: {},
-					}),
+				getAuthorizationCode: sinon.stub().returns({
+					authorizationCode: 12345,
+					client: {},
+					expiresAt: new Date(new Date() * 2),
+					user: {},
+				}),
 				revokeAuthorizationCode: function () {},
 				saveToken: function () {},
 			});
