@@ -1,3 +1,22 @@
+## Modules
+
+<dl>
+<dt><a href="#module_pkce">pkce</a></dt>
+<dd></dd>
+</dl>
+
+## Constants
+
+<dl>
+<dt><a href="#codeChallengeAndVerifierRegexp">codeChallengeAndVerifierRegexp</a> : <code>RegExp</code></dt>
+<dd><p>ABNF for &quot;code_verifier&quot; and &quot;code_challenge&quot; is as follows.</p>
+<p>code-verifier = 43*128unreserved
+unreserved = ALPHA / DIGIT / &quot;-&quot; / &quot;.&quot; / &quot;_&quot; / &quot;~&quot;
+ALPHA = %x41-5A / %x61-7A
+DIGIT = %x30-39</p>
+</dd>
+</dl>
+
 <a name="module_pkce"></a>
 
 ## pkce
@@ -62,3 +81,14 @@ Checks if the code challenge method is one of the supported methods
 | --- | --- |
 | method | <code>String</code> | 
 
+<a name="codeChallengeAndVerifierRegexp"></a>
+
+## codeChallengeAndVerifierRegexp : <code>RegExp</code>
+ABNF for "code_verifier" and "code_challenge" is as follows.
+
+code-verifier = 43*128unreserved
+unreserved = ALPHA / DIGIT / "-" / "." / "_" / "~"
+ALPHA = %x41-5A / %x61-7A
+DIGIT = %x30-39
+
+**Kind**: global constant  
