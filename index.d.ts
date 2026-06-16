@@ -258,7 +258,7 @@ declare namespace OAuth2Server {
          * Invoked to retrieve a client using a client id or a client id/client secret combination, depending on the grant type.
          *
          */
-        getClient(clientId: string, clientSecret: string): Promise<Client | Falsey>;
+        getClient(clientId: string, clientSecret?: string): Promise<Client | Falsey>;
 
         /**
          * Invoked to save an access token and optionally a refresh token, depending on the grant type.
