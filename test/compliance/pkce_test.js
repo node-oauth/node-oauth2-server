@@ -675,4 +675,116 @@ describe('PKCE Compliance (RFC 7636)', function () {
       }
     });
   });
+
+  // ==================================================================
+  // requirePKCE option (OAuth 2.1 / RFC 9700 §2.1.1)
+  //
+  // When `requirePKCE` is enabled, the authorization_code grant must use
+  // PKCE: the authorize endpoint rejects requests without a
+  // `code_challenge`, and the token endpoint rejects authorization codes
+  // that were issued without one.
+  // ==================================================================
+  describe('requirePKCE option', function () {
+    function pkceModel() {
+      const baseModel = createModel(db);
+      return {
+        ...baseModel,
+        getAuthorizationCode: async (authorizationCode) => db.authorizationCodes.get(authorizationCode) || null,
+        saveAuthorizationCode: async (code, client, user) => {
+          const doc = { ...code, client, user };
+          db.authorizationCodes.set(code.authorizationCode, doc);
+          return doc;
+        },
+        revokeAuthorizationCode: async (code) => db.authorizationCodes.delete(code.authorizationCode),
+        validateScope: async (user, client, scope) => scope,
+      };
+    }
+
+    function requirePKCEServer() {
+      return new OAuth2Server({ requirePKCE: true, authorizationCodeLifetime: 300, model: pkceModel() });
+    }
+
+    function authorizeRequest(extraQuery = {}) {
+      return createRequest({
+        method: 'GET',
+        query: {
+          response_type: 'code',
+          client_id: clientDoc.id,
+          redirect_uri: clientDoc.redirectUris[0],
+          state: 'teststate',
+          scope: 'read',
+          ...extraQuery,
+        },
+      });
+    }
+
+    const authenticateHandler = { handle: () => userDoc };
+
+    it('rejects an authorize request without a `code_challenge`', async function () {
+      const server = requirePKCEServer();
+      const response = new Response({ headers: {} });
+      let error = null;
+      try {
+        await server.authorize(authorizeRequest(), response, { authenticateHandler });
+      } catch (e) {
+        error = e;
+      }
+      (error !== null).should.equal(true);
+      error.should.be.an.instanceOf(InvalidRequestError);
+      error.message.should.match(/code_challenge/);
+    });
+
+    it('rejects a `code_challenge_method` without a `code_challenge` as a missing `code_challenge`', async function () {
+      // the missing-`code_challenge` error must take precedence over method
+      // validation, so a request with an (otherwise invalid) method but no
+      // challenge reports the missing parameter, not a method error.
+      const server = requirePKCEServer();
+      const response = new Response({ headers: {} });
+      let error = null;
+      try {
+        await server.authorize(authorizeRequest({ code_challenge_method: 'plain' }), response, { authenticateHandler });
+      } catch (e) {
+        error = e;
+      }
+      (error !== null).should.equal(true);
+      error.should.be.an.instanceOf(InvalidRequestError);
+      error.message.should.equal('Missing parameter: `code_challenge`');
+    });
+
+    it('allows an authorize request that includes a `code_challenge`', async function () {
+      const server = requirePKCEServer();
+      const response = new Response({ headers: {} });
+      const challenge = computeS256Challenge('a'.repeat(43));
+      const code = await server.authorize(
+        authorizeRequest({ code_challenge: challenge, code_challenge_method: 'S256' }),
+        response,
+        { authenticateHandler },
+      );
+      code.codeChallenge.should.equal(challenge);
+    });
+
+    it('rejects a token exchange for a code issued without a `code_challenge`', async function () {
+      const server = requirePKCEServer();
+      const codeValue = 'no-pkce-code-' + Math.random().toString(36).slice(2);
+      db.authorizationCodes.set(codeValue, {
+        authorizationCode: codeValue,
+        expiresAt: new Date(Date.now() + 60000),
+        redirectUri: 'https://client.example/callback',
+        client: clientDoc,
+        user: userDoc,
+        scope: ['read'],
+        // intentionally no codeChallenge
+      });
+      const response = new Response();
+      let error = null;
+      try {
+        await server.token(tokenRequest(codeValue), response);
+      } catch (e) {
+        error = e;
+      }
+      (error !== null).should.equal(true);
+      error.should.be.an.instanceOf(InvalidGrantError);
+      error.message.should.equal('Invalid grant: authorization code was issued without a `code_challenge`');
+    });
+  });
 });

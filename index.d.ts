@@ -208,6 +208,11 @@ declare namespace OAuth2Server {
          * Lifetime of generated authorization codes in seconds (default = 5 minutes).
          */
         authorizationCodeLifetime?: number;
+
+        /**
+         * Require PKCE for the authorization code grant: reject authorize requests without a `code_challenge`. Recommended by OAuth 2.1.
+         */
+        requirePKCE?: boolean;
     }
 
     interface TokenOptions {
@@ -243,6 +248,11 @@ declare namespace OAuth2Server {
          * Additional supported grant types.
          */
         extendedGrantTypes?: Record<string, typeof AbstractGrantType>;
+
+        /**
+         * Require PKCE for the authorization code grant: reject token exchanges for codes issued without a `code_challenge`. Recommended by OAuth 2.1.
+         */
+        requirePKCE?: boolean;
     }
 
     /**
