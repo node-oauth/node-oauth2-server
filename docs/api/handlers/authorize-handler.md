@@ -125,8 +125,12 @@ Update response with the redirect uri and the state parameter, if available.
 <a name="AuthorizeHandler+getCodeChallengeMethod"></a>
 
 ### authorizeHandler.getCodeChallengeMethod()
-Get code challenge method from request or defaults to plain.
-https://www.rfc-editor.org/rfc/rfc7636#section-4.3
+Get code challenge method from request.
+
+When `enablePlainPKCE` is false (the default), the "plain" method is
+rejected and the default (when no method is provided) is "S256".
+When `enablePlainPKCE` is true, "plain" is accepted and used as the
+default per RFC 7636 §4.3.
 
 **Kind**: instance method of [<code>AuthorizeHandler</code>](#AuthorizeHandler)  
 **Throws**:
@@ -134,6 +138,7 @@ https://www.rfc-editor.org/rfc/rfc7636#section-4.3
 - <code>InvalidRequestError</code> if request contains unsupported code_challenge_method
  (see https://www.rfc-editor.org/rfc/rfc7636#section-4.4)
 
+**See**: https://www.rfc-editor.org/rfc/rfc7636#section-4.3  
 <a name="responseTypes"></a>
 
 ## responseTypes

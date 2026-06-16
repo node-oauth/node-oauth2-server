@@ -7,6 +7,7 @@
     * [new AuthorizationCodeGrantType(options)](#new_AuthorizationCodeGrantType_new)
     * [.handle(request, client)](#AuthorizationCodeGrantType+handle)
     * [.getAuthorizationCode(request, client)](#AuthorizationCodeGrantType+getAuthorizationCode) ⇒ <code>Promise.&lt;{user}&gt;</code>
+    * [.verifyPKCE(request, code)](#AuthorizationCodeGrantType+verifyPKCE)
     * [.validateRedirectUri(request, code)](#AuthorizationCodeGrantType+validateRedirectUri)
     * [.revokeAuthorizationCode(code)](#AuthorizationCodeGrantType+revokeAuthorizationCode)
     * [.saveToken(user, client, authorizationCode, requestedScope)](#AuthorizationCodeGrantType+saveToken)
@@ -43,6 +44,23 @@ Get the authorization code.
 | --- | --- |
 | request | <code>Request</code> | 
 | client | <code>ClientData</code> | 
+
+<a name="AuthorizationCodeGrantType+verifyPKCE"></a>
+
+### authorizationCodeGrantType.verifyPKCE(request, code)
+Verify PKCE code_verifier against the stored code_challenge.
+
+This is called from handle() AFTER the authorization code has been
+revoked, so that a failed verification attempt consumes the code
+and prevents online brute-force guessing.
+
+**Kind**: instance method of [<code>AuthorizationCodeGrantType</code>](#AuthorizationCodeGrantType)  
+**See**: https://datatracker.ietf.org/doc/html/rfc7636#section-4.6  
+
+| Param | Type |
+| --- | --- |
+| request | <code>Request</code> | 
+| code | <code>AuthorizationCodeData</code> | 
 
 <a name="AuthorizationCodeGrantType+validateRedirectUri"></a>
 
