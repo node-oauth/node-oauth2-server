@@ -464,6 +464,11 @@ declare namespace OAuth2Server {
          * A human-readable error message.
          */
         message: string;
+
+        /**
+         * The original error, present when this error was constructed by wrapping another `Error`.
+         */
+        inner?: Error;
     }
 
     class AccessDeniedError extends OAuthError {}
