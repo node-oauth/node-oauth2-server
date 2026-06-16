@@ -130,3 +130,36 @@ The loaded code has to contain `codeChallenge` and `codeChallengeMethod`.
 If `model.saveAuthorizationCode` did not cover these values when saving the code then this step will deny the request.
 
 See `Model#saveAuthorizationCode` and `Model#getAuthorizationCode`
+
+## PKCE, client authentication and refresh tokens
+
+PKCE only protects the `authorization_code` → token exchange. The `code_verifier`
+is sent and verified **once**, when the authorization code is redeemed (step 3
+above); it is **not** a parameter of the `refresh_token` grant and is ignored
+there. A client that obtained its tokens via PKCE refreshes them like any other
+client — by presenting its `refresh_token` (and, if it is a confidential client,
+its `client_secret`).
+
+PKCE is **not** client authentication, and never a substitute for a `client_secret`:
+
+- A **confidential** client (one issued a `client_secret`) must authenticate with
+  its secret on **every** token request, including `refresh_token`. PKCE is
+  additive. Your `model.getClient(clientId, clientSecret)` is responsible for
+  rejecting (returning a falsy value) a confidential client that fails to present
+  its secret.
+- A **public** client has no secret. If you choose to issue refresh tokens to
+  public clients (weigh the security implications first — see
+  [RFC 9700](https://www.rfc-editor.org/rfc/rfc9700)), relax client authentication
+  for that grant:
+
+      const server = new OAuth2Server({
+        model,
+        requireClientAuthentication: { refresh_token: false } // allow refresh without a client_secret
+      })
+
+  `requireClientAuthentication: { refresh_token: false }` disables the
+  `client_secret` **presence** check for the `refresh_token` grant for **all**
+  clients, not just public ones, so per-client (public vs confidential)
+  enforcement must be done in your `model.getClient`. The library does not yet
+  model the public/confidential distinction itself (tracked in
+  [#81](https://github.com/node-oauth/node-oauth2-server/issues/81)).

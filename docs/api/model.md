@@ -84,6 +84,14 @@ This model function is **required** for all grant types.
 - `refresh_token` grant
 - `password` grant
 
+**Remarks:**
+`clientSecret` is `null`/absent for public clients, and also for
+`authorization_code` requests that authenticate with PKCE (a `code_verifier`)
+instead of a secret — even if the client *has* a `client_secret`. PKCE is
+**not** a substitute for client authentication: your implementation must
+reject (return a falsy value) a confidential client that should have
+presented its `client_secret` but did not.
+
 **Kind**: instance method of [<code>Model</code>](#Model)  
 **Fulfil**: [<code>ClientData</code>](#ClientData) - An `Object` representing the client and associated data, or a falsy value if no such client could be found.  
 **Reject**: <code>Error</code> - An Error type  
