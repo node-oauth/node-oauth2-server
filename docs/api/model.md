@@ -657,7 +657,7 @@ An `Object` representing the authorization code and associated data. `code.clien
 
 | Name | Type | Description |
 | --- | --- | --- |
-| code | <code>string</code> | The authorization code passed to `getAuthorizationCode()`. |
+| authorizationCode | <code>string</code> | The authorization code passed to `getAuthorizationCode()`. |
 | expiresAt | <code>Date</code> | The expiry time of the authorization code. |
 | redirectUri | <code>string</code> | The redirect URI of the authorization code. |
 | scope | <code>Array.&lt;string&gt;</code> | The authorized scope of the authorization code. |
@@ -674,7 +674,7 @@ An `Object` representing the client and associated data.
 
 | Name | Type | Description |
 | --- | --- | --- |
-| id | <code>string</code> | The authorization code passed to `getAuthorizationCode()`. |
+| id | <code>string</code> | A unique string identifying the client. |
 | redirectUris | <code>Array.&lt;string&gt;</code> | Redirect URIs allowed for the client. Required for the `authorization_code` grant. |
 | grants | <code>Array.&lt;string&gt;</code> | Grant types allowed for the client. |
 | accessTokenLifetime | <code>number</code> | Client-specific lifetime of generated access tokens in seconds. |
