@@ -264,7 +264,7 @@ declare namespace OAuth2Server {
          * Invoked to save an access token and optionally a refresh token, depending on the grant type.
          *
          */
-        saveToken(token: Token, client: Client, user: User): Promise<Token | Falsey>;
+        saveToken(token: Omit<Token, 'client' | 'user'>, client: Client, user: User): Promise<Token | Falsey>;
     }
 
     interface RequestAuthenticationModel {
