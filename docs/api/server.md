@@ -43,6 +43,7 @@ Instantiates `OAuth2Server` using the supplied model.
 | [options.requireClientAuthentication] | <code>object</code> \| <code>boolean</code> | <code>object</code> | Require a client secret for grant types (names as keys). Defaults to `true` for all grant types. |
 | [options.alwaysIssueNewRefreshToken] | <code>boolean</code> | <code>true</code> | Always revoke the used refresh token and issue a new one for the `refresh_token` grant. |
 | [options.extendedGrantTypes] | <code>object</code> | <code>object</code> | Additional supported grant types. |
+| [options.enablePlainPKCE] | <code>boolean</code> | <code>false</code> | Allow the use of the `plain` code challenge method for PKCE. This is not recommended for production environments. |
 
 **Example**  
 ```js
