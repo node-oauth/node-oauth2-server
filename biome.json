@@ -24,7 +24,8 @@
 	},
 	"javascript": {
 		"formatter": {
-			"quoteStyle": "double"
+			"quoteStyle": "single",
+			"indentStyle": "space"
 		}
 	},
 	"assist": {
