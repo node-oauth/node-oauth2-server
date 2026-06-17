@@ -248,23 +248,31 @@ describe('RefreshTokenGrantType integration', function () {
       grantType.handle(request, client).should.be.an.instanceOf(Promise);
     });
 
-    it('should throw an error if extra `scope` is requested', async function() {
+    it('should throw an error if extra `scope` is requested', async function () {
       const client = { id: 123 };
       const token = {
         accessToken: 'foo',
         client: { id: 123 },
         user: { name: 'foo' },
-        refreshTokenExpiresAt: new Date(new Date() * 2)
+        refreshTokenExpiresAt: new Date(new Date() * 2),
       };
       const model = {
-        getRefreshToken: async function() {
+        getRefreshToken: async function () {
           return token;
         },
         revokeToken: () => should.fail(),
-        saveToken: () => should.fail()
+        saveToken: () => should.fail(),
       };
-      const grantType = new RefreshTokenGrantType({ accessTokenLifetime: 123, model });
-      const request = new Request({ body: { refresh_token: 'foobar', scope: 'read' }, headers: {}, method: {}, query: {} });
+      const grantType = new RefreshTokenGrantType({
+        accessTokenLifetime: 123,
+        model,
+      });
+      const request = new Request({
+        body: { refresh_token: 'foobar', scope: 'read' },
+        headers: {},
+        method: {},
+        query: {},
+      });
 
       try {
         await grantType.handle(request, client);

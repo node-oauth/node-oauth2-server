@@ -7,7 +7,7 @@
 	},
 	"files": {
 		"ignoreUnknown": true,
-		"includes": ["lib/**/*.js", "test/**/*.js"]
+		"includes": ["index.js", "lib/**/*.js", "test/**/*.js"]
 	},
 	"formatter": {
 		"enabled": true,
@@ -20,7 +20,8 @@
 			"suspicious": {
 				"noRedundantUseStrict": "off",
 				"noPrototypeBuiltins": "off",
-				"useIsArray": "off"
+				"useIsArray": "off",
+				"noGlobalAssign": "off"
 			},
 			"complexity": {
 				"useArrowFunction": "off",
