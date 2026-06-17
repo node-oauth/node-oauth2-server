@@ -14,11 +14,11 @@ const should = require('chai').should();
 function generateBaseResponse() {
   return {
     headers: {
-      bar: 'foo',
+      bar: 'foo'
     },
     body: {
-      foobar: 'barfoo',
-    },
+      foobar: 'barfoo'
+    }
   };
 }
 
@@ -56,7 +56,7 @@ describe('Request', function () {
     const originalResponse = generateBaseResponse();
     originalResponse.headers = {
       Foo: 'bar',
-      BAR: 'foo',
+      BAR: 'foo'
     };
 
     const response = new Response(originalResponse);
@@ -69,11 +69,11 @@ describe('Request', function () {
   it('should include additional properties passed in the response', function () {
     const originalResponse = generateBaseResponse();
     originalResponse.custom = {
-      newFoo: 'newBar',
+      newFoo: 'newBar'
     };
 
     originalResponse.custom2 = {
-      newBar: 'newFoo',
+      newBar: 'newFoo'
     };
 
     const response = new Response(originalResponse);
@@ -86,12 +86,12 @@ describe('Request', function () {
   it('should not allow overwriting methods on the Response prototype via custom properties', () => {
     const response = new Response({
       headers: {
-        'content-type': 'application/json',
+        'content-type': 'application/json'
       },
       get() {
         // malicious attempt to override the 'get' method
         return 'text/html';
-      },
+      }
     });
 
     response.get('content-type').should.equal('application/json');

@@ -19,7 +19,7 @@ describe('Server', function () {
   describe('authenticate()', function () {
     it('should call `handle`', function () {
       const model = Model.from({
-        getAccessToken: function () {},
+        getAccessToken: function () {}
       });
       const server = new Server({ model: model });
 
@@ -38,7 +38,7 @@ describe('Server', function () {
       const model = Model.from({
         getAccessToken: function () {},
         getClient: function () {},
-        saveAuthorizationCode: function () {},
+        saveAuthorizationCode: function () {}
       });
       const server = new Server({ model: model });
 
@@ -56,7 +56,7 @@ describe('Server', function () {
     it('should call `handle`', function () {
       const model = Model.from({
         getClient: function () {},
-        saveToken: function () {},
+        saveToken: function () {}
       });
       const server = new Server({ model: model });
 

@@ -24,20 +24,20 @@ describe('AuthorizationCodeGrantType', function () {
           authorizationCode: 12345,
           client: {},
           expiresAt: new Date(new Date() * 2),
-          user: {},
+          user: {}
         }),
         revokeAuthorizationCode: function () {},
-        saveToken: function () {},
+        saveToken: function () {}
       });
       const handler = new AuthorizationCodeGrantType({
         accessTokenLifetime: 120,
-        model: model,
+        model: model
       });
       const request = new Request({
         body: { code: 12345 },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
       const client = {};
 
@@ -58,11 +58,11 @@ describe('AuthorizationCodeGrantType', function () {
       const model = Model.from({
         getAuthorizationCode: function () {},
         revokeAuthorizationCode: sinon.stub().returns(true),
-        saveToken: function () {},
+        saveToken: function () {}
       });
       const handler = new AuthorizationCodeGrantType({
         accessTokenLifetime: 120,
-        model: model,
+        model: model
       });
       const authorizationCode = {};
 
@@ -85,11 +85,11 @@ describe('AuthorizationCodeGrantType', function () {
       const model = Model.from({
         getAuthorizationCode: function () {},
         revokeAuthorizationCode: function () {},
-        saveToken: sinon.stub().returns(true),
+        saveToken: sinon.stub().returns(true)
       });
       const handler = new AuthorizationCodeGrantType({
         accessTokenLifetime: 120,
-        model: model,
+        model: model
       });
 
       sinon.stub(handler, 'validateScope').returns(['foobiz']);
@@ -109,7 +109,7 @@ describe('AuthorizationCodeGrantType', function () {
             accessTokenExpiresAt: 'biz',
             refreshToken: 'bar',
             refreshTokenExpiresAt: 'baz',
-            scope: ['foobiz'],
+            scope: ['foobiz']
           });
           model.saveToken.firstCall.args[1].should.equal(client);
           model.saveToken.firstCall.args[2].should.equal(user);
@@ -131,7 +131,7 @@ describe('AuthorizationCodeGrantType', function () {
         expiresAt: new Date(new Date().getTime() * 2),
         user: {},
         codeChallengeMethod: 'S256',
-        codeChallenge: stringUtil.base64URLEncode(crypto.createHash('sha256').update(codeVerifier).digest()),
+        codeChallenge: stringUtil.base64URLEncode(crypto.createHash('sha256').update(codeVerifier).digest())
       };
       const client = { id: 'foobar', isPublic: true };
       const model = Model.from({
@@ -139,17 +139,17 @@ describe('AuthorizationCodeGrantType', function () {
           return authorizationCode;
         },
         revokeAuthorizationCode: function () {},
-        saveToken: function () {},
+        saveToken: function () {}
       });
       const grantType = new AuthorizationCodeGrantType({
         accessTokenLifetime: 123,
-        model: model,
+        model: model
       });
       const request = new Request({
         body: { code: 12345, code_verifier: codeVerifier },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       return grantType
@@ -168,7 +168,7 @@ describe('AuthorizationCodeGrantType', function () {
         expiresAt: new Date(new Date().getTime() * 2),
         user: {},
         codeChallengeMethod: 'plain',
-        codeChallenge: codeVerifier,
+        codeChallenge: codeVerifier
       };
       const client = { id: 'foobar', isPublic: true };
       const model = Model.from({
@@ -176,17 +176,17 @@ describe('AuthorizationCodeGrantType', function () {
           return authorizationCode;
         },
         revokeAuthorizationCode: function () {},
-        saveToken: function () {},
+        saveToken: function () {}
       });
       const grantType = new AuthorizationCodeGrantType({
         accessTokenLifetime: 123,
-        model: model,
+        model: model
       });
       const request = new Request({
         body: { code: 12345, code_verifier: codeVerifier },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       return grantType

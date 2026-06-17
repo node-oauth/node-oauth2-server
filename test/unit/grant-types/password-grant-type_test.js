@@ -19,18 +19,18 @@ describe('PasswordGrantType', function () {
     it('should call `model.getUser()`', function () {
       const model = Model.from({
         getUser: sinon.stub().returns(true),
-        saveToken: function () {},
+        saveToken: function () {}
       });
       const client = { id: 'foobar' };
       const handler = new PasswordGrantType({
         accessTokenLifetime: 120,
-        model: model,
+        model: model
       });
       const request = new Request({
         body: { username: 'foo', password: 'bar' },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       return handler
@@ -52,11 +52,11 @@ describe('PasswordGrantType', function () {
       const user = {};
       const model = Model.from({
         getUser: function () {},
-        saveToken: sinon.stub().returns(true),
+        saveToken: sinon.stub().returns(true)
       });
       const handler = new PasswordGrantType({
         accessTokenLifetime: 120,
-        model: model,
+        model: model
       });
 
       sinon.stub(handler, 'validateScope').returns(['foobar']);
@@ -75,7 +75,7 @@ describe('PasswordGrantType', function () {
             accessTokenExpiresAt: 'biz',
             refreshToken: 'bar',
             refreshTokenExpiresAt: 'baz',
-            scope: ['foobar'],
+            scope: ['foobar']
           });
           model.saveToken.firstCall.args[1].should.equal(client);
           model.saveToken.firstCall.args[2].should.equal(user);

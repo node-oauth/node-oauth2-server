@@ -23,7 +23,7 @@ describe('TokenModel', function () {
       const data = {
         client: 'bar',
         user: 'tar',
-        accessTokenExpiresAt: atExpiresAt,
+        accessTokenExpiresAt: atExpiresAt
       };
 
       try {
@@ -41,7 +41,7 @@ describe('TokenModel', function () {
       const data = {
         accessToken: 'foo',
         user: 'tar',
-        accessTokenExpiresAt: atExpiresAt,
+        accessTokenExpiresAt: atExpiresAt
       };
 
       try {
@@ -59,7 +59,7 @@ describe('TokenModel', function () {
       const data = {
         accessToken: 'foo',
         client: 'bar',
-        accessTokenExpiresAt: atExpiresAt,
+        accessTokenExpiresAt: atExpiresAt
       };
 
       try {
@@ -75,7 +75,7 @@ describe('TokenModel', function () {
         accessToken: 'foo',
         client: 'bar',
         user: 'tar',
-        accessTokenExpiresAt: '11/10/2023',
+        accessTokenExpiresAt: '11/10/2023'
       };
 
       try {
@@ -91,7 +91,7 @@ describe('TokenModel', function () {
         accessToken: 'foo',
         client: 'bar',
         user: 'tar',
-        refreshTokenExpiresAt: '11/10/2023',
+        refreshTokenExpiresAt: '11/10/2023'
       };
 
       try {
@@ -110,7 +110,7 @@ describe('TokenModel', function () {
         accessToken: 'foo',
         client: 'bar',
         user: 'tar',
-        accessTokenExpiresAt: atExpiresAt,
+        accessTokenExpiresAt: atExpiresAt
       };
 
       const model = new TokenModel(data);
@@ -130,7 +130,7 @@ describe('TokenModel', function () {
         accessToken: 'token',
         client: 'client',
         user: 'user',
-        myCustomAttribute: 'myCustomValue',
+        myCustomAttribute: 'myCustomValue'
       });
 
       should.not.exist(model['myCustomAttribute']);
@@ -143,10 +143,10 @@ describe('TokenModel', function () {
           accessToken: 'token',
           client: 'client',
           user: 'user',
-          myCustomAttribute: 'myCustomValue',
+          myCustomAttribute: 'myCustomValue'
         },
         {
-          allowExtendedTokenAttributes: true,
+          allowExtendedTokenAttributes: true
         }
       );
 

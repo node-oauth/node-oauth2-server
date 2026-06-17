@@ -67,7 +67,7 @@ require('chai').should();
 const db = new DB();
 
 const auth = new OAuth2Server({
-  model: createModel(db),
+  model: createModel(db)
 });
 
 const user = db.saveUser({ id: 1, username: 'test', password: 'test' });
@@ -80,13 +80,13 @@ function createDefaultRequest() {
       grant_type: 'password',
       username: user.username,
       password: user.password,
-      scope,
+      scope
     },
     headers: {
       authorization: 'Basic ' + Buffer.from(client.id + ':' + client.secret).toString('base64'),
-      'content-type': 'application/x-www-form-urlencoded',
+      'content-type': 'application/x-www-form-urlencoded'
     },
-    method: 'POST',
+    method: 'POST'
   });
 }
 
@@ -122,10 +122,10 @@ describe('PasswordGrantType Compliance', function () {
       const authenticationRequest = createRequest({
         body: {},
         headers: {
-          Authorization: `Bearer ${token.accessToken}`,
+          Authorization: `Bearer ${token.accessToken}`
         },
         method: 'GET',
-        query: {},
+        query: {}
       });
       const authenticationResponse = new Response({});
 
@@ -202,8 +202,8 @@ describe('PasswordGrantType Compliance', function () {
 
       const token = await auth.token(request, response, {
         requireClientAuthentication: {
-          password: false,
-        },
+          password: false
+        }
       });
 
       token.accessToken.should.be.a('string');
@@ -218,8 +218,8 @@ describe('PasswordGrantType Compliance', function () {
       await auth
         .token(request, response, {
           requireClientAuthentication: {
-            password: false,
-          },
+            password: false
+          }
         })
         .catch((err) => {
           err.name.should.equal('invalid_client');

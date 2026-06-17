@@ -35,7 +35,7 @@ describe(parseScope.name, () => {
     const values = [
       ['foo', ['foo']],
       ['foo bar', ['foo', 'bar']],
-      ['foo       bar', ['foo', 'bar']],
+      ['foo       bar', ['foo', 'bar']]
     ];
     values.forEach(([str, compare]) => {
       const parsed = parseScope(str);

@@ -66,13 +66,13 @@ describe('PKCE Compliance (RFC 7636)', function () {
   const userDoc = {
     id: 'pkce-user-1',
     username: 'pkceuser',
-    password: 'pkcepass',
+    password: 'pkcepass'
   };
   const clientDoc = {
     id: 'pkce-client',
     secret: 'pkce-secret',
     grants: ['authorization_code'],
-    redirectUris: ['https://client.example/callback'],
+    redirectUris: ['https://client.example/callback']
   };
 
   /**
@@ -94,7 +94,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
       user: userDoc,
       scope: ['read'],
       codeChallenge,
-      codeChallengeMethod: method,
+      codeChallengeMethod: method
     };
     // store in DB so getAuthorizationCode can find it
     db.authorizationCodes.set(codeValue, codeDoc);
@@ -113,13 +113,13 @@ describe('PKCE Compliance (RFC 7636)', function () {
         grant_type: 'authorization_code',
         code,
         redirect_uri: 'https://client.example/callback',
-        code_verifier: codeVerifier,
+        code_verifier: codeVerifier
       },
       headers: {
         authorization: 'Basic ' + Buffer.from(clientDoc.id + ':' + clientDoc.secret).toString('base64'),
-        'content-type': 'application/x-www-form-urlencoded',
+        'content-type': 'application/x-www-form-urlencoded'
       },
-      method: 'POST',
+      method: 'POST'
     });
   }
 
@@ -155,8 +155,8 @@ describe('PKCE Compliance (RFC 7636)', function () {
 
         validateScope: async function (user, client, scope) {
           return scope;
-        },
-      },
+        }
+      }
     });
   });
 
@@ -475,7 +475,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
         user: userDoc,
         scope: ['read'],
         codeChallenge: verifier, // plain: challenge === verifier
-        codeChallengeMethod: 'plain', // RFC 7636 §4.3 default
+        codeChallengeMethod: 'plain' // RFC 7636 §4.3 default
       };
       db.authorizationCodes.set(codeValue, codeDoc);
 
@@ -534,8 +534,8 @@ describe('PKCE Compliance (RFC 7636)', function () {
           },
           validateScope: async function (user, client, scope) {
             return scope;
-          },
-        },
+          }
+        }
       });
 
       const verifier = 'a'.repeat(43); // valid ABNF-length verifier
@@ -548,7 +548,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
         user: userDoc,
         scope: ['read'],
         codeChallenge: verifier, // plain: challenge === verifier
-        codeChallengeMethod: 'plain',
+        codeChallengeMethod: 'plain'
       });
 
       const request = tokenRequest(codeValue, verifier);
@@ -599,7 +599,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
         user: userDoc,
         scope: ['read'],
         codeChallenge: verifier,
-        codeChallengeMethod: 'plain',
+        codeChallengeMethod: 'plain'
       });
 
       // The attacker uses the stolen code_challenge directly as code_verifier
@@ -647,7 +647,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
         user: userDoc,
         scope: ['read'],
         codeChallenge: verifier,
-        codeChallengeMethod: 'forged-xyz', // invalid method stored in DB that could cause a "plain" fallback if not handled properly
+        codeChallengeMethod: 'forged-xyz' // invalid method stored in DB that could cause a "plain" fallback if not handled properly
       });
 
       // The attacker uses the stolen code_challenge directly as code_verifier

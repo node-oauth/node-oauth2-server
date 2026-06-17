@@ -29,7 +29,7 @@ require('chai').should();
 const db = new DB();
 
 const auth = new OAuth2Server({
-  model: createModel(db),
+  model: createModel(db)
 });
 
 const user = db.saveUser({ id: 1, username: 'test', password: 'test' });
@@ -42,13 +42,13 @@ function createDefaultRequest() {
       grant_type: 'password',
       username: user.username,
       password: user.password,
-      scope,
+      scope
     },
     headers: {
       authorization: 'Basic ' + Buffer.from(client.id + ':' + client.secret).toString('base64'),
-      'content-type': 'application/x-www-form-urlencoded',
+      'content-type': 'application/x-www-form-urlencoded'
     },
-    method: 'POST',
+    method: 'POST'
   });
 }
 

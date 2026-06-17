@@ -21,15 +21,15 @@ describe('AuthenticateHandler', function () {
     describe('with bearer token in the request authorization header', function () {
       it('should throw an error if the token is malformed', () => {
         const handler = new AuthenticateHandler({
-          model: { getAccessToken() {} },
+          model: { getAccessToken() {} }
         });
         const request = new Request({
           body: {},
           headers: {
-            Authorization: 'foo Bearer bar',
+            Authorization: 'foo Bearer bar'
           },
           method: 'ANY',
-          query: {},
+          query: {}
         });
 
         try {
@@ -46,13 +46,13 @@ describe('AuthenticateHandler', function () {
     describe('with bearer token in the request authorization header', function () {
       it('should call `getTokenFromRequestHeader()`', function () {
         const handler = new AuthenticateHandler({
-          model: { getAccessToken: function () {} },
+          model: { getAccessToken: function () {} }
         });
         const request = new Request({
           body: {},
           headers: { Authorization: 'Bearer foo' },
           method: {},
-          query: {},
+          query: {}
         });
 
         sinon.stub(handler, 'getTokenFromRequestHeader');
@@ -68,13 +68,13 @@ describe('AuthenticateHandler', function () {
     describe('with bearer token in the request query', function () {
       it('should call `getTokenFromRequestQuery()`', function () {
         const handler = new AuthenticateHandler({
-          model: { getAccessToken: function () {} },
+          model: { getAccessToken: function () {} }
         });
         const request = new Request({
           body: {},
           headers: {},
           method: {},
-          query: { access_token: 'foo' },
+          query: { access_token: 'foo' }
         });
 
         sinon.stub(handler, 'getTokenFromRequestQuery');
@@ -90,13 +90,13 @@ describe('AuthenticateHandler', function () {
     describe('with bearer token in the request body', function () {
       it('should call `getTokenFromRequestBody()`', function () {
         const handler = new AuthenticateHandler({
-          model: { getAccessToken: function () {} },
+          model: { getAccessToken: function () {} }
         });
         const request = new Request({
           body: { access_token: 'foo' },
           headers: {},
           method: {},
-          query: {},
+          query: {}
         });
 
         sinon.stub(handler, 'getTokenFromRequestBody');
@@ -113,7 +113,7 @@ describe('AuthenticateHandler', function () {
   describe('getAccessToken()', function () {
     it('should call `model.getAccessToken()`', function () {
       const model = Model.from({
-        getAccessToken: sinon.stub().returns({ user: {} }),
+        getAccessToken: sinon.stub().returns({ user: {} })
       });
       const handler = new AuthenticateHandler({ model: model });
 
@@ -132,14 +132,14 @@ describe('AuthenticateHandler', function () {
   describe('validateAccessToken()', function () {
     it('should fail if token has no valid `accessTokenExpiresAt` date', function () {
       const model = Model.from({
-        getAccessToken: function () {},
+        getAccessToken: function () {}
       });
       const handler = new AuthenticateHandler({ model: model });
 
       let failed = false;
       try {
         handler.validateAccessToken({
-          user: {},
+          user: {}
         });
       } catch (err) {
         err.should.be.an.instanceOf(ServerError);
@@ -150,13 +150,13 @@ describe('AuthenticateHandler', function () {
 
     it('should succeed if token has valid `accessTokenExpiresAt` date', function () {
       const model = Model.from({
-        getAccessToken: function () {},
+        getAccessToken: function () {}
       });
       const handler = new AuthenticateHandler({ model: model });
       try {
         handler.validateAccessToken({
           user: {},
-          accessTokenExpiresAt: new Date(new Date().getTime() + 10000),
+          accessTokenExpiresAt: new Date(new Date().getTime() + 10000)
         });
       } catch (err) {
         should.fail();
@@ -168,13 +168,13 @@ describe('AuthenticateHandler', function () {
     it('should call `model.getAccessToken()` if scope is defined', function () {
       const model = Model.from({
         getAccessToken: function () {},
-        verifyScope: sinon.stub().returns(true),
+        verifyScope: sinon.stub().returns(true)
       });
       const handler = new AuthenticateHandler({
         addAcceptedScopesHeader: true,
         addAuthorizedScopesHeader: true,
         model: model,
-        scope: 'bar',
+        scope: 'bar'
       });
 
       return handler

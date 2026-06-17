@@ -19,18 +19,18 @@ describe('TokenHandler', function () {
     it('should call `model.getClient()`', function () {
       const model = Model.from({
         getClient: sinon.stub().returns({ grants: ['password'] }),
-        saveToken: function () {},
+        saveToken: function () {}
       });
       const handler = new TokenHandler({
         accessTokenLifetime: 120,
         model: model,
-        refreshTokenLifetime: 120,
+        refreshTokenLifetime: 120
       });
       const request = new Request({
         body: { client_id: 12345, client_secret: 'secret' },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       return handler

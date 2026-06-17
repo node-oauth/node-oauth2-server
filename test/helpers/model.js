@@ -19,7 +19,7 @@ function createModel(db) {
       userId: user.id,
       scope: token.scope,
       accessTokenExpiresAt: token.accessTokenExpiresAt,
-      refreshTokenExpiresAt: token.refreshTokenExpiresAt,
+      refreshTokenExpiresAt: token.refreshTokenExpiresAt
     };
 
     token.client = client;
@@ -50,7 +50,7 @@ function createModel(db) {
       accessTokenExpiresAt: meta.accessTokenExpiresAt,
       user: db.findUserById(meta.userId),
       client: db.findClientById(meta.clientId),
-      scope: meta.scope,
+      scope: meta.scope
     };
   }
 
@@ -68,7 +68,7 @@ function createModel(db) {
       refreshTokenExpiresAt: meta.refreshTokenExpiresAt,
       user: db.findUserById(meta.userId),
       client: db.findClientById(meta.clientId),
-      scope: meta.scope,
+      scope: meta.scope
     };
   }
 
@@ -92,7 +92,7 @@ function createModel(db) {
     getAccessToken,
     getRefreshToken,
     revokeToken,
-    verifyScope,
+    verifyScope
   });
 }
 

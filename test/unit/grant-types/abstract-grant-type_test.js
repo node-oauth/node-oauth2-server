@@ -17,11 +17,11 @@ describe('AbstractGrantType', function () {
   describe('generateAccessToken()', function () {
     it('should call `model.generateAccessToken()`', function () {
       const model = Model.from({
-        generateAccessToken: sinon.stub().returns({ client: {}, expiresAt: new Date(), user: {} }),
+        generateAccessToken: sinon.stub().returns({ client: {}, expiresAt: new Date(), user: {} })
       });
       const handler = new AbstractGrantType({
         accessTokenLifetime: 120,
-        model: model,
+        model: model
       });
 
       return handler
@@ -40,12 +40,12 @@ describe('AbstractGrantType', function () {
         generateRefreshToken: sinon.stub().returns({
           client: {},
           expiresAt: new Date(new Date() / 2),
-          user: {},
-        }),
+          user: {}
+        })
       });
       const handler = new AbstractGrantType({
         accessTokenLifetime: 120,
-        model: model,
+        model: model
       });
 
       return handler

@@ -21,7 +21,7 @@ describe('Response integration', function () {
     it('should set the `headers`', function () {
       const response = new Response({
         body: {},
-        headers: { foo: 'bar', QuX: 'biz' },
+        headers: { foo: 'bar', QuX: 'biz' }
       });
 
       response.headers.should.eql({ foo: 'bar', qux: 'biz' });
@@ -44,7 +44,7 @@ describe('Response integration', function () {
     it('should return the value if the field exists', function () {
       const response = new Response({
         body: {},
-        headers: { 'content-type': 'text/html; charset=utf-8' },
+        headers: { 'content-type': 'text/html; charset=utf-8' }
       });
 
       response.get('Content-Type').should.equal('text/html; charset=utf-8');

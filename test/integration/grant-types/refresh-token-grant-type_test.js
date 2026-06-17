@@ -45,7 +45,7 @@ describe('RefreshTokenGrantType integration', function () {
     it('should throw an error if the model does not implement `revokeToken()`', function () {
       try {
         const model = Model.from({
-          getRefreshToken: () => should.fail(),
+          getRefreshToken: () => should.fail()
         });
 
         new RefreshTokenGrantType({ model });
@@ -61,7 +61,7 @@ describe('RefreshTokenGrantType integration', function () {
       try {
         const model = Model.from({
           getRefreshToken: () => should.fail(),
-          revokeToken: () => should.fail(),
+          revokeToken: () => should.fail()
         });
 
         new RefreshTokenGrantType({ model });
@@ -79,11 +79,11 @@ describe('RefreshTokenGrantType integration', function () {
       const model = Model.from({
         getRefreshToken: () => should.fail(),
         revokeToken: () => should.fail(),
-        saveToken: () => should.fail(),
+        saveToken: () => should.fail()
       });
       const grantType = new RefreshTokenGrantType({
         accessTokenLifetime: 120,
-        model,
+        model
       });
 
       try {
@@ -100,17 +100,17 @@ describe('RefreshTokenGrantType integration', function () {
       const model = Model.from({
         getRefreshToken: () => should.fail(),
         revokeToken: () => should.fail(),
-        saveToken: () => should.fail(),
+        saveToken: () => should.fail()
       });
       const grantType = new RefreshTokenGrantType({
         accessTokenLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: {},
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       try {
@@ -130,7 +130,7 @@ describe('RefreshTokenGrantType integration', function () {
         client: { id: 123 },
         user: { name: 'foo' },
         scope: ['read', 'write'],
-        refreshTokenExpiresAt: new Date(new Date() * 2),
+        refreshTokenExpiresAt: new Date(new Date() * 2)
       };
       const model = Model.from({
         getRefreshToken: async function (_refreshToken) {
@@ -161,18 +161,18 @@ describe('RefreshTokenGrantType integration', function () {
           _token.accessTokenExpiresAt.should.be.instanceOf(Date);
           _token.refreshTokenExpiresAt.should.be.instanceOf(Date);
           return token;
-        },
+        }
       });
 
       const grantType = new RefreshTokenGrantType({
         accessTokenLifetime: 123,
-        model,
+        model
       });
       const request = new Request({
         body: { refresh_token: 'foobar_refresh' },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
       const data = await grantType.handle(request, client);
       data.should.equal(token);
@@ -189,22 +189,22 @@ describe('RefreshTokenGrantType integration', function () {
             accessToken: 'foo',
             client: {},
             refreshTokenExpiresAt: new Date(new Date() / 2),
-            user: {},
+            user: {}
           };
         },
         saveToken: async function () {
           return { accessToken: 'foo', client: {}, user: {} };
-        },
+        }
       });
       const grantType = new RefreshTokenGrantType({
         accessTokenLifetime: 123,
-        model,
+        model
       });
       const request = new Request({
         body: { refresh_token: 'foobar' },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       grantType.handle(request, client).should.be.an.instanceOf(Promise);
@@ -221,22 +221,22 @@ describe('RefreshTokenGrantType integration', function () {
             accessToken: 'foo',
             client: {},
             refreshTokenExpiresAt: new Date(new Date() / 2),
-            user: {},
+            user: {}
           };
         },
         saveToken: async function () {
           return { accessToken: 'foo', client: {}, user: {} };
-        },
+        }
       });
       const grantType = new RefreshTokenGrantType({
         accessTokenLifetime: 123,
-        model,
+        model
       });
       const request = new Request({
         body: { refresh_token: 'foobar' },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       grantType.handle(request, client).should.be.an.instanceOf(Promise);
@@ -248,24 +248,24 @@ describe('RefreshTokenGrantType integration', function () {
         accessToken: 'foo',
         client: { id: 123 },
         user: { name: 'foo' },
-        refreshTokenExpiresAt: new Date(new Date() * 2),
+        refreshTokenExpiresAt: new Date(new Date() * 2)
       };
       const model = {
         getRefreshToken: async function () {
           return token;
         },
         revokeToken: () => should.fail(),
-        saveToken: () => should.fail(),
+        saveToken: () => should.fail()
       };
       const grantType = new RefreshTokenGrantType({
         accessTokenLifetime: 123,
-        model,
+        model
       });
       const request = new Request({
         body: { refresh_token: 'foobar', scope: 'read' },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       try {
@@ -285,17 +285,17 @@ describe('RefreshTokenGrantType integration', function () {
       const model = Model.from({
         getRefreshToken: () => should.fail(),
         revokeToken: () => should.fail(),
-        saveToken: () => should.fail(),
+        saveToken: () => should.fail()
       });
       const grantType = new RefreshTokenGrantType({
         accessTokenLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: {},
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       try {
@@ -313,17 +313,17 @@ describe('RefreshTokenGrantType integration', function () {
       const model = Model.from({
         getRefreshToken: async function () {},
         revokeToken: () => should.fail(),
-        saveToken: () => should.fail(),
+        saveToken: () => should.fail()
       });
       const grantType = new RefreshTokenGrantType({
         accessTokenLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: { refresh_token: '12345' },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       try {
@@ -343,17 +343,17 @@ describe('RefreshTokenGrantType integration', function () {
           return {};
         },
         revokeToken: () => should.fail(),
-        saveToken: () => should.fail(),
+        saveToken: () => should.fail()
       });
       const grantType = new RefreshTokenGrantType({
         accessTokenLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: { refresh_token: 12345 },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       try {
@@ -373,17 +373,17 @@ describe('RefreshTokenGrantType integration', function () {
           return { accessToken: 'foo', client: {} };
         },
         revokeToken: () => should.fail(),
-        saveToken: () => should.fail(),
+        saveToken: () => should.fail()
       });
       const grantType = new RefreshTokenGrantType({
         accessTokenLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: { refresh_token: 12345 },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       try {
@@ -403,17 +403,17 @@ describe('RefreshTokenGrantType integration', function () {
           return { accessToken: 'foo', client: { id: 456 }, user: {} };
         },
         revokeToken: () => should.fail(),
-        saveToken: () => should.fail(),
+        saveToken: () => should.fail()
       });
       const grantType = new RefreshTokenGrantType({
         accessTokenLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: { refresh_token: 12345 },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       try {
@@ -433,17 +433,17 @@ describe('RefreshTokenGrantType integration', function () {
           return { client: { id: 456 }, user: {} };
         },
         revokeToken: () => should.fail(),
-        saveToken: () => should.fail(),
+        saveToken: () => should.fail()
       });
       const grantType = new RefreshTokenGrantType({
         accessTokenLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: { refresh_token: 'øå€£‰' },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       try {
@@ -463,17 +463,17 @@ describe('RefreshTokenGrantType integration', function () {
           return { accessToken: 'foo', client: { id: 456 }, user: {} };
         },
         revokeToken: () => should.fail(),
-        saveToken: () => should.fail(),
+        saveToken: () => should.fail()
       });
       const grantType = new RefreshTokenGrantType({
         accessTokenLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: { refresh_token: 12345 },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       try {
@@ -495,21 +495,21 @@ describe('RefreshTokenGrantType integration', function () {
             accessToken: 'foo',
             client: { id: 123 },
             refreshTokenExpiresAt: date,
-            user: {},
+            user: {}
           };
         },
         revokeToken: () => should.fail(),
-        saveToken: () => should.fail(),
+        saveToken: () => should.fail()
       });
       const grantType = new RefreshTokenGrantType({
         accessTokenLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: { refresh_token: 12345 },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       try {
@@ -530,21 +530,21 @@ describe('RefreshTokenGrantType integration', function () {
             accessToken: 'foo',
             client: { id: 123 },
             refreshTokenExpiresAt: 'stringvalue',
-            user: {},
+            user: {}
           };
         },
         revokeToken: () => should.fail(),
-        saveToken: () => should.fail(),
+        saveToken: () => should.fail()
       });
       const grantType = new RefreshTokenGrantType({
         accessTokenLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: { refresh_token: 12345 },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       try {
@@ -562,7 +562,7 @@ describe('RefreshTokenGrantType integration', function () {
       const token = {
         accessToken: 'foo',
         client: { id: 123 },
-        user: { name: 'foobar' },
+        user: { name: 'foobar' }
       };
       const model = Model.from({
         getRefreshToken: async function (_refreshToken) {
@@ -581,17 +581,17 @@ describe('RefreshTokenGrantType integration', function () {
           _token.accessTokenExpiresAt.should.be.instanceOf(Date);
           _token.refreshTokenExpiresAt.should.be.instanceOf(Date);
           return token;
-        },
+        }
       });
       const grantType = new RefreshTokenGrantType({
         accessTokenLifetime: 123,
-        model,
+        model
       });
       const request = new Request({
         body: { refresh_token: 'foobar_refresh' },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       const data = await grantType.getRefreshToken(request, client);
@@ -606,17 +606,17 @@ describe('RefreshTokenGrantType integration', function () {
           return token;
         },
         revokeToken: async function () {},
-        saveToken: async function () {},
+        saveToken: async function () {}
       });
       const grantType = new RefreshTokenGrantType({
         accessTokenLifetime: 123,
-        model,
+        model
       });
       const request = new Request({
         body: { refresh_token: 'foobar' },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       grantType.getRefreshToken(request, client).should.be.an.instanceOf(Promise);
@@ -630,17 +630,17 @@ describe('RefreshTokenGrantType integration', function () {
           return token;
         },
         revokeToken: async function () {},
-        saveToken: async function () {},
+        saveToken: async function () {}
       });
       const grantType = new RefreshTokenGrantType({
         accessTokenLifetime: 123,
-        model,
+        model
       });
       const request = new Request({
         body: { refresh_token: 'foobar' },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       grantType.getRefreshToken(request, client).should.be.an.instanceOf(Promise);
@@ -652,11 +652,11 @@ describe('RefreshTokenGrantType integration', function () {
       const model = Model.from({
         getRefreshToken: () => should.fail(),
         revokeToken: async () => {},
-        saveToken: () => should.fail(),
+        saveToken: () => should.fail()
       });
       const grantType = new RefreshTokenGrantType({
         accessTokenLifetime: 120,
-        model,
+        model
       });
 
       try {
@@ -673,7 +673,7 @@ describe('RefreshTokenGrantType integration', function () {
         accessToken: 'foo',
         client: {},
         refreshTokenExpiresAt: new Date(new Date() / 2),
-        user: {},
+        user: {}
       };
       const model = Model.from({
         getRefreshToken: () => should.fail(),
@@ -681,11 +681,11 @@ describe('RefreshTokenGrantType integration', function () {
           _token.should.deep.equal(token);
           return token;
         },
-        saveToken: () => should.fail(),
+        saveToken: () => should.fail()
       });
       const grantType = new RefreshTokenGrantType({
         accessTokenLifetime: 123,
-        model,
+        model
       });
 
       const data = await grantType.revokeToken(token);
@@ -697,18 +697,18 @@ describe('RefreshTokenGrantType integration', function () {
         accessToken: 'foo',
         client: {},
         refreshTokenExpiresAt: new Date(new Date() / 2),
-        user: {},
+        user: {}
       };
       const model = Model.from({
         getRefreshToken: () => should.fail(),
         revokeToken: async function () {
           return token;
         },
-        saveToken: () => should.fail(),
+        saveToken: () => should.fail()
       });
       const grantType = new RefreshTokenGrantType({
         accessTokenLifetime: 123,
-        model,
+        model
       });
 
       grantType.revokeToken(token).should.be.an.instanceOf(Promise);
@@ -719,18 +719,18 @@ describe('RefreshTokenGrantType integration', function () {
         accessToken: 'foo',
         client: {},
         refreshTokenExpiresAt: new Date(new Date() / 2),
-        user: {},
+        user: {}
       };
       const model = Model.from({
         getRefreshToken: () => should.fail(),
         revokeToken: function () {
           return token;
         },
-        saveToken: () => should.fail(),
+        saveToken: () => should.fail()
       });
       const grantType = new RefreshTokenGrantType({
         accessTokenLifetime: 123,
-        model,
+        model
       });
 
       grantType.revokeToken(token).should.be.an.instanceOf(Promise);
@@ -754,11 +754,11 @@ describe('RefreshTokenGrantType integration', function () {
           _token.accessTokenExpiresAt.should.be.instanceOf(Date);
           _token.refreshTokenExpiresAt.should.be.instanceOf(Date);
           return { ..._token };
-        },
+        }
       });
       const grantType = new RefreshTokenGrantType({
         accessTokenLifetime: 123,
-        model,
+        model
       });
 
       const data = await grantType.saveToken(user, client, scope);
@@ -776,11 +776,11 @@ describe('RefreshTokenGrantType integration', function () {
         revokeToken: () => should.fail(),
         saveToken: async function () {
           return token;
-        },
+        }
       });
       const grantType = new RefreshTokenGrantType({
         accessTokenLifetime: 123,
-        model,
+        model
       });
 
       grantType.saveToken(token).should.be.an.instanceOf(Promise);
@@ -793,11 +793,11 @@ describe('RefreshTokenGrantType integration', function () {
         revokeToken: () => should.fail(),
         saveToken: function () {
           return token;
-        },
+        }
       });
       const grantType = new RefreshTokenGrantType({
         accessTokenLifetime: 123,
-        model,
+        model
       });
 
       grantType.saveToken(token).should.be.an.instanceOf(Promise);

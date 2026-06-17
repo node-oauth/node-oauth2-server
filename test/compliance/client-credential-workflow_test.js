@@ -37,14 +37,14 @@ const oAuth2Server = new OAuth2Server({
       // but we need to return a truthy response to
       const client = db.findClient(_client.id, _client.secret);
       return client && { ...userDoc };
-    },
-  },
+    }
+  }
 });
 
 const clientDoc = db.saveClient({
   id: 'client-credential-test-client',
   secret: 'client-credential-test-secret',
-  grants: ['client_credentials'],
+  grants: ['client_credentials']
 });
 
 const enabledScope = 'read write';
@@ -74,13 +74,13 @@ describe('ClientCredentials Workflow Compliance (4.4)', function () {
       const request = createRequest({
         body: {
           grant_type: 'client_credentials',
-          scope: enabledScope,
+          scope: enabledScope
         },
         headers: {
           authorization: 'Basic ' + Buffer.from(clientDoc.id + ':' + clientDoc.secret).toString('base64'),
-          'content-type': 'application/x-www-form-urlencoded',
+          'content-type': 'application/x-www-form-urlencoded'
         },
-        method: 'POST',
+        method: 'POST'
       });
 
       const token = await oAuth2Server.token(request, response);
@@ -88,7 +88,7 @@ describe('ClientCredentials Workflow Compliance (4.4)', function () {
       response.status.should.equal(200);
       response.headers.should.deep.equal({
         'cache-control': 'no-store',
-        pragma: 'no-cache',
+        pragma: 'no-cache'
       });
       response.body.token_type.should.equal('Bearer');
       response.body.access_token.should.equal(token.accessToken);
@@ -124,9 +124,9 @@ describe('ClientCredentials Workflow Compliance (4.4)', function () {
       const request = createRequest({
         query: {},
         headers: {
-          authorization: `Bearer ${accessToken}`,
+          authorization: `Bearer ${accessToken}`
         },
-        method: 'GET',
+        method: 'GET'
       });
 
       const token = await oAuth2Server.authenticate(request, response);

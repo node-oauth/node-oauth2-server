@@ -26,7 +26,7 @@ const createModel = (model = {}) => {
     getAccessToken: () => should.fail(),
     getClient: () => should.fail(),
     saveAuthorizationCode: () => should.fail(),
-    ...model,
+    ...model
   });
 };
 
@@ -70,7 +70,7 @@ describe('AuthorizeHandler integration', function () {
       try {
         new AuthorizeHandler({
           authorizationCodeLifetime: 120,
-          model: { getClient: () => should.fail() },
+          model: { getClient: () => should.fail() }
         });
         should.fail();
       } catch (e) {
@@ -82,7 +82,7 @@ describe('AuthorizeHandler integration', function () {
     it('should throw an error if the model does not implement `getAccessToken()`', function () {
       const model = Model.from({
         getClient: () => should.fail(),
-        saveAuthorizationCode: () => should.fail(),
+        saveAuthorizationCode: () => should.fail()
       });
 
       try {
@@ -99,7 +99,7 @@ describe('AuthorizeHandler integration', function () {
       const model = createModel();
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
 
       handler.authorizationCodeLifetime.should.equal(120);
@@ -113,7 +113,7 @@ describe('AuthorizeHandler integration', function () {
         new AuthorizeHandler({
           authenticateHandler,
           authorizationCodeLifetime: 120,
-          model,
+          model
         });
         should.fail();
       } catch (e) {
@@ -126,7 +126,7 @@ describe('AuthorizeHandler integration', function () {
       const model = createModel();
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       handler.authenticateHandler.should.be.an.instanceOf(AuthenticateHandler);
     });
@@ -142,7 +142,7 @@ describe('AuthorizeHandler integration', function () {
       const handler = new AuthorizeHandler({
         authenticateHandler,
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       handler.authenticateHandler.should.be.an.instanceOf(CustomAuthenticateHandler);
       handler.authenticateHandler.should.not.be.an.instanceOf(AuthenticateHandler);
@@ -152,7 +152,7 @@ describe('AuthorizeHandler integration', function () {
       const model = createModel();
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       handler.model.should.equal(model);
     });
@@ -163,7 +163,7 @@ describe('AuthorizeHandler integration', function () {
       const model = createModel();
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
 
       try {
@@ -179,13 +179,13 @@ describe('AuthorizeHandler integration', function () {
       const model = createModel();
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: {},
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       try {
@@ -201,39 +201,39 @@ describe('AuthorizeHandler integration', function () {
       const client = {
         id: 'client-12345',
         grants: ['authorization_code'],
-        redirectUris: ['http://example.com/cb'],
+        redirectUris: ['http://example.com/cb']
       };
       const model = createModel({
         getAccessToken: async function (_token) {
           _token.should.equal('foobarbazmootoken');
           return {
             user: {},
-            accessTokenExpiresAt: new Date(new Date().getTime() + 10000),
+            accessTokenExpiresAt: new Date(new Date().getTime() + 10000)
           };
         },
         getClient: async function (clientId, clientSecret) {
           clientId.should.equal(client.id);
           (clientSecret === null).should.equal(true);
           return { ...client };
-        },
+        }
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: {
           client_id: client.id,
-          response_type: 'code',
+          response_type: 'code'
         },
         method: {},
         headers: {
-          Authorization: 'Bearer foobarbazmootoken',
+          Authorization: 'Bearer foobarbazmootoken'
         },
         query: {
           state: 'foobar',
-          allowed: 'false',
-        },
+          allowed: 'false'
+        }
       });
       const response = new Response({ body: {}, headers: {} });
 
@@ -256,36 +256,36 @@ describe('AuthorizeHandler integration', function () {
         getAccessToken: async function () {
           return {
             user: {},
-            accessTokenExpiresAt: new Date(new Date().getTime() + 10000),
+            accessTokenExpiresAt: new Date(new Date().getTime() + 10000)
           };
         },
         getClient: async function () {
           return {
             grants: ['authorization_code'],
-            redirectUris: ['http://example.com/cb'],
+            redirectUris: ['http://example.com/cb']
           };
         },
         saveAuthorizationCode: async function () {
           throw new CustomError('Unhandled exception');
-        },
+        }
       });
       class CustomError extends Error {}
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: {
           client_id: 12345,
-          response_type: 'code',
+          response_type: 'code'
         },
         headers: {
-          Authorization: 'Bearer foo',
+          Authorization: 'Bearer foo'
         },
         method: {},
         query: {
-          state: 'foobar',
-        },
+          state: 'foobar'
+        }
       });
       const response = new Response({ body: {}, headers: {} });
 
@@ -308,35 +308,35 @@ describe('AuthorizeHandler integration', function () {
         getAccessToken: async function () {
           return {
             user: {},
-            accessTokenExpiresAt: new Date(new Date().getTime() + 10000),
+            accessTokenExpiresAt: new Date(new Date().getTime() + 10000)
           };
         },
         getClient: async function () {
           return {
             grants: ['authorization_code'],
-            redirectUris: ['http://example.com/cb'],
+            redirectUris: ['http://example.com/cb']
           };
         },
         saveAuthorizationCode: async function () {
           throw new AccessDeniedError('Cannot request this auth code');
-        },
+        }
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: {
           client_id: 12345,
-          response_type: 'code',
+          response_type: 'code'
         },
         headers: {
-          Authorization: 'Bearer foo',
+          Authorization: 'Bearer foo'
         },
         method: {},
         query: {
-          state: 'foobar',
-        },
+          state: 'foobar'
+        }
       });
       const response = new Response({ body: {}, headers: {} });
 
@@ -358,7 +358,7 @@ describe('AuthorizeHandler integration', function () {
       const client = {
         id: 'client-12343434',
         grants: ['authorization_code'],
-        redirectUris: ['http://example.com/cb'],
+        redirectUris: ['http://example.com/cb']
       };
       const model = createModel({
         getAccessToken: async function (_token) {
@@ -366,7 +366,7 @@ describe('AuthorizeHandler integration', function () {
           return {
             client,
             user: {},
-            accessTokenExpiresAt: new Date(new Date().getTime() + 10000),
+            accessTokenExpiresAt: new Date(new Date().getTime() + 10000)
           };
         },
         getClient: async function (clientId, clientSecret) {
@@ -377,26 +377,26 @@ describe('AuthorizeHandler integration', function () {
         saveAuthorizationCode: async function () {
           return {
             authorizationCode: 'fooobar-long-authzcode-?',
-            client,
+            client
           };
-        },
+        }
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: {
           client_id: client.id,
-          response_type: 'code',
+          response_type: 'code'
         },
         headers: {
-          Authorization: 'Bearer foobarbaztokenmoo',
+          Authorization: 'Bearer foobarbaztokenmoo'
         },
         method: {},
         query: {
-          state: 'foobarbazstatemoo',
-        },
+          state: 'foobarbazstatemoo'
+        }
       });
       const response = new Response({ body: {}, headers: {} });
       const data = await handler.handle(request, response);
@@ -413,36 +413,36 @@ describe('AuthorizeHandler integration', function () {
         getAccessToken: async function () {
           return {
             user: {},
-            accessTokenExpiresAt: new Date(new Date().getTime() + 10000),
+            accessTokenExpiresAt: new Date(new Date().getTime() + 10000)
           };
         },
         getClient: async function () {
           return {
             grants: ['authorization_code'],
-            redirectUris: ['http://example.com/cb'],
+            redirectUris: ['http://example.com/cb']
           };
         },
         saveAuthorizationCode: async function () {
           return {};
-        },
+        }
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: {
           client_id: 12345,
-          response_type: 'code',
+          response_type: 'code'
         },
         headers: {
-          Authorization: 'Bearer foo',
+          Authorization: 'Bearer foo'
         },
         method: {},
         query: {
           scope: [],
-          state: 'foobar',
-        },
+          state: 'foobar'
+        }
       });
       const response = new Response({ body: {}, headers: {} });
 
@@ -464,14 +464,14 @@ describe('AuthorizeHandler integration', function () {
     it('should redirect to a successful response if `model.validateScope` is not defined', async function () {
       const client = {
         grants: ['authorization_code'],
-        redirectUris: ['http://example.com/cb'],
+        redirectUris: ['http://example.com/cb']
       };
       const model = Model.from({
         getAccessToken: function () {
           return {
             client: client,
             user: {},
-            accessTokenExpiresAt: new Date(new Date().getTime() + 10000),
+            accessTokenExpiresAt: new Date(new Date().getTime() + 10000)
           };
         },
         getClient: function () {
@@ -479,31 +479,31 @@ describe('AuthorizeHandler integration', function () {
         },
         saveAuthorizationCode: function () {
           return { authorizationCode: 'fooobar-long-authzcode-?', client };
-        },
+        }
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: {
           client_id: 12345,
-          response_type: 'code',
+          response_type: 'code'
         },
         headers: {
-          Authorization: 'Bearer foo',
+          Authorization: 'Bearer foo'
         },
         method: {},
         query: {
           scope: 'read',
-          state: 'foobarbazstatemoo',
-        },
+          state: 'foobarbazstatemoo'
+        }
       });
       const response = new Response({ body: {}, headers: {} });
       const data = await handler.handle(request, response);
       data.should.deep.equal({
         authorizationCode: 'fooobar-long-authzcode-?',
-        client: client,
+        client: client
       });
       response.status.should.equal(302);
       response
@@ -515,14 +515,14 @@ describe('AuthorizeHandler integration', function () {
       const client = {
         id: 12345,
         grants: ['authorization_code'],
-        redirectUris: ['http://example.com/cb'],
+        redirectUris: ['http://example.com/cb']
       };
       const model = Model.from({
         getAccessToken: async function () {
           return {
             client: client,
             user: { name: 'foouser' },
-            accessTokenExpiresAt: new Date(new Date().getTime() + 10000),
+            accessTokenExpiresAt: new Date(new Date().getTime() + 10000)
           };
         },
         getClient: async function () {
@@ -534,25 +534,25 @@ describe('AuthorizeHandler integration', function () {
         validateScope: async function (_user, _client, _scope) {
           _scope.should.eql(['read']);
           return false;
-        },
+        }
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: {
           client_id: 12345,
-          response_type: 'code',
+          response_type: 'code'
         },
         headers: {
-          Authorization: 'Bearer foo',
+          Authorization: 'Bearer foo'
         },
         method: {},
         query: {
           scope: 'read',
-          state: 'foobar',
-        },
+          state: 'foobar'
+        }
       });
       const response = new Response({ body: {}, headers: {} });
 
@@ -576,33 +576,33 @@ describe('AuthorizeHandler integration', function () {
         getAccessToken: async function () {
           return {
             user: {},
-            accessTokenExpiresAt: new Date(new Date().getTime() + 10000),
+            accessTokenExpiresAt: new Date(new Date().getTime() + 10000)
           };
         },
         getClient: async function () {
           return {
             grants: ['authorization_code'],
-            redirectUris: ['http://example.com/cb'],
+            redirectUris: ['http://example.com/cb']
           };
         },
         saveAuthorizationCode: async function () {
           throw new AccessDeniedError('Cannot request this auth code');
-        },
+        }
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: {
           client_id: 12345,
-          response_type: 'code',
+          response_type: 'code'
         },
         headers: {
-          Authorization: 'Bearer foo',
+          Authorization: 'Bearer foo'
         },
         method: {},
-        query: {},
+        query: {}
       });
       const response = new Response({ body: {}, headers: {} });
 
@@ -626,33 +626,33 @@ describe('AuthorizeHandler integration', function () {
         getAccessToken: async function () {
           return {
             user: {},
-            accessTokenExpiresAt: new Date(new Date().getTime() + 10000),
+            accessTokenExpiresAt: new Date(new Date().getTime() + 10000)
           };
         },
         getClient: async function () {
           return {
             grants: ['authorization_code'],
-            redirectUris: ['http://example.com/cb'],
+            redirectUris: ['http://example.com/cb']
           };
         },
-        saveAuthorizationCode: () => should.fail(), // should fail before call
+        saveAuthorizationCode: () => should.fail() // should fail before call
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: {
           client_id: 12345,
-          response_type: 'test',
+          response_type: 'test'
         },
         headers: {
-          Authorization: 'Bearer foo',
+          Authorization: 'Bearer foo'
         },
         method: {},
         query: {
-          state: 'foobar',
-        },
+          state: 'foobar'
+        }
       });
       const response = new Response({ body: {}, headers: {} });
 
@@ -674,14 +674,14 @@ describe('AuthorizeHandler integration', function () {
     it('should return the `code` if successful', async function () {
       const client = {
         grants: ['authorization_code'],
-        redirectUris: ['http://example.com/cb'],
+        redirectUris: ['http://example.com/cb']
       };
       const model = Model.from({
         getAccessToken: async function () {
           return {
             client: client,
             user: {},
-            accessTokenExpiresAt: new Date(new Date().getTime() + 10000),
+            accessTokenExpiresAt: new Date(new Date().getTime() + 10000)
           };
         },
         getClient: async function () {
@@ -690,31 +690,31 @@ describe('AuthorizeHandler integration', function () {
         generateAuthorizationCode: async () => 'some-code',
         saveAuthorizationCode: async function (code) {
           return { authorizationCode: code.authorizationCode, client: client };
-        },
+        }
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: {
           client_id: 12345,
-          response_type: 'code',
+          response_type: 'code'
         },
         headers: {
-          Authorization: 'Bearer foo',
+          Authorization: 'Bearer foo'
         },
         method: {},
         query: {
-          state: 'foobar',
-        },
+          state: 'foobar'
+        }
       });
       const response = new Response({ body: {}, headers: {} });
 
       const data = await handler.handle(request, response);
       data.should.eql({
         authorizationCode: 'some-code',
-        client: client,
+        client: client
       });
     });
 
@@ -725,7 +725,7 @@ describe('AuthorizeHandler integration', function () {
       const client = {
         id: 'client-1322132131',
         grants: ['authorization_code'],
-        redirectUris: ['http://example.com/cb'],
+        redirectUris: ['http://example.com/cb']
       };
       const authorizationCode = 'long-authz-code';
       const accessTokenDoc = {
@@ -733,7 +733,7 @@ describe('AuthorizeHandler integration', function () {
         client,
         user,
         scope,
-        accessTokenExpiresAt: new Date(new Date().getTime() + 10000),
+        accessTokenExpiresAt: new Date(new Date().getTime() + 10000)
       };
       const model = Model.from({
         getClient: async function (clientId, clientSecret) {
@@ -768,23 +768,23 @@ describe('AuthorizeHandler integration', function () {
           _user.should.deep.equal(user);
           _client.should.deep.equal(client);
           return { ...code, client, user };
-        },
+        }
       });
 
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: {
           client_id: client.id,
-          response_type: 'code',
+          response_type: 'code'
         },
         headers: {
-          Authorization: `Bearer ${accessTokenDoc.accessToken}`,
+          Authorization: `Bearer ${accessTokenDoc.accessToken}`
         },
         method: {},
-        query: { state, scope: scope.join(' ') },
+        query: { state, scope: scope.join(' ') }
       });
 
       const response = new Response({ body: {}, headers: {} });
@@ -804,18 +804,18 @@ describe('AuthorizeHandler integration', function () {
         handle: async function () {
           // all good
           return { ...user };
-        },
+        }
       };
       const client = {
         grants: ['authorization_code'],
-        redirectUris: ['http://example.com/cb'],
+        redirectUris: ['http://example.com/cb']
       };
       const model = Model.from({
         getAccessToken: async function () {
           return {
             client: client,
             user: {},
-            accessTokenExpiresAt: new Date(new Date().getTime() + 10000),
+            accessTokenExpiresAt: new Date(new Date().getTime() + 10000)
           };
         },
         getClient: async function () {
@@ -824,32 +824,32 @@ describe('AuthorizeHandler integration', function () {
         generateAuthorizationCode: async () => 'some-code',
         saveAuthorizationCode: async function (code) {
           return { authorizationCode: code.authorizationCode, client: client };
-        },
+        }
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
         model,
-        authenticateHandler,
+        authenticateHandler
       });
       const request = new Request({
         body: {
           client_id: 12345,
-          response_type: 'code',
+          response_type: 'code'
         },
         headers: {
-          Authorization: 'Bearer foo',
+          Authorization: 'Bearer foo'
         },
         method: {},
         query: {
-          state: 'foobar',
-        },
+          state: 'foobar'
+        }
       });
       const response = new Response({ body: {}, headers: {} });
 
       const data = await handler.handle(request, response);
       data.should.eql({
         authorizationCode: 'some-code',
-        client: client,
+        client: client
       });
     });
   });
@@ -859,11 +859,11 @@ describe('AuthorizeHandler integration', function () {
       const model = Model.from({
         getAccessToken: function () {},
         getClient: function () {},
-        saveAuthorizationCode: function () {},
+        saveAuthorizationCode: function () {}
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
 
       return handler
@@ -881,11 +881,11 @@ describe('AuthorizeHandler integration', function () {
         },
         getAccessToken: function () {},
         getClient: function () {},
-        saveAuthorizationCode: function () {},
+        saveAuthorizationCode: function () {}
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
 
       handler.generateAuthorizationCode().should.be.an.instanceOf(Promise);
@@ -898,11 +898,11 @@ describe('AuthorizeHandler integration', function () {
         },
         getAccessToken: function () {},
         getClient: function () {},
-        saveAuthorizationCode: function () {},
+        saveAuthorizationCode: function () {}
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
 
       handler.generateAuthorizationCode().should.be.an.instanceOf(Promise);
@@ -914,11 +914,11 @@ describe('AuthorizeHandler integration', function () {
       const model = Model.from({
         getAccessToken: function () {},
         getClient: function () {},
-        saveAuthorizationCode: function () {},
+        saveAuthorizationCode: function () {}
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
 
       handler.getAuthorizationCodeLifetime().should.be.an.instanceOf(Date);
@@ -930,17 +930,17 @@ describe('AuthorizeHandler integration', function () {
       const model = Model.from({
         getAccessToken: function () {},
         getClient: function () {},
-        saveAuthorizationCode: function () {},
+        saveAuthorizationCode: function () {}
       });
 
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
 
       handler
         .validateRedirectUri('http://example.com/a', {
-          redirectUris: ['http://example.com/a'],
+          redirectUris: ['http://example.com/a']
         })
         .should.be.an.instanceOf(Promise);
     });
@@ -952,12 +952,12 @@ describe('AuthorizeHandler integration', function () {
         saveAuthorizationCode: function () {},
         validateRedirectUri: async function () {
           return true;
-        },
+        }
       });
 
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
 
       handler.validateRedirectUri('http://example.com/a', {}).should.be.an.instanceOf(Promise);
@@ -970,12 +970,12 @@ describe('AuthorizeHandler integration', function () {
         saveAuthorizationCode: function () {},
         validateRedirectUri: function () {
           return true;
-        },
+        }
       });
 
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
 
       handler.validateRedirectUri('http://example.com/a', {}).should.be.an.instanceOf(Promise);
@@ -987,17 +987,17 @@ describe('AuthorizeHandler integration', function () {
       const model = Model.from({
         getAccessToken: function () {},
         getClient: function () {},
-        saveAuthorizationCode: function () {},
+        saveAuthorizationCode: function () {}
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: { response_type: 'code' },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       try {
@@ -1014,17 +1014,17 @@ describe('AuthorizeHandler integration', function () {
       const model = Model.from({
         getAccessToken: function () {},
         getClient: function () {},
-        saveAuthorizationCode: function () {},
+        saveAuthorizationCode: function () {}
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: { client_id: 'øå€£‰', response_type: 'code' },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       try {
@@ -1041,21 +1041,21 @@ describe('AuthorizeHandler integration', function () {
       const model = Model.from({
         getAccessToken: function () {},
         getClient: function () {},
-        saveAuthorizationCode: function () {},
+        saveAuthorizationCode: function () {}
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: {
           client_id: 12345,
           response_type: 'code',
-          redirect_uri: 'foobar',
+          redirect_uri: 'foobar'
         },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       try {
@@ -1072,17 +1072,17 @@ describe('AuthorizeHandler integration', function () {
       const model = Model.from({
         getAccessToken: function () {},
         getClient: function () {},
-        saveAuthorizationCode: function () {},
+        saveAuthorizationCode: function () {}
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: { client_id: 12345, response_type: 'code' },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       return handler
@@ -1100,17 +1100,17 @@ describe('AuthorizeHandler integration', function () {
         getClient: function () {
           return {};
         },
-        saveAuthorizationCode: function () {},
+        saveAuthorizationCode: function () {}
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: { client_id: 12345, response_type: 'code' },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       return handler
@@ -1128,17 +1128,17 @@ describe('AuthorizeHandler integration', function () {
         getClient: function () {
           return { grants: [] };
         },
-        saveAuthorizationCode: function () {},
+        saveAuthorizationCode: function () {}
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: { client_id: 12345, response_type: 'code' },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       return handler
@@ -1156,17 +1156,17 @@ describe('AuthorizeHandler integration', function () {
         getClient: function () {
           return { grants: ['authorization_code'] };
         },
-        saveAuthorizationCode: function () {},
+        saveAuthorizationCode: function () {}
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: { client_id: 12345, response_type: 'code' },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       return handler
@@ -1184,24 +1184,24 @@ describe('AuthorizeHandler integration', function () {
         getClient: function () {
           return {
             grants: ['authorization_code'],
-            redirectUris: ['https://example.com'],
+            redirectUris: ['https://example.com']
           };
         },
-        saveAuthorizationCode: function () {},
+        saveAuthorizationCode: function () {}
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: {
           client_id: 12345,
           response_type: 'code',
-          redirect_uri: 'https://foobar.com',
+          redirect_uri: 'https://foobar.com'
         },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       return handler
@@ -1219,20 +1219,20 @@ describe('AuthorizeHandler integration', function () {
         getClient: async function () {
           return {
             grants: ['authorization_code'],
-            redirectUris: ['http://example.com/cb'],
+            redirectUris: ['http://example.com/cb']
           };
         },
-        saveAuthorizationCode: function () {},
+        saveAuthorizationCode: function () {}
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: { client_id: 12345 },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       handler.getClient(request).should.be.an.instanceOf(Promise);
@@ -1244,20 +1244,20 @@ describe('AuthorizeHandler integration', function () {
         getClient: function () {
           return {
             grants: ['authorization_code'],
-            redirectUris: ['http://example.com/cb'],
+            redirectUris: ['http://example.com/cb']
           };
         },
-        saveAuthorizationCode: function () {},
+        saveAuthorizationCode: function () {}
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: { client_id: 12345 },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       handler.getClient(request).should.be.an.instanceOf(Promise);
@@ -1267,24 +1267,24 @@ describe('AuthorizeHandler integration', function () {
       it('should return a client', function () {
         const client = {
           grants: ['authorization_code'],
-          redirectUris: ['http://example.com/cb'],
+          redirectUris: ['http://example.com/cb']
         };
         const model = Model.from({
           getAccessToken: function () {},
           getClient: function () {
             return client;
           },
-          saveAuthorizationCode: function () {},
+          saveAuthorizationCode: function () {}
         });
         const handler = new AuthorizeHandler({
           authorizationCodeLifetime: 120,
-          model,
+          model
         });
         const request = new Request({
           body: { response_type: 'code' },
           headers: {},
           method: {},
-          query: { client_id: 12345 },
+          query: { client_id: 12345 }
         });
 
         return handler
@@ -1302,17 +1302,17 @@ describe('AuthorizeHandler integration', function () {
       const model = Model.from({
         getAccessToken: function () {},
         getClient: function () {},
-        saveAuthorizationCode: function () {},
+        saveAuthorizationCode: function () {}
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: { scope: 'øå€£‰' },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       try {
@@ -1330,17 +1330,17 @@ describe('AuthorizeHandler integration', function () {
         const model = Model.from({
           getAccessToken: function () {},
           getClient: function () {},
-          saveAuthorizationCode: function () {},
+          saveAuthorizationCode: function () {}
         });
         const handler = new AuthorizeHandler({
           authorizationCodeLifetime: 120,
-          model,
+          model
         });
         const request = new Request({
           body: { scope: 'foo' },
           headers: {},
           method: {},
-          query: {},
+          query: {}
         });
 
         handler.getScope(request).should.eql(['foo']);
@@ -1352,17 +1352,17 @@ describe('AuthorizeHandler integration', function () {
         const model = Model.from({
           getAccessToken: function () {},
           getClient: function () {},
-          saveAuthorizationCode: function () {},
+          saveAuthorizationCode: function () {}
         });
         const handler = new AuthorizeHandler({
           authorizationCodeLifetime: 120,
-          model,
+          model
         });
         const request = new Request({
           body: {},
           headers: {},
           method: {},
-          query: { scope: 'foo' },
+          query: { scope: 'foo' }
         });
 
         handler.getScope(request).should.eql(['foo']);
@@ -1375,18 +1375,18 @@ describe('AuthorizeHandler integration', function () {
       const model = Model.from({
         getAccessToken: function () {},
         getClient: function () {},
-        saveAuthorizationCode: function () {},
+        saveAuthorizationCode: function () {}
       });
       const handler = new AuthorizeHandler({
         allowEmptyState: false,
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: {},
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       try {
@@ -1403,18 +1403,18 @@ describe('AuthorizeHandler integration', function () {
       const model = Model.from({
         getAccessToken: function () {},
         getClient: function () {},
-        saveAuthorizationCode: function () {},
+        saveAuthorizationCode: function () {}
       });
       const handler = new AuthorizeHandler({
         allowEmptyState: true,
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: {},
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
       const state = handler.getState(request);
       should.equal(state, undefined);
@@ -1424,17 +1424,17 @@ describe('AuthorizeHandler integration', function () {
       const model = Model.from({
         getAccessToken: function () {},
         getClient: function () {},
-        saveAuthorizationCode: function () {},
+        saveAuthorizationCode: function () {}
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: {},
         headers: {},
         method: {},
-        query: { state: 'øå€£‰' },
+        query: { state: 'øå€£‰' }
       });
 
       try {
@@ -1452,17 +1452,17 @@ describe('AuthorizeHandler integration', function () {
         const model = Model.from({
           getAccessToken: function () {},
           getClient: function () {},
-          saveAuthorizationCode: function () {},
+          saveAuthorizationCode: function () {}
         });
         const handler = new AuthorizeHandler({
           authorizationCodeLifetime: 120,
-          model,
+          model
         });
         const request = new Request({
           body: { state: 'foobar' },
           headers: {},
           method: {},
-          query: {},
+          query: {}
         });
 
         handler.getState(request).should.equal('foobar');
@@ -1474,17 +1474,17 @@ describe('AuthorizeHandler integration', function () {
         const model = Model.from({
           getAccessToken: function () {},
           getClient: function () {},
-          saveAuthorizationCode: function () {},
+          saveAuthorizationCode: function () {}
         });
         const handler = new AuthorizeHandler({
           authorizationCodeLifetime: 120,
-          model,
+          model
         });
         const request = new Request({
           body: {},
           headers: {},
           method: {},
-          query: { state: 'foobar' },
+          query: { state: 'foobar' }
         });
 
         handler.getState(request).should.equal('foobar');
@@ -1497,18 +1497,18 @@ describe('AuthorizeHandler integration', function () {
       const authenticateHandler = { handle: function () {} };
       const model = Model.from({
         getClient: function () {},
-        saveAuthorizationCode: function () {},
+        saveAuthorizationCode: function () {}
       });
       const handler = new AuthorizeHandler({
         authenticateHandler: authenticateHandler,
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: {},
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
       const response = new Response();
 
@@ -1527,21 +1527,21 @@ describe('AuthorizeHandler integration', function () {
         getAccessToken: function () {
           return {
             user: user,
-            accessTokenExpiresAt: new Date(new Date().getTime() + 10000),
+            accessTokenExpiresAt: new Date(new Date().getTime() + 10000)
           };
         },
         getClient: function () {},
-        saveAuthorizationCode: function () {},
+        saveAuthorizationCode: function () {}
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: {},
         headers: { Authorization: 'Bearer foo' },
         method: {},
-        query: {},
+        query: {}
       });
       const response = new Response({ body: {}, headers: {} });
 
@@ -1562,11 +1562,11 @@ describe('AuthorizeHandler integration', function () {
         getClient: function () {},
         saveAuthorizationCode: function () {
           return authorizationCode;
-        },
+        }
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
 
       return handler
@@ -1583,11 +1583,11 @@ describe('AuthorizeHandler integration', function () {
         getClient: function () {},
         saveAuthorizationCode: async function () {
           return {};
-        },
+        }
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
 
       handler.saveAuthorizationCode('foo', 'bar', 'biz', 'baz').should.be.an.instanceOf(Promise);
@@ -1599,11 +1599,11 @@ describe('AuthorizeHandler integration', function () {
         getClient: function () {},
         saveAuthorizationCode: function () {
           return {};
-        },
+        }
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
 
       handler.saveAuthorizationCode('foo', 'bar', 'biz', 'baz').should.be.an.instanceOf(Promise);
@@ -1615,17 +1615,17 @@ describe('AuthorizeHandler integration', function () {
       const model = Model.from({
         getAccessToken: function () {},
         getClient: function () {},
-        saveAuthorizationCode: function () {},
+        saveAuthorizationCode: function () {}
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: {},
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       try {
@@ -1642,17 +1642,17 @@ describe('AuthorizeHandler integration', function () {
       const model = Model.from({
         getAccessToken: function () {},
         getClient: function () {},
-        saveAuthorizationCode: function () {},
+        saveAuthorizationCode: function () {}
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: { response_type: 'foobar' },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       try {
@@ -1670,17 +1670,17 @@ describe('AuthorizeHandler integration', function () {
         const model = Model.from({
           getAccessToken: function () {},
           getClient: function () {},
-          saveAuthorizationCode: function () {},
+          saveAuthorizationCode: function () {}
         });
         const handler = new AuthorizeHandler({
           authorizationCodeLifetime: 120,
-          model,
+          model
         });
         const request = new Request({
           body: { response_type: 'code' },
           headers: {},
           method: {},
-          query: {},
+          query: {}
         });
         const ResponseType = handler.getResponseType(request);
 
@@ -1693,17 +1693,17 @@ describe('AuthorizeHandler integration', function () {
         const model = Model.from({
           getAccessToken: function () {},
           getClient: function () {},
-          saveAuthorizationCode: function () {},
+          saveAuthorizationCode: function () {}
         });
         const handler = new AuthorizeHandler({
           authorizationCodeLifetime: 120,
-          model,
+          model
         });
         const request = new Request({
           body: {},
           headers: {},
           method: {},
-          query: { response_type: 'code' },
+          query: { response_type: 'code' }
         });
         const ResponseType = handler.getResponseType(request);
 
@@ -1717,11 +1717,11 @@ describe('AuthorizeHandler integration', function () {
       const model = Model.from({
         getAccessToken: function () {},
         getClient: function () {},
-        saveAuthorizationCode: function () {},
+        saveAuthorizationCode: function () {}
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const responseType = new CodeResponseType(12345);
       const redirectUri = handler.buildSuccessRedirectUri('http://example.com/cb', responseType);
@@ -1736,11 +1736,11 @@ describe('AuthorizeHandler integration', function () {
       const model = Model.from({
         getAccessToken: function () {},
         getClient: function () {},
-        saveAuthorizationCode: function () {},
+        saveAuthorizationCode: function () {}
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const redirectUri = handler.buildErrorRedirectUri('http://example.com/cb', error);
 
@@ -1752,11 +1752,11 @@ describe('AuthorizeHandler integration', function () {
       const model = Model.from({
         getAccessToken: function () {},
         getClient: function () {},
-        saveAuthorizationCode: function () {},
+        saveAuthorizationCode: function () {}
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const redirectUri = handler.buildErrorRedirectUri('http://example.com/cb', error);
 
@@ -1771,11 +1771,11 @@ describe('AuthorizeHandler integration', function () {
       const model = Model.from({
         getAccessToken: function () {},
         getClient: function () {},
-        saveAuthorizationCode: function () {},
+        saveAuthorizationCode: function () {}
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const response = new Response({ body: {}, headers: {} });
       const uri = url.parse('http://example.com/cb');
@@ -1794,17 +1794,17 @@ describe('AuthorizeHandler integration', function () {
         const model = Model.from({
           getAccessToken: function () {},
           getClient: function () {},
-          saveAuthorizationCode: function () {},
+          saveAuthorizationCode: function () {}
         });
         const handler = new AuthorizeHandler({
           authorizationCodeLifetime: 120,
-          model,
+          model
         });
         const request = new Request({
           body: { code_challenge_method: method },
           headers: {},
           method: {},
-          query: {},
+          query: {}
         });
 
         try {
@@ -1826,17 +1826,17 @@ describe('AuthorizeHandler integration', function () {
       const model = Model.from({
         getAccessToken: function () {},
         getClient: function () {},
-        saveAuthorizationCode: function () {},
+        saveAuthorizationCode: function () {}
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: { code_challenge_method: 'S256' },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       const codeChallengeMethod = handler.getCodeChallengeMethod(request);
@@ -1847,17 +1847,17 @@ describe('AuthorizeHandler integration', function () {
       const model = Model.from({
         getAccessToken: function () {},
         getClient: function () {},
-        saveAuthorizationCode: function () {},
+        saveAuthorizationCode: function () {}
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: { code_challenge_method: 'foo' },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       try {
@@ -1875,17 +1875,17 @@ describe('AuthorizeHandler integration', function () {
       const model = Model.from({
         getAccessToken: function () {},
         getClient: function () {},
-        saveAuthorizationCode: function () {},
+        saveAuthorizationCode: function () {}
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: {},
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       const codeChallengeMethod = handler.getCodeChallengeMethod(request);
@@ -1896,18 +1896,18 @@ describe('AuthorizeHandler integration', function () {
       const model = Model.from({
         getAccessToken: function () {},
         getClient: function () {},
-        saveAuthorizationCode: function () {},
+        saveAuthorizationCode: function () {}
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
         enablePlainPKCE: true,
-        model,
+        model
       });
       const request = new Request({
         body: {},
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       const codeChallengeMethod = handler.getCodeChallengeMethod(request);
@@ -1920,17 +1920,17 @@ describe('AuthorizeHandler integration', function () {
       const model = Model.from({
         getAccessToken: function () {},
         getClient: function () {},
-        saveAuthorizationCode: function () {},
+        saveAuthorizationCode: function () {}
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model,
+        model
       });
       const request = new Request({
         body: { code_challenge: 'challenge' },
         headers: {},
         method: {},
-        query: {},
+        query: {}
       });
 
       const codeChallengeMethod = handler.getCodeChallenge(request);
