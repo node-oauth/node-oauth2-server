@@ -398,6 +398,56 @@ describe('TokenHandler integration', function () {
         });
     });
 
+    it('should normalise an `InvalidArgumentError` thrown while handling the request to a `server_error`', function () {
+      // A model that returns malformed token data makes `TokenModel` throw an
+      // `InvalidArgumentError`. That is an internal error, not an OAuth error, so
+      // it must reach the client as a standard `server_error` rather than the
+      // non-standard `invalid_argument`.
+      const model = Model.from({
+        getClient: function () {
+          return { grants: ['password'] };
+        },
+        getUser: function () {
+          return {};
+        },
+        saveToken: function () {
+          return { accessToken: 'foo', client: {}, user: {}, accessTokenExpiresAt: 'not-a-date' };
+        },
+        validateScope: function () {
+          return ['baz'];
+        },
+      });
+      const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
+      const request = new Request({
+        body: {
+          client_id: 12345,
+          client_secret: 'secret',
+          username: 'foo',
+          password: 'bar',
+          grant_type: 'password',
+          scope: 'baz',
+        },
+        headers: { 'content-type': 'application/x-www-form-urlencoded', 'transfer-encoding': 'chunked' },
+        method: 'POST',
+        query: {},
+      });
+      const response = new Response({ body: {}, headers: {} });
+
+      return handler
+        .handle(request, response)
+        .then(should.fail)
+        .catch(function (e) {
+          e.should.be.an.instanceOf(ServerError);
+          e.inner.should.be.an.instanceOf(InvalidArgumentError);
+          e.message.should.equal('Invalid parameter: `accessTokenExpiresAt`');
+          response.body.should.eql({
+            error: 'server_error',
+            error_description: 'Invalid parameter: `accessTokenExpiresAt`',
+          });
+          response.status.should.equal(503);
+        });
+    });
+
     it('should return a bearer token if successful', function () {
       const token = {
         accessToken: 'foo',
