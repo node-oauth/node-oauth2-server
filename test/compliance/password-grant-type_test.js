@@ -83,9 +83,7 @@ function createDefaultRequest() {
       scope,
     },
     headers: {
-      authorization:
-        'Basic ' +
-        Buffer.from(client.id + ':' + client.secret).toString('base64'),
+      authorization: 'Basic ' + Buffer.from(client.id + ':' + client.secret).toString('base64'),
       'content-type': 'application/x-www-form-urlencoded',
     },
     method: 'POST',
@@ -131,11 +129,7 @@ describe('PasswordGrantType Compliance', function () {
       });
       const authenticationResponse = new Response({});
 
-      const authenticated = await auth.authenticate(
-        authenticationRequest,
-        authenticationResponse,
-        {},
-      );
+      const authenticated = await auth.authenticate(authenticationRequest, authenticationResponse, {});
 
       authenticated.scope.should.eql(['read', 'write']);
       authenticated.user.should.be.an('object');
@@ -193,9 +187,7 @@ describe('PasswordGrantType Compliance', function () {
       const clientId = crypto.randomBytes(4).toString('hex');
       const clientSecret = crypto.randomBytes(4).toString('hex');
 
-      request.headers.authorization =
-        'Basic ' +
-        Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+      request.headers.authorization = 'Basic ' + Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
 
       await auth.token(request, response, {}).catch((err) => {
         err.name.should.equal('invalid_client');

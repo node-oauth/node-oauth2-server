@@ -88,9 +88,7 @@ function createLoginRequest() {
       scope,
     },
     headers: {
-      authorization:
-        'Basic ' +
-        Buffer.from(client.id + ':' + client.secret).toString('base64'),
+      authorization: 'Basic ' + Buffer.from(client.id + ':' + client.secret).toString('base64'),
       'content-type': 'application/x-www-form-urlencoded',
     },
     method: 'POST',
@@ -106,9 +104,7 @@ function createRefreshRequest(refresh_token) {
       scope,
     },
     headers: {
-      authorization:
-        'Basic ' +
-        Buffer.from(client.id + ':' + client.secret).toString('base64'),
+      authorization: 'Basic ' + Buffer.from(client.id + ':' + client.secret).toString('base64'),
       'content-type': 'application/x-www-form-urlencoded',
     },
   });

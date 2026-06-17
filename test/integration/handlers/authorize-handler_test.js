@@ -42,9 +42,7 @@ describe('AuthorizeHandler integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
-        e.message.should.equal(
-          'Missing parameter: `authorizationCodeLifetime`',
-        );
+        e.message.should.equal('Missing parameter: `authorizationCodeLifetime`');
       }
     });
 
@@ -64,9 +62,7 @@ describe('AuthorizeHandler integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
-        e.message.should.equal(
-          'Invalid argument: model does not implement `getClient()`',
-        );
+        e.message.should.equal('Invalid argument: model does not implement `getClient()`');
       }
     });
 
@@ -79,9 +75,7 @@ describe('AuthorizeHandler integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
-        e.message.should.equal(
-          'Invalid argument: model does not implement `saveAuthorizationCode()`',
-        );
+        e.message.should.equal('Invalid argument: model does not implement `saveAuthorizationCode()`');
       }
     });
 
@@ -97,9 +91,7 @@ describe('AuthorizeHandler integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
-        e.message.should.equal(
-          'Invalid argument: model does not implement `getAccessToken()`',
-        );
+        e.message.should.equal('Invalid argument: model does not implement `getAccessToken()`');
       }
     });
 
@@ -126,9 +118,7 @@ describe('AuthorizeHandler integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
-        e.message.should.equal(
-          'Invalid argument: authenticateHandler does not implement `handle()`',
-        );
+        e.message.should.equal('Invalid argument: authenticateHandler does not implement `handle()`');
       }
     });
 
@@ -154,12 +144,8 @@ describe('AuthorizeHandler integration', function () {
         authorizationCodeLifetime: 120,
         model,
       });
-      handler.authenticateHandler.should.be.an.instanceOf(
-        CustomAuthenticateHandler,
-      );
-      handler.authenticateHandler.should.not.be.an.instanceOf(
-        AuthenticateHandler,
-      );
+      handler.authenticateHandler.should.be.an.instanceOf(CustomAuthenticateHandler);
+      handler.authenticateHandler.should.not.be.an.instanceOf(AuthenticateHandler);
     });
 
     it('should set the `model`', function () {
@@ -185,9 +171,7 @@ describe('AuthorizeHandler integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
-        e.message.should.equal(
-          'Invalid argument: `request` must be an instance of Request',
-        );
+        e.message.should.equal('Invalid argument: `request` must be an instance of Request');
       }
     });
 
@@ -209,9 +193,7 @@ describe('AuthorizeHandler integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
-        e.message.should.equal(
-          'Invalid argument: `response` must be an instance of Response',
-        );
+        e.message.should.equal('Invalid argument: `response` must be an instance of Response');
       }
     });
 
@@ -260,13 +242,11 @@ describe('AuthorizeHandler integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(AccessDeniedError);
-        e.message.should.equal(
-          'Access denied: user denied access to application',
-        );
+        e.message.should.equal('Access denied: user denied access to application');
         response
           .get('location')
           .should.equal(
-            'http://example.com/cb?error=access_denied&error_description=Access%20denied%3A%20user%20denied%20access%20to%20application&state=foobar',
+            'http://example.com/cb?error=access_denied&error_description=Access%20denied%3A%20user%20denied%20access%20to%20application&state=foobar'
           );
       }
     });
@@ -318,7 +298,7 @@ describe('AuthorizeHandler integration', function () {
         response
           .get('location')
           .should.equal(
-            'http://example.com/cb?error=server_error&error_description=Unhandled%20exception&state=foobar',
+            'http://example.com/cb?error=server_error&error_description=Unhandled%20exception&state=foobar'
           );
       }
     });
@@ -369,7 +349,7 @@ describe('AuthorizeHandler integration', function () {
         response
           .get('location')
           .should.equal(
-            'http://example.com/cb?error=access_denied&error_description=Cannot%20request%20this%20auth%20code&state=foobar',
+            'http://example.com/cb?error=access_denied&error_description=Cannot%20request%20this%20auth%20code&state=foobar'
           );
       }
     });
@@ -425,9 +405,7 @@ describe('AuthorizeHandler integration', function () {
       response.status.should.equal(302);
       response
         .get('location')
-        .should.equal(
-          'http://example.com/cb?code=fooobar-long-authzcode-%3F&state=foobarbazstatemoo',
-        );
+        .should.equal('http://example.com/cb?code=fooobar-long-authzcode-%3F&state=foobarbazstatemoo');
     });
 
     it('should redirect to an error response if `scope` is invalid', async function () {
@@ -478,7 +456,7 @@ describe('AuthorizeHandler integration', function () {
         response
           .get('location')
           .should.equal(
-            'http://example.com/cb?error=invalid_scope&error_description=Invalid%20parameter%3A%20%60scope%60&state=foobar',
+            'http://example.com/cb?error=invalid_scope&error_description=Invalid%20parameter%3A%20%60scope%60&state=foobar'
           );
       }
     });
@@ -530,9 +508,7 @@ describe('AuthorizeHandler integration', function () {
       response.status.should.equal(302);
       response
         .get('location')
-        .should.equal(
-          'http://example.com/cb?code=fooobar-long-authzcode-%3F&state=foobarbazstatemoo',
-        );
+        .should.equal('http://example.com/cb?code=fooobar-long-authzcode-%3F&state=foobarbazstatemoo');
     });
 
     it('should redirect to an error response if `scope` is insufficient (validateScope)', async function () {
@@ -590,7 +566,7 @@ describe('AuthorizeHandler integration', function () {
         response
           .get('location')
           .should.equal(
-            'http://example.com/cb?error=invalid_scope&error_description=Invalid%20scope%3A%20Requested%20scope%20is%20invalid&state=foobar',
+            'http://example.com/cb?error=invalid_scope&error_description=Invalid%20scope%3A%20Requested%20scope%20is%20invalid&state=foobar'
           );
       }
     });
@@ -640,7 +616,7 @@ describe('AuthorizeHandler integration', function () {
         response
           .get('location')
           .should.equal(
-            'http://example.com/cb?error=invalid_request&error_description=Missing%20parameter%3A%20%60state%60',
+            'http://example.com/cb?error=invalid_request&error_description=Missing%20parameter%3A%20%60state%60'
           );
       }
     });
@@ -685,14 +661,12 @@ describe('AuthorizeHandler integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(UnsupportedResponseTypeError);
-        e.message.should.equal(
-          'Unsupported response type: `response_type` is not supported',
-        );
+        e.message.should.equal('Unsupported response type: `response_type` is not supported');
         response.status.should.equal(302);
         response
           .get('location')
           .should.equal(
-            'http://example.com/cb?error=unsupported_response_type&error_description=Unsupported%20response%20type%3A%20%60response_type%60%20is%20not%20supported&state=foobar',
+            'http://example.com/cb?error=unsupported_response_type&error_description=Unsupported%20response%20type%3A%20%60response_type%60%20is%20not%20supported&state=foobar'
           );
       }
     });
@@ -821,11 +795,7 @@ describe('AuthorizeHandler integration', function () {
       data.expiresAt.should.be.instanceOf(Date);
       data.redirectUri.should.equal(client.redirectUris[0]);
       response.status.should.equal(302);
-      response
-        .get('location')
-        .should.equal(
-          'http://example.com/cb?code=long-authz-code&state=fooobarstatebaz',
-        );
+      response.get('location').should.equal('http://example.com/cb?code=long-authz-code&state=fooobarstatebaz');
     });
 
     it('should support a custom `authenticateHandler`', async function () {
@@ -990,9 +960,7 @@ describe('AuthorizeHandler integration', function () {
         model,
       });
 
-      handler
-        .validateRedirectUri('http://example.com/a', {})
-        .should.be.an.instanceOf(Promise);
+      handler.validateRedirectUri('http://example.com/a', {}).should.be.an.instanceOf(Promise);
     });
 
     it('should support non-promises', function () {
@@ -1010,9 +978,7 @@ describe('AuthorizeHandler integration', function () {
         model,
       });
 
-      handler
-        .validateRedirectUri('http://example.com/a', {})
-        .should.be.an.instanceOf(Promise);
+      handler.validateRedirectUri('http://example.com/a', {}).should.be.an.instanceOf(Promise);
     });
   });
 
@@ -1098,9 +1064,7 @@ describe('AuthorizeHandler integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidRequestError);
-        e.message.should.equal(
-          'Invalid request: `redirect_uri` is not a valid URI',
-        );
+        e.message.should.equal('Invalid request: `redirect_uri` is not a valid URI');
       }
     });
 
@@ -1126,9 +1090,7 @@ describe('AuthorizeHandler integration', function () {
         .then(should.fail)
         .catch(function (e) {
           e.should.be.an.instanceOf(InvalidClientError);
-          e.message.should.equal(
-            'Invalid client: client credentials are invalid',
-          );
+          e.message.should.equal('Invalid client: client credentials are invalid');
         });
     });
 
@@ -1184,9 +1146,7 @@ describe('AuthorizeHandler integration', function () {
         .then(should.fail)
         .catch(function (e) {
           e.should.be.an.instanceOf(UnauthorizedClientError);
-          e.message.should.equal(
-            'Unauthorized client: `grant_type` is invalid',
-          );
+          e.message.should.equal('Unauthorized client: `grant_type` is invalid');
         });
     });
 
@@ -1214,9 +1174,7 @@ describe('AuthorizeHandler integration', function () {
         .then(should.fail)
         .catch(function (e) {
           e.should.be.an.instanceOf(InvalidClientError);
-          e.message.should.equal(
-            'Invalid client: missing client `redirectUri`',
-          );
+          e.message.should.equal('Invalid client: missing client `redirectUri`');
         });
     });
 
@@ -1251,9 +1209,7 @@ describe('AuthorizeHandler integration', function () {
         .then(should.fail)
         .catch(function (e) {
           e.should.be.an.instanceOf(InvalidClientError);
-          e.message.should.equal(
-            'Invalid client: `redirect_uri` does not match client value',
-          );
+          e.message.should.equal('Invalid client: `redirect_uri` does not match client value');
         });
     });
 
@@ -1561,9 +1517,7 @@ describe('AuthorizeHandler integration', function () {
         .then(should.fail)
         .catch(function (e) {
           e.should.be.an.instanceOf(ServerError);
-          e.message.should.equal(
-            'Server error: `handle()` did not return a `user` object',
-          );
+          e.message.should.equal('Server error: `handle()` did not return a `user` object');
         });
     });
 
@@ -1636,9 +1590,7 @@ describe('AuthorizeHandler integration', function () {
         model,
       });
 
-      handler
-        .saveAuthorizationCode('foo', 'bar', 'biz', 'baz')
-        .should.be.an.instanceOf(Promise);
+      handler.saveAuthorizationCode('foo', 'bar', 'biz', 'baz').should.be.an.instanceOf(Promise);
     });
 
     it('should support non-promises when calling `model.saveAuthorizationCode()`', function () {
@@ -1654,9 +1606,7 @@ describe('AuthorizeHandler integration', function () {
         model,
       });
 
-      handler
-        .saveAuthorizationCode('foo', 'bar', 'biz', 'baz')
-        .should.be.an.instanceOf(Promise);
+      handler.saveAuthorizationCode('foo', 'bar', 'biz', 'baz').should.be.an.instanceOf(Promise);
     });
   });
 
@@ -1711,9 +1661,7 @@ describe('AuthorizeHandler integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(UnsupportedResponseTypeError);
-        e.message.should.equal(
-          'Unsupported response type: `response_type` is not supported',
-        );
+        e.message.should.equal('Unsupported response type: `response_type` is not supported');
       }
     });
 
@@ -1776,10 +1724,7 @@ describe('AuthorizeHandler integration', function () {
         model,
       });
       const responseType = new CodeResponseType(12345);
-      const redirectUri = handler.buildSuccessRedirectUri(
-        'http://example.com/cb',
-        responseType,
-      );
+      const redirectUri = handler.buildSuccessRedirectUri('http://example.com/cb', responseType);
 
       url.format(redirectUri).should.equal('http://example.com/cb?code=12345');
     });
@@ -1797,16 +1742,9 @@ describe('AuthorizeHandler integration', function () {
         authorizationCodeLifetime: 120,
         model,
       });
-      const redirectUri = handler.buildErrorRedirectUri(
-        'http://example.com/cb',
-        error,
-      );
+      const redirectUri = handler.buildErrorRedirectUri('http://example.com/cb', error);
 
-      url
-        .format(redirectUri)
-        .should.equal(
-          'http://example.com/cb?error=invalid_client&error_description=foo%20bar',
-        );
+      url.format(redirectUri).should.equal('http://example.com/cb?error=invalid_client&error_description=foo%20bar');
     });
 
     it('should return a redirect uri', function () {
@@ -1820,16 +1758,11 @@ describe('AuthorizeHandler integration', function () {
         authorizationCodeLifetime: 120,
         model,
       });
-      const redirectUri = handler.buildErrorRedirectUri(
-        'http://example.com/cb',
-        error,
-      );
+      const redirectUri = handler.buildErrorRedirectUri('http://example.com/cb', error);
 
       url
         .format(redirectUri)
-        .should.equal(
-          'http://example.com/cb?error=invalid_client&error_description=Bad%20Request',
-        );
+        .should.equal('http://example.com/cb?error=invalid_client&error_description=Bad%20Request');
     });
   });
 
@@ -1849,9 +1782,7 @@ describe('AuthorizeHandler integration', function () {
 
       handler.updateResponse(response, uri, 'foobar');
 
-      response
-        .get('location')
-        .should.equal('http://example.com/cb?state=foobar');
+      response.get('location').should.equal('http://example.com/cb?state=foobar');
     });
   });
 
@@ -1882,14 +1813,10 @@ describe('AuthorizeHandler integration', function () {
         } catch (e) {
           if (method === 'plain') {
             e.should.be.an.instanceOf(InvalidRequestError);
-            e.message.should.equal(
-              'Invalid request: `code_challenge_method` "plain" is not allowed; use "S256"',
-            );
+            e.message.should.equal('Invalid request: `code_challenge_method` "plain" is not allowed; use "S256"');
           } else {
             e.should.be.an.instanceOf(InvalidRequestError);
-            e.message.should.equal(
-              `Invalid request: transform algorithm '${method}' not supported`,
-            );
+            e.message.should.equal(`Invalid request: transform algorithm '${method}' not supported`);
           }
         }
       }
@@ -1940,9 +1867,7 @@ describe('AuthorizeHandler integration', function () {
       } catch (e) {
         // defined in RFC 7636 - 4.4
         e.should.be.an.instanceOf(InvalidRequestError);
-        e.message.should.equal(
-          "Invalid request: transform algorithm 'foo' not supported",
-        );
+        e.message.should.equal("Invalid request: transform algorithm 'foo' not supported");
       }
     });
 

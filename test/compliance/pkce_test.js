@@ -116,9 +116,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
         code_verifier: codeVerifier,
       },
       headers: {
-        authorization:
-          'Basic ' +
-          Buffer.from(clientDoc.id + ':' + clientDoc.secret).toString('base64'),
+        authorization: 'Basic ' + Buffer.from(clientDoc.id + ':' + clientDoc.secret).toString('base64'),
         'content-type': 'application/x-www-form-urlencoded',
       },
       method: 'POST',
@@ -212,7 +210,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
         throw new Error(
           'Server issued a token for a 1-character code_verifier ("z"). ' +
             'RFC 7636 §4.1 ABNF requires 43..128 unreserved characters; accepting shorter ' +
-            'values breaks the entropy guarantee of Appendix B.',
+            'values breaks the entropy guarantee of Appendix B.'
         );
       }
     });
@@ -238,7 +236,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
         throw new Error(
           'Server issued a token for a 42-character code_verifier. ' +
             'RFC 7636 §4.1 ABNF minimum is 43 characters; server-side enforcement ' +
-            'is needed to preserve the entropy guarantee of Appendix B.',
+            'is needed to preserve the entropy guarantee of Appendix B.'
         );
       }
     });
@@ -264,7 +262,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
         throw new Error(
           'Server issued a token for a 129-character code_verifier. ' +
             'RFC 7636 §4.1 ABNF maximum is 128 characters; server-side enforcement ' +
-            'is needed to preserve the entropy guarantee of Appendix B.',
+            'is needed to preserve the entropy guarantee of Appendix B.'
         );
       }
     });
@@ -289,7 +287,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
       if (tokenIssued) {
         throw new Error(
           'Server issued a token for a code_verifier containing ' +
-            'forbidden characters (space). RFC 7636 §4.1 restricts to unreserved characters.',
+            'forbidden characters (space). RFC 7636 §4.1 restricts to unreserved characters.'
         );
       }
     });
@@ -328,10 +326,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
 
       // before
       const codeExists = db.authorizationCodes.has(code.authorizationCode);
-      codeExists.should.equal(
-        true,
-        'Precondition failed: seeded authorization code should exist in DB',
-      );
+      codeExists.should.equal(true, 'Precondition failed: seeded authorization code should exist in DB');
 
       try {
         await oAuth2Server.token(badRequest, badResponse);
@@ -346,8 +341,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
 
       if (codeStillExists) {
         throw new Error(
-          'Authorization code was NOT revoked after a failed ' +
-            'code_verifier attempt. An attacker can keep guessing.',
+          'Authorization code was NOT revoked after a failed ' + 'code_verifier attempt. An attacker can keep guessing.'
         );
       }
     });
@@ -383,7 +377,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
         throw new Error(
           `Brute-forced code_verifier in ${tries} tries ` +
             `(guess="${successfulGuess}"). The authorization code was not ` +
-            'consumed after failed attempts, allowing online guessing.',
+            'consumed after failed attempts, allowing online guessing.'
         );
       }
     });
@@ -407,10 +401,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
       }
 
       // Attempt 2: correct verifier but should fail because code was revoked
-      const correctRequest = tokenRequest(
-        code.authorizationCode,
-        validVerifier,
-      );
+      const correctRequest = tokenRequest(code.authorizationCode, validVerifier);
       const correctResponse = new Response();
 
       let tokenIssued = false;
@@ -430,7 +421,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
         throw new Error(
           'Authorization code was still valid after a prior ' +
             'failed PKCE attempt. The code should have been revoked on the first ' +
-            'failed verification to prevent further guessing.',
+            'failed verification to prevent further guessing.'
         );
       }
     });
@@ -475,8 +466,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
       // We seed an authorization code using "plain" (which is what the
       // server would store when code_challenge_method is omitted per
       // RFC 7636 §4.3).
-      const codeValue =
-        'auth-code-plain-default-' + Math.random().toString(36).slice(2);
+      const codeValue = 'auth-code-plain-default-' + Math.random().toString(36).slice(2);
       const codeDoc = {
         authorizationCode: codeValue,
         expiresAt: new Date(Date.now() + 60000),
@@ -501,9 +491,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
       } catch (e) {
         // would be expected if plain were rejected
         e.should.be.instanceOf(InvalidRequestError);
-        e.message.should.equal(
-          'Invalid request: `code_challenge_method` "plain" is not allowed; use "S256"',
-        );
+        e.message.should.equal('Invalid request: `code_challenge_method` "plain" is not allowed; use "S256"');
       }
 
       // Note: accepting "plain" is RFC 7636-compliant (§4.3 says the
@@ -516,7 +504,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
           'Server issued a token using "plain" PKCE method. ' +
             'While RFC 7636 §4.3 requires server support for "plain", the OAuth 2.0 ' +
             'Security BCP and OAuth 2.1 deprecate it because code_challenge === code_verifier ' +
-            'offers zero cryptographic protection.',
+            'offers zero cryptographic protection.'
         );
       }
     });
@@ -551,8 +539,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
       });
 
       const verifier = 'a'.repeat(43); // valid ABNF-length verifier
-      const codeValue =
-        'auth-code-reject-plain-' + Math.random().toString(36).slice(2);
+      const codeValue = 'auth-code-reject-plain-' + Math.random().toString(36).slice(2);
       db.authorizationCodes.set(codeValue, {
         authorizationCode: codeValue,
         expiresAt: new Date(Date.now() + 60000),
@@ -581,7 +568,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
         throw new Error(
           'Server with enablePlainPKCE=false still issued ' +
             'a token using "plain" PKCE method. The option should cause the server to ' +
-            'reject any plain code_challenge_method.',
+            'reject any plain code_challenge_method.'
         );
       }
 
@@ -603,8 +590,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
       // omitted (defaults to "plain"): code_challenge = verifier
       const stolenChallenge = verifier; // attacker reads this from the authorize request
 
-      const codeValue =
-        'auth-code-stolen-' + Math.random().toString(36).slice(2);
+      const codeValue = 'auth-code-stolen-' + Math.random().toString(36).slice(2);
       db.authorizationCodes.set(codeValue, {
         authorizationCode: codeValue,
         expiresAt: new Date(Date.now() + 60000),
@@ -627,16 +613,14 @@ describe('PKCE Compliance (RFC 7636)', function () {
         tokenIssued = true;
       } catch (e) {
         e.should.be.instanceOf(InvalidRequestError);
-        e.message.should.equal(
-          'Invalid request: `code_challenge_method` "plain" is not allowed; use "S256"',
-        );
+        e.message.should.equal('Invalid request: `code_challenge_method` "plain" is not allowed; use "S256"');
       }
 
       if (tokenIssued) {
         throw new Error(
           'Attacker redeemed an authorization code by using ' +
             'the intercepted code_challenge as code_verifier (plain method). ' +
-            'This defeats PKCE entirely for public clients.',
+            'This defeats PKCE entirely for public clients.'
         );
       }
     });
@@ -654,8 +638,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
       // omitted (defaults to "plain"): code_challenge = verifier
       const stolenChallenge = verifier; // attacker reads this from the authorize request
 
-      const codeValue =
-        'auth-code-stolen-' + Math.random().toString(36).slice(2);
+      const codeValue = 'auth-code-stolen-' + Math.random().toString(36).slice(2);
       db.authorizationCodes.set(codeValue, {
         authorizationCode: codeValue,
         expiresAt: new Date(Date.now() + 60000),
@@ -679,16 +662,14 @@ describe('PKCE Compliance (RFC 7636)', function () {
       } catch (e) {
         // this is not part of the standard which is why we throw a generic ServerError
         e.should.be.instanceOf(ServerError);
-        e.message.should.equal(
-          'Server error: no valid hash algorithm available to verify `code_verifier`',
-        );
+        e.message.should.equal('Server error: no valid hash algorithm available to verify `code_verifier`');
       }
 
       if (tokenIssued) {
         throw new Error(
           'Attacker redeemed an authorization code by using ' +
             'the intercepted code_challenge as code_verifier (custom method). ' +
-            'This defeats PKCE entirely for public clients.',
+            'This defeats PKCE entirely for public clients.'
         );
       }
     });

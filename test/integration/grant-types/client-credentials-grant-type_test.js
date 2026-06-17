@@ -35,9 +35,7 @@ describe('ClientCredentialsGrantType integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
-        e.message.should.equal(
-          'Invalid argument: model does not implement `getUserFromClient()`',
-        );
+        e.message.should.equal('Invalid argument: model does not implement `getUserFromClient()`');
       }
     });
 
@@ -52,9 +50,7 @@ describe('ClientCredentialsGrantType integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
-        e.message.should.equal(
-          'Invalid argument: model does not implement `saveToken()`',
-        );
+        e.message.should.equal('Invalid argument: model does not implement `saveToken()`');
       }
     });
   });

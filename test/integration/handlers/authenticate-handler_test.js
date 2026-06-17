@@ -41,9 +41,7 @@ describe('AuthenticateHandler integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
-        e.message.should.equal(
-          'Invalid argument: model does not implement `getAccessToken()`',
-        );
+        e.message.should.equal('Invalid argument: model does not implement `getAccessToken()`');
       }
     });
 
@@ -72,9 +70,7 @@ describe('AuthenticateHandler integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
-        e.message.should.equal(
-          'Missing parameter: `addAuthorizedScopesHeader`',
-        );
+        e.message.should.equal('Missing parameter: `addAuthorizedScopesHeader`');
       }
     });
 
@@ -90,9 +86,7 @@ describe('AuthenticateHandler integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
-        e.message.should.equal(
-          'Invalid argument: model does not implement `verifyScope()`',
-        );
+        e.message.should.equal('Invalid argument: model does not implement `verifyScope()`');
       }
     });
 
@@ -134,9 +128,7 @@ describe('AuthenticateHandler integration', function () {
           should.fail();
         } catch (e) {
           e.should.be.an.instanceOf(InvalidArgumentError);
-          e.message.should.equal(
-            'Invalid argument: `request` must be an instance of Request',
-          );
+          e.message.should.equal('Invalid argument: `request` must be an instance of Request');
         }
       }
     });
@@ -161,9 +153,7 @@ describe('AuthenticateHandler integration', function () {
           should.fail();
         } catch (e) {
           e.should.be.an.instanceOf(InvalidArgumentError);
-          e.message.should.equal(
-            'Invalid argument: `response` must be an instance of Response',
-          );
+          e.message.should.equal('Invalid argument: `response` must be an instance of Response');
         }
       }
     });
@@ -210,9 +200,7 @@ describe('AuthenticateHandler integration', function () {
         .handle(request, response)
         .then(should.fail)
         .catch(function () {
-          response
-            .get('WWW-Authenticate')
-            .should.equal('Bearer realm="Service",error="invalid_request"');
+          response.get('WWW-Authenticate').should.equal('Bearer realm="Service",error="invalid_request"');
         });
     });
 
@@ -235,9 +223,7 @@ describe('AuthenticateHandler integration', function () {
         .handle(request, response)
         .then(should.fail)
         .catch(function () {
-          response
-            .get('WWW-Authenticate')
-            .should.equal('Bearer realm="Service",error="invalid_token"');
+          response.get('WWW-Authenticate').should.equal('Bearer realm="Service",error="invalid_token"');
         });
     });
 
@@ -260,9 +246,7 @@ describe('AuthenticateHandler integration', function () {
         .handle(request, response)
         .then(should.fail)
         .catch(function () {
-          response
-            .get('WWW-Authenticate')
-            .should.equal('Bearer realm="Service",error="insufficient_scope"');
+          response.get('WWW-Authenticate').should.equal('Bearer realm="Service",error="insufficient_scope"');
         });
     });
 
@@ -403,9 +387,7 @@ describe('AuthenticateHandler integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidRequestError);
-        e.message.should.equal(
-          'Invalid request: only one authentication method is allowed',
-        );
+        e.message.should.equal('Invalid request: only one authentication method is allowed');
       }
     });
 
@@ -451,9 +433,7 @@ describe('AuthenticateHandler integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidRequestError);
-        e.message.should.equal(
-          'Invalid request: malformed authorization header',
-        );
+        e.message.should.equal('Invalid request: malformed authorization header');
       }
     });
 
@@ -488,9 +468,7 @@ describe('AuthenticateHandler integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidRequestError);
-        e.message.should.equal(
-          'Invalid request: do not send bearer tokens in query URLs',
-        );
+        e.message.should.equal('Invalid request: do not send bearer tokens in query URLs');
       }
     });
 
@@ -500,9 +478,7 @@ describe('AuthenticateHandler integration', function () {
         model: { getAccessToken: function () {} },
       });
 
-      handler
-        .getTokenFromRequestQuery({ query: { access_token: 'foo' } })
-        .should.equal('foo');
+      handler.getTokenFromRequestQuery({ query: { access_token: 'foo' } }).should.equal('foo');
     });
   });
 
@@ -524,9 +500,7 @@ describe('AuthenticateHandler integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidRequestError);
-        e.message.should.equal(
-          'Invalid request: token may not be passed in the body when using the GET verb',
-        );
+        e.message.should.equal('Invalid request: token may not be passed in the body when using the GET verb');
       }
     });
 
@@ -547,9 +521,7 @@ describe('AuthenticateHandler integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidRequestError);
-        e.message.should.equal(
-          'Invalid request: content must be application/x-www-form-urlencoded',
-        );
+        e.message.should.equal('Invalid request: content must be application/x-www-form-urlencoded');
       }
     });
 
@@ -600,9 +572,7 @@ describe('AuthenticateHandler integration', function () {
         .then(should.fail)
         .catch(function (e) {
           e.should.be.an.instanceOf(ServerError);
-          e.message.should.equal(
-            'Server error: `getAccessToken()` did not return a `user` object',
-          );
+          e.message.should.equal('Server error: `getAccessToken()` did not return a `user` object');
         });
     });
 
@@ -696,9 +666,7 @@ describe('AuthenticateHandler integration', function () {
         .then(should.fail)
         .catch(function (e) {
           e.should.be.an.instanceOf(InsufficientScopeError);
-          e.message.should.equal(
-            'Insufficient scope: authorized scope is insufficient',
-          );
+          e.message.should.equal('Insufficient scope: authorized scope is insufficient');
         });
     });
 
@@ -721,9 +689,7 @@ describe('AuthenticateHandler integration', function () {
         .then(should.fail)
         .catch(function (e) {
           e.should.be.an.instanceOf(InsufficientScopeError);
-          e.message.should.equal(
-            'Insufficient scope: authorized scope is insufficient',
-          );
+          e.message.should.equal('Insufficient scope: authorized scope is insufficient');
         });
     });
 

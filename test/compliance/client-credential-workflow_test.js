@@ -77,11 +77,7 @@ describe('ClientCredentials Workflow Compliance (4.4)', function () {
           scope: enabledScope,
         },
         headers: {
-          authorization:
-            'Basic ' +
-            Buffer.from(clientDoc.id + ':' + clientDoc.secret).toString(
-              'base64',
-            ),
+          authorization: 'Basic ' + Buffer.from(clientDoc.id + ':' + clientDoc.secret).toString('base64'),
           'content-type': 'application/x-www-form-urlencoded',
         },
         method: 'POST',

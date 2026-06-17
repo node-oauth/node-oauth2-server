@@ -17,9 +17,7 @@ describe('AbstractGrantType', function () {
   describe('generateAccessToken()', function () {
     it('should call `model.generateAccessToken()`', function () {
       const model = Model.from({
-        generateAccessToken: sinon
-          .stub()
-          .returns({ client: {}, expiresAt: new Date(), user: {} }),
+        generateAccessToken: sinon.stub().returns({ client: {}, expiresAt: new Date(), user: {} }),
       });
       const handler = new AbstractGrantType({
         accessTokenLifetime: 120,

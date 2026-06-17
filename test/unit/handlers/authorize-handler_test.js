@@ -33,9 +33,7 @@ describe('AuthorizeHandler', function () {
         .generateAuthorizationCode()
         .then(function () {
           model.generateAuthorizationCode.callCount.should.equal(1);
-          model.generateAuthorizationCode.firstCall.thisValue.should.equal(
-            model,
-          );
+          model.generateAuthorizationCode.firstCall.thisValue.should.equal(model);
         })
         .catch(should.fail);
     });
@@ -150,16 +148,7 @@ describe('AuthorizeHandler', function () {
       });
 
       return handler
-        .saveAuthorizationCode(
-          'foo',
-          'bar',
-          ['qux'],
-          'biz',
-          'baz',
-          'boz',
-          'codeChallenge',
-          'codeChallengeMethod',
-        )
+        .saveAuthorizationCode('foo', 'bar', ['qux'], 'biz', 'baz', 'boz', 'codeChallenge', 'codeChallengeMethod')
         .then(function () {
           model.saveAuthorizationCode.callCount.should.equal(1);
           model.saveAuthorizationCode.firstCall.args.should.have.length(3);
@@ -213,9 +202,7 @@ describe('AuthorizeHandler', function () {
 
           model.validateRedirectUri.callCount.should.equal(1);
           model.validateRedirectUri.firstCall.args.should.have.length(2);
-          model.validateRedirectUri.firstCall.args[0].should.equal(
-            redirect_uri,
-          );
+          model.validateRedirectUri.firstCall.args[0].should.equal(redirect_uri);
           model.validateRedirectUri.firstCall.args[1].should.equal(client);
           model.validateRedirectUri.firstCall.thisValue.should.equal(model);
         })
@@ -286,9 +273,7 @@ describe('AuthorizeHandler', function () {
         })
         .catch((err) => {
           err.name.should.equal('invalid_client');
-          err.message.should.equal(
-            'Invalid client: `redirect_uri` does not match client value',
-          );
+          err.message.should.equal('Invalid client: `redirect_uri` does not match client value');
         });
     });
   });

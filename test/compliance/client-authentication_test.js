@@ -45,9 +45,7 @@ function createDefaultRequest() {
       scope,
     },
     headers: {
-      authorization:
-        'Basic ' +
-        Buffer.from(client.id + ':' + client.secret).toString('base64'),
+      authorization: 'Basic ' + Buffer.from(client.id + ':' + client.secret).toString('base64'),
       'content-type': 'application/x-www-form-urlencoded',
     },
     method: 'POST',
@@ -85,8 +83,7 @@ describe('Client Authentication Compliance', function () {
       const request = createDefaultRequest();
       const response = new Response({});
 
-      request.headers.authorization =
-        'Basic ' + Buffer.from('a:c').toString('base64');
+      request.headers.authorization = 'Basic ' + Buffer.from('a:c').toString('base64');
 
       await auth
         .token(request, response, {})

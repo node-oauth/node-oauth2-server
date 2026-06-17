@@ -36,9 +36,7 @@ describe('PasswordGrantType integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
-        e.message.should.equal(
-          'Invalid argument: model does not implement `getUser()`',
-        );
+        e.message.should.equal('Invalid argument: model does not implement `getUser()`');
       }
     });
 
@@ -53,9 +51,7 @@ describe('PasswordGrantType integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
-        e.message.should.equal(
-          'Invalid argument: model does not implement `saveToken()`',
-        );
+        e.message.should.equal('Invalid argument: model does not implement `saveToken()`');
       }
     });
   });
@@ -427,11 +423,7 @@ describe('PasswordGrantType integration', function () {
       const token = {};
       const model = Model.from({
         getUser: () => should.fail(),
-        saveToken: async function (
-          _token,
-          _client = 'fallback',
-          _user = 'fallback',
-        ) {
+        saveToken: async function (_token, _client = 'fallback', _user = 'fallback') {
           _token.accessToken.should.be.a.sha256();
           _token.accessTokenExpiresAt.should.be.instanceOf(Date);
           _token.refreshTokenExpiresAt.should.be.instanceOf(Date);

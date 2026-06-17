@@ -71,9 +71,7 @@ describe('AuthorizationCodeGrantType', function () {
         .then(function () {
           model.revokeAuthorizationCode.callCount.should.equal(1);
           model.revokeAuthorizationCode.firstCall.args.should.have.length(1);
-          model.revokeAuthorizationCode.firstCall.args[0].should.equal(
-            authorizationCode,
-          );
+          model.revokeAuthorizationCode.firstCall.args[0].should.equal(authorizationCode);
           model.revokeAuthorizationCode.firstCall.thisValue.should.equal(model);
         })
         .catch(should.fail);
@@ -95,18 +93,10 @@ describe('AuthorizationCodeGrantType', function () {
       });
 
       sinon.stub(handler, 'validateScope').returns(['foobiz']);
-      sinon
-        .stub(handler, 'generateAccessToken')
-        .returns(Promise.resolve('foo'));
-      sinon
-        .stub(handler, 'generateRefreshToken')
-        .returns(Promise.resolve('bar'));
-      sinon
-        .stub(handler, 'getAccessTokenExpiresAt')
-        .returns(Promise.resolve('biz'));
-      sinon
-        .stub(handler, 'getRefreshTokenExpiresAt')
-        .returns(Promise.resolve('baz'));
+      sinon.stub(handler, 'generateAccessToken').returns(Promise.resolve('foo'));
+      sinon.stub(handler, 'generateRefreshToken').returns(Promise.resolve('bar'));
+      sinon.stub(handler, 'getAccessTokenExpiresAt').returns(Promise.resolve('biz'));
+      sinon.stub(handler, 'getRefreshTokenExpiresAt').returns(Promise.resolve('baz'));
 
       return handler
         .saveToken(user, client, 'foobar', ['foobiz'])
@@ -141,9 +131,7 @@ describe('AuthorizationCodeGrantType', function () {
         expiresAt: new Date(new Date().getTime() * 2),
         user: {},
         codeChallengeMethod: 'S256',
-        codeChallenge: stringUtil.base64URLEncode(
-          crypto.createHash('sha256').update(codeVerifier).digest(),
-        ),
+        codeChallenge: stringUtil.base64URLEncode(crypto.createHash('sha256').update(codeVerifier).digest()),
       };
       const client = { id: 'foobar', isPublic: true };
       const model = Model.from({

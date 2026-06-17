@@ -34,11 +34,7 @@ describe('Request', function () {
       [null, TypeError, "Cannot destructure property 'headers'"],
       [{}, InvalidArgumentError, 'Missing parameter: `headers`'],
       [{ headers: {} }, InvalidArgumentError, 'Missing parameter: `method`'],
-      [
-        { headers: {}, method: 'GET' },
-        InvalidArgumentError,
-        'Missing parameter: `query`',
-      ],
+      [{ headers: {}, method: 'GET' }, InvalidArgumentError, 'Missing parameter: `query`'],
     ];
 
     args.forEach(([value, error, message]) => {
@@ -189,25 +185,17 @@ describe('Request', function () {
 
   it('should validate the content-type', function () {
     const originalRequest = generateBaseRequest();
-    originalRequest.headers['content-type'] =
-      'application/x-www-form-urlencoded';
-    originalRequest.headers['content-length'] = JSON.stringify(
-      originalRequest.body,
-    ).length;
+    originalRequest.headers['content-type'] = 'application/x-www-form-urlencoded';
+    originalRequest.headers['content-length'] = JSON.stringify(originalRequest.body).length;
 
     const request = new Request(originalRequest);
-    request
-      .is('application/x-www-form-urlencoded')
-      .should.eql('application/x-www-form-urlencoded');
+    request.is('application/x-www-form-urlencoded').should.eql('application/x-www-form-urlencoded');
   });
 
   it('should return false if the content-type is invalid', function () {
     const originalRequest = generateBaseRequest();
-    originalRequest.headers['content-type'] =
-      'application/x-www-form-urlencoded';
-    originalRequest.headers['content-length'] = JSON.stringify(
-      originalRequest.body,
-    ).length;
+    originalRequest.headers['content-type'] = 'application/x-www-form-urlencoded';
+    originalRequest.headers['content-length'] = JSON.stringify(originalRequest.body).length;
 
     const request = new Request(originalRequest);
     request.is('application/json').should.eql(false);

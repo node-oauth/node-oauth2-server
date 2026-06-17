@@ -147,14 +147,12 @@ describe('TokenModel', function () {
         },
         {
           allowExtendedTokenAttributes: true,
-        },
+        }
       );
 
       should.not.exist(model['myCustomAttribute']);
       model['customAttributes'].should.be.an('object');
-      model['customAttributes']['myCustomAttribute'].should.equal(
-        'myCustomValue',
-      );
+      model['customAttributes']['myCustomAttribute'].should.equal('myCustomValue');
     });
   });
 });

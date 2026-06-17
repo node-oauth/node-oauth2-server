@@ -10,17 +10,7 @@ describe(parseScope.name, () => {
     });
   });
   it('should throw on non-string values', () => {
-    const invalid = [
-      1,
-      -1,
-      true,
-      false,
-      {},
-      ['foo'],
-      [],
-      () => {},
-      Symbol('foo'),
-    ];
+    const invalid = [1, -1, true, false, {}, ['foo'], [], () => {}, Symbol('foo')];
     invalid.forEach((str) => {
       try {
         parseScope(str);

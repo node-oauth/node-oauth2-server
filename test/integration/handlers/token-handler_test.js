@@ -73,9 +73,7 @@ describe('TokenHandler integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
-        e.message.should.equal(
-          'Invalid argument: model does not implement `getClient()`',
-        );
+        e.message.should.equal('Invalid argument: model does not implement `getClient()`');
       }
     });
 
@@ -107,9 +105,7 @@ describe('TokenHandler integration', function () {
         alwaysIssueNewRefreshToken: alwaysIssueNewRefreshToken,
       });
 
-      handler.alwaysIssueNewRefreshToken.should.equal(
-        alwaysIssueNewRefreshToken,
-      );
+      handler.alwaysIssueNewRefreshToken.should.equal(alwaysIssueNewRefreshToken);
     });
 
     it('should set the `alwaysIssueNewRefreshToken` to false', function () {
@@ -125,9 +121,7 @@ describe('TokenHandler integration', function () {
         alwaysIssueNewRefreshToken: alwaysIssueNewRefreshToken,
       });
 
-      handler.alwaysIssueNewRefreshToken.should.equal(
-        alwaysIssueNewRefreshToken,
-      );
+      handler.alwaysIssueNewRefreshToken.should.equal(alwaysIssueNewRefreshToken);
     });
 
     it('should return the default `alwaysIssueNewRefreshToken` value', function () {
@@ -207,9 +201,7 @@ describe('TokenHandler integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
-        e.message.should.equal(
-          'Invalid argument: `request` must be an instance of Request',
-        );
+        e.message.should.equal('Invalid argument: `request` must be an instance of Request');
       }
     });
 
@@ -236,9 +228,7 @@ describe('TokenHandler integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
-        e.message.should.equal(
-          'Invalid argument: `response` must be an instance of Response',
-        );
+        e.message.should.equal('Invalid argument: `response` must be an instance of Response');
       }
     });
 
@@ -292,9 +282,7 @@ describe('TokenHandler integration', function () {
         .then(should.fail)
         .catch(function (e) {
           e.should.be.an.instanceOf(InvalidRequestError);
-          e.message.should.equal(
-            'Invalid request: content must be application/x-www-form-urlencoded',
-          );
+          e.message.should.equal('Invalid request: content must be application/x-www-form-urlencoded');
         });
     });
 
@@ -324,9 +312,7 @@ describe('TokenHandler integration', function () {
         .then(should.fail)
         .catch(function (e) {
           e.should.be.an.instanceOf(InvalidClientError);
-          e.message.should.equal(
-            'Invalid client: cannot retrieve client credentials',
-          );
+          e.message.should.equal('Invalid client: cannot retrieve client credentials');
         });
     });
 
@@ -733,10 +719,7 @@ describe('TokenHandler integration', function () {
       const request = new Request({
         body: {},
         headers: {
-          authorization: util.format(
-            'Basic %s',
-            Buffer.from('foo:bar').toString('base64'),
-          ),
+          authorization: util.format('Basic %s', Buffer.from('foo:bar').toString('base64')),
         },
         method: {},
         query: {},
@@ -751,9 +734,7 @@ describe('TokenHandler integration', function () {
           e.code.should.equal(401);
           e.message.should.equal('Invalid client: client is invalid');
 
-          response
-            .get('WWW-Authenticate')
-            .should.equal('Basic realm="Service"');
+          response.get('WWW-Authenticate').should.equal('Basic realm="Service"');
         });
     });
 
@@ -840,10 +821,7 @@ describe('TokenHandler integration', function () {
         const request = new Request({
           body: { grant_type: 'password' },
           headers: {
-            authorization: util.format(
-              'Basic %s',
-              Buffer.from('blah:').toString('base64'),
-            ),
+            authorization: util.format('Basic %s', Buffer.from('blah:').toString('base64')),
           },
           method: {},
           query: {},
@@ -927,9 +905,7 @@ describe('TokenHandler integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidClientError);
-        e.message.should.equal(
-          'Invalid client: cannot retrieve client credentials',
-        );
+        e.message.should.equal('Invalid client: cannot retrieve client credentials');
       }
     });
 
@@ -956,9 +932,7 @@ describe('TokenHandler integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidClientError);
-        e.message.should.equal(
-          'Invalid client: cannot retrieve client credentials',
-        );
+        e.message.should.equal('Invalid client: cannot retrieve client credentials');
       }
     });
 
@@ -1000,10 +974,7 @@ describe('TokenHandler integration', function () {
         const request = new Request({
           body: {},
           headers: {
-            authorization: util.format(
-              'Basic %s',
-              Buffer.from('foo:bar').toString('base64'),
-            ),
+            authorization: util.format('Basic %s', Buffer.from('foo:bar').toString('base64')),
           },
           method: {},
           query: {},
@@ -1116,9 +1087,7 @@ describe('TokenHandler integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(UnsupportedGrantTypeError);
-        e.message.should.equal(
-          'Unsupported grant type: `grant_type` is invalid',
-        );
+        e.message.should.equal('Unsupported grant type: `grant_type` is invalid');
       }
     });
 
@@ -1238,18 +1207,14 @@ describe('TokenHandler integration', function () {
         const methods = ['S256', undefined];
 
         for (const method of methods) {
-          const codeVerifier = stringUtil.base64URLEncode(
-            crypto.randomBytes(32),
-          );
+          const codeVerifier = stringUtil.base64URLEncode(crypto.randomBytes(32));
           const authorizationCode = {
             authorizationCode: 12345,
             client: { id: 'foobar' },
             expiresAt: new Date(new Date().getTime() * 2),
             user: {},
             codeChallengeMethod: method,
-            codeChallenge: stringUtil.base64URLEncode(
-              crypto.createHash('sha256').update(codeVerifier).digest(),
-            ),
+            codeChallenge: stringUtil.base64URLEncode(crypto.createHash('sha256').update(codeVerifier).digest()),
           };
           const client = { id: 'foobar', grants: ['authorization_code'] };
           const token = {};
@@ -1293,9 +1258,7 @@ describe('TokenHandler integration', function () {
         const methods = ['plain', undefined];
 
         for (const method of methods) {
-          const codeVerifier = stringUtil.base64URLEncode(
-            crypto.randomBytes(32),
-          );
+          const codeVerifier = stringUtil.base64URLEncode(crypto.randomBytes(32));
           const authorizationCode = {
             authorizationCode: 12345,
             client: { id: 'foobar' },
@@ -1351,9 +1314,7 @@ describe('TokenHandler integration', function () {
           expiresAt: new Date(new Date().getTime() * 2),
           user: {},
           codeChallengeMethod: 'S256',
-          codeChallenge: stringUtil.base64URLEncode(
-            crypto.createHash('sha256').update(codeVerifier).digest(),
-          ),
+          codeChallenge: stringUtil.base64URLEncode(crypto.createHash('sha256').update(codeVerifier).digest()),
         };
         const client = { id: 'foobar', grants: ['authorization_code'] };
         const token = {};
@@ -1405,9 +1366,7 @@ describe('TokenHandler integration', function () {
           expiresAt: new Date(new Date().getTime() * 2),
           user: {},
           codeChallengeMethod: 'S256',
-          codeChallenge: stringUtil.base64URLEncode(
-            crypto.createHash('sha256').update(codeVerifier).digest(),
-          ),
+          codeChallenge: stringUtil.base64URLEncode(crypto.createHash('sha256').update(codeVerifier).digest()),
         };
         const client = { id: 'foobar', grants: ['authorization_code'] };
         const token = {};

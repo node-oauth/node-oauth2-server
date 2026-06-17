@@ -49,22 +49,16 @@ describe('CodeResponseType integration', function () {
 
     it('should return the new redirect uri and set the `code` and `state` in the query', function () {
       const responseType = new CodeResponseType('foo');
-      const redirectUri = responseType.buildRedirectUri(
-        'http://example.com/cb',
-      );
+      const redirectUri = responseType.buildRedirectUri('http://example.com/cb');
 
       url.format(redirectUri).should.equal('http://example.com/cb?code=foo');
     });
 
     it('should return the new redirect uri and append the `code` and `state` in the query', function () {
       const responseType = new CodeResponseType('foo');
-      const redirectUri = responseType.buildRedirectUri(
-        'http://example.com/cb?foo=bar',
-      );
+      const redirectUri = responseType.buildRedirectUri('http://example.com/cb?foo=bar');
 
-      url
-        .format(redirectUri)
-        .should.equal('http://example.com/cb?foo=bar&code=foo');
+      url.format(redirectUri).should.equal('http://example.com/cb?foo=bar&code=foo');
     });
   });
 });

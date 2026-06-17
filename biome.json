@@ -43,7 +43,9 @@
 	"javascript": {
 		"formatter": {
 			"quoteStyle": "single",
-			"indentStyle": "space"
+			"indentStyle": "space",
+			"trailingCommas": "es5",
+			"lineWidth": 120
 		}
 	},
 	"assist": {

@@ -37,9 +37,7 @@ describe('AuthorizationCodeGrantType integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
-        e.message.should.equal(
-          'Invalid argument: model does not implement `getAuthorizationCode()`',
-        );
+        e.message.should.equal('Invalid argument: model does not implement `getAuthorizationCode()`');
       }
     });
 
@@ -54,9 +52,7 @@ describe('AuthorizationCodeGrantType integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
-        e.message.should.equal(
-          'Invalid argument: model does not implement `revokeAuthorizationCode()`',
-        );
+        e.message.should.equal('Invalid argument: model does not implement `revokeAuthorizationCode()`');
       }
     });
 
@@ -72,9 +68,7 @@ describe('AuthorizationCodeGrantType integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
-        e.message.should.equal(
-          'Invalid argument: model does not implement `saveToken()`',
-        );
+        e.message.should.equal('Invalid argument: model does not implement `saveToken()`');
       }
     });
   });
@@ -129,9 +123,7 @@ describe('AuthorizationCodeGrantType integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(ServerError);
-        e.message.should.equal(
-          'Server error: `getAuthorizationCode()` did not return a `client` object',
-        );
+        e.message.should.equal('Server error: `getAuthorizationCode()` did not return a `client` object');
       }
     });
 
@@ -397,9 +389,7 @@ describe('AuthorizationCodeGrantType integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(ServerError);
-        e.message.should.equal(
-          'Server error: `getAuthorizationCode()` did not return a `client` object',
-        );
+        e.message.should.equal('Server error: `getAuthorizationCode()` did not return a `client` object');
       }
     });
 
@@ -428,9 +418,7 @@ describe('AuthorizationCodeGrantType integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(ServerError);
-        e.message.should.equal(
-          'Server error: `expiresAt` must be a Date instance',
-        );
+        e.message.should.equal('Server error: `expiresAt` must be a Date instance');
       }
     });
 
@@ -463,9 +451,7 @@ describe('AuthorizationCodeGrantType integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(ServerError);
-        e.message.should.equal(
-          'Server error: `getAuthorizationCode()` did not return a `user` object',
-        );
+        e.message.should.equal('Server error: `getAuthorizationCode()` did not return a `user` object');
       }
     });
 
@@ -570,9 +556,7 @@ describe('AuthorizationCodeGrantType integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidGrantError);
-        e.message.should.equal(
-          'Invalid grant: `redirect_uri` is not a valid URI',
-        );
+        e.message.should.equal('Invalid grant: `redirect_uri` is not a valid URI');
       }
     });
 
@@ -633,9 +617,7 @@ describe('AuthorizationCodeGrantType integration', function () {
         query: {},
       });
 
-      grantType
-        .getAuthorizationCode(request, client)
-        .should.be.an.instanceOf(Promise);
+      grantType.getAuthorizationCode(request, client).should.be.an.instanceOf(Promise);
     });
 
     it('should support non-promises', function () {
@@ -664,9 +646,7 @@ describe('AuthorizationCodeGrantType integration', function () {
         query: {},
       });
 
-      grantType
-        .getAuthorizationCode(request, client)
-        .should.be.an.instanceOf(Promise);
+      grantType.getAuthorizationCode(request, client).should.be.an.instanceOf(Promise);
     });
   });
 
@@ -703,9 +683,7 @@ describe('AuthorizationCodeGrantType integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidRequestError);
-        e.message.should.equal(
-          'Invalid request: `redirect_uri` is not a valid URI',
-        );
+        e.message.should.equal('Invalid request: `redirect_uri` is not a valid URI');
       }
     });
 
@@ -828,9 +806,7 @@ describe('AuthorizationCodeGrantType integration', function () {
           should.fail();
         } catch (e) {
           e.should.be.an.instanceOf(InvalidGrantError);
-          e.message.should.equal(
-            'Invalid grant: authorization code is invalid',
-          );
+          e.message.should.equal('Invalid grant: authorization code is invalid');
         }
       }
     });
@@ -853,9 +829,7 @@ describe('AuthorizationCodeGrantType integration', function () {
         accessTokenLifetime: 123,
         model: model,
       });
-      grantType
-        .revokeAuthorizationCode(authorizationCode)
-        .should.be.an.instanceOf(Promise);
+      grantType.revokeAuthorizationCode(authorizationCode).should.be.an.instanceOf(Promise);
     });
 
     it('should support non-promises', function () {
@@ -876,9 +850,7 @@ describe('AuthorizationCodeGrantType integration', function () {
         accessTokenLifetime: 123,
         model: model,
       });
-      grantType
-        .revokeAuthorizationCode(authorizationCode)
-        .should.be.an.instanceOf(Promise);
+      grantType.revokeAuthorizationCode(authorizationCode).should.be.an.instanceOf(Promise);
     });
   });
 
@@ -899,11 +871,7 @@ describe('AuthorizationCodeGrantType integration', function () {
           _client.should.equal('fallback');
           return token;
         },
-        validateScope: function (
-          _user = 'fallback',
-          _client = 'fallback',
-          _scope = ['fallback'],
-        ) {
+        validateScope: function (_user = 'fallback', _client = 'fallback', _scope = ['fallback']) {
           _user.should.equal('fallback');
           _client.should.equal('fallback');
           _scope.should.eql(['fallback']);

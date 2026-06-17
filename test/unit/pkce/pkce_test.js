@@ -14,11 +14,7 @@ describe('PKCE', function () {
     it('returns, whether parameters define a PKCE request', function () {
       [
         [true, 'authorization_code', 'foo'],
-        [
-          true,
-          'authorization_code',
-          '123123123123123123123123123123123123123123123',
-        ],
+        [true, 'authorization_code', '123123123123123123123123123123123123123123123'],
         [false, 'authorization_code', ''],
         [false, 'authorization_code', undefined],
         [false, 'foo_code', '123123123123123123123123123123123123123123123'],
@@ -31,7 +27,7 @@ describe('PKCE', function () {
           pkce.isPKCERequest({
             grantType: triple[1],
             codeVerifier: triple[2],
-          }),
+          })
         );
       });
     });
@@ -49,10 +45,7 @@ describe('PKCE', function () {
           '123123123112312312311231231231123123123112312312311231231231123123123112312312311231231231123123123112312312311231231231123123123',
         ], // too long
         // invalid chars
-        [
-          true,
-          '-_.~abcdefghijklmnopqrstuvwxyz0123456789ABCDEFHIJKLMNOPQRSTUVWXYZ',
-        ],
+        [true, '-_.~abcdefghijklmnopqrstuvwxyz0123456789ABCDEFHIJKLMNOPQRSTUVWXYZ'],
       ].forEach((pair) => {
         should.equal(pair[0], pkce.codeChallengeMatchesABNF(pair[1]));
       });
@@ -60,8 +53,7 @@ describe('PKCE', function () {
   });
   describe(pkce.getHashForCodeChallenge.name, function () {
     it('returns nothing if method is not valid', function () {
-      const verifier =
-        '-_.~abcdefghijklmnopqrstuvwxyz0123456789ABCDEFHIJKLMNOPQRSTUVWXYZ';
+      const verifier = '-_.~abcdefghijklmnopqrstuvwxyz0123456789ABCDEFHIJKLMNOPQRSTUVWXYZ';
 
       [
         [undefined, undefined, verifier],
@@ -74,7 +66,7 @@ describe('PKCE', function () {
           pkce.getHashForCodeChallenge({
             method: triple[1],
             verifier: triple[2],
-          }),
+          })
         );
       });
     });
@@ -92,19 +84,17 @@ describe('PKCE', function () {
           pkce.getHashForCodeChallenge({
             method: triple[1],
             verifier: triple[2],
-          }),
+          })
         );
       });
     });
     it('returns the unhashed verifier when method is plain', function () {
-      const verifier =
-        '-_.~abcdefghijklmnopqrstuvwxyz0123456789ABCDEFHIJKLMNOPQRSTUVWXYZ';
+      const verifier = '-_.~abcdefghijklmnopqrstuvwxyz0123456789ABCDEFHIJKLMNOPQRSTUVWXYZ';
       const hash = pkce.getHashForCodeChallenge({ method: 'plain', verifier });
       should.equal(hash, verifier);
     });
     it('returns the hash verifier when method is S256', function () {
-      const verifier =
-        '-_.~abcdefghijklmnopqrstuvwxyz0123456789ABCDEFHIJKLMNOPQRSTUVWXYZ';
+      const verifier = '-_.~abcdefghijklmnopqrstuvwxyz0123456789ABCDEFHIJKLMNOPQRSTUVWXYZ';
       const hash = pkce.getHashForCodeChallenge({ method: 'S256', verifier });
       const expectedHash = base64URLEncode(createHash({ data: verifier }));
       should.equal(hash, expectedHash);

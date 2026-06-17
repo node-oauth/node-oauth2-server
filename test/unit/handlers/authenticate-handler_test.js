@@ -38,9 +38,7 @@ describe('AuthenticateHandler', function () {
           should.fail('should.fail', '');
         } catch (e) {
           e.should.be.an.instanceOf(InvalidRequestError);
-          e.message.should.equal(
-            'Invalid request: malformed authorization header',
-          );
+          e.message.should.equal('Invalid request: malformed authorization header');
         }
       });
     });
@@ -62,9 +60,7 @@ describe('AuthenticateHandler', function () {
         handler.getTokenFromRequest(request);
 
         handler.getTokenFromRequestHeader.callCount.should.equal(1);
-        handler.getTokenFromRequestHeader.firstCall.args[0].should.equal(
-          request,
-        );
+        handler.getTokenFromRequestHeader.firstCall.args[0].should.equal(request);
         handler.getTokenFromRequestHeader.restore();
       });
     });
@@ -86,9 +82,7 @@ describe('AuthenticateHandler', function () {
         handler.getTokenFromRequest(request);
 
         handler.getTokenFromRequestQuery.callCount.should.equal(1);
-        handler.getTokenFromRequestQuery.firstCall.args[0].should.equal(
-          request,
-        );
+        handler.getTokenFromRequestQuery.firstCall.args[0].should.equal(request);
         handler.getTokenFromRequestQuery.restore();
       });
     });

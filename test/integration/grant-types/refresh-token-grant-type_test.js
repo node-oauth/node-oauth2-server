@@ -38,9 +38,7 @@ describe('RefreshTokenGrantType integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
-        e.message.should.equal(
-          'Invalid argument: model does not implement `getRefreshToken()`',
-        );
+        e.message.should.equal('Invalid argument: model does not implement `getRefreshToken()`');
       }
     });
 
@@ -55,9 +53,7 @@ describe('RefreshTokenGrantType integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
-        e.message.should.equal(
-          'Invalid argument: model does not implement `revokeToken()`',
-        );
+        e.message.should.equal('Invalid argument: model does not implement `revokeToken()`');
       }
     });
 
@@ -73,9 +69,7 @@ describe('RefreshTokenGrantType integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidArgumentError);
-        e.message.should.equal(
-          'Invalid argument: model does not implement `saveToken()`',
-        );
+        e.message.should.equal('Invalid argument: model does not implement `saveToken()`');
       }
     });
   });
@@ -368,9 +362,7 @@ describe('RefreshTokenGrantType integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(ServerError);
-        e.message.should.equal(
-          'Server error: `getRefreshToken()` did not return a `client` object',
-        );
+        e.message.should.equal('Server error: `getRefreshToken()` did not return a `client` object');
       }
     });
 
@@ -400,9 +392,7 @@ describe('RefreshTokenGrantType integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(ServerError);
-        e.message.should.equal(
-          'Server error: `getRefreshToken()` did not return a `user` object',
-        );
+        e.message.should.equal('Server error: `getRefreshToken()` did not return a `user` object');
       }
     });
 
@@ -432,9 +422,7 @@ describe('RefreshTokenGrantType integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidGrantError);
-        e.message.should.equal(
-          'Invalid grant: refresh token was issued to another client',
-        );
+        e.message.should.equal('Invalid grant: refresh token was issued to another client');
       }
     });
 
@@ -494,9 +482,7 @@ describe('RefreshTokenGrantType integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidGrantError);
-        e.message.should.equal(
-          'Invalid grant: refresh token was issued to another client',
-        );
+        e.message.should.equal('Invalid grant: refresh token was issued to another client');
       }
     });
 
@@ -567,9 +553,7 @@ describe('RefreshTokenGrantType integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(ServerError);
-        e.message.should.equal(
-          'Server error: `refreshTokenExpiresAt` must be a Date instance',
-        );
+        e.message.should.equal('Server error: `refreshTokenExpiresAt` must be a Date instance');
       }
     });
 
@@ -635,9 +619,7 @@ describe('RefreshTokenGrantType integration', function () {
         query: {},
       });
 
-      grantType
-        .getRefreshToken(request, client)
-        .should.be.an.instanceOf(Promise);
+      grantType.getRefreshToken(request, client).should.be.an.instanceOf(Promise);
     });
 
     it('should support non-promises', function () {
@@ -661,9 +643,7 @@ describe('RefreshTokenGrantType integration', function () {
         query: {},
       });
 
-      grantType
-        .getRefreshToken(request, client)
-        .should.be.an.instanceOf(Promise);
+      grantType.getRefreshToken(request, client).should.be.an.instanceOf(Promise);
     });
   });
 
@@ -684,9 +664,7 @@ describe('RefreshTokenGrantType integration', function () {
         should.fail();
       } catch (e) {
         e.should.be.an.instanceOf(InvalidGrantError);
-        e.message.should.equal(
-          'Invalid grant: refresh token is invalid or could not be revoked',
-        );
+        e.message.should.equal('Invalid grant: refresh token is invalid or could not be revoked');
       }
     });
 

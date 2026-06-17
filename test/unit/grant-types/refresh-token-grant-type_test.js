@@ -59,9 +59,7 @@ describe('RefreshTokenGrantType', function () {
   describe('getRefreshToken()', function () {
     it('should call `model.getRefreshToken()`', function () {
       const model = Model.from({
-        getRefreshToken: sinon
-          .stub()
-          .returns({ accessToken: 'foo', client: {}, user: {} }),
+        getRefreshToken: sinon.stub().returns({ accessToken: 'foo', client: {}, user: {} }),
         saveToken: function () {},
         revokeToken: function () {},
       });
