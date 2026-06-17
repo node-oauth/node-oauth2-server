@@ -81,6 +81,45 @@ oauth.authenticate(request, response)
     });
 ```
 
+### Sending the response
+
+This library is **framework-agnostic and does not send the HTTP response for you**.
+`authenticate()`, `authorize()` and `token()` resolve with their result *and*
+populate the `Response` object you passed in — setting `response.status`,
+`response.headers` and `response.body`. It is up to you to copy those onto your
+framework's real response and send it. For `authorize()` this is how the redirect
+happens: the `location` header is set on the `Response`, but you still have to
+issue it.
+
+A minimal Express example for the authorization endpoint:
+
+```js
+app.get('/authorize', async (req, res) => {
+    // Wrap the framework objects in NEW variables — see the warning below.
+    const request = new Request(req);
+    const response = new Response(res);
+
+    try {
+        await oauth.authorize(request, response, { authenticateHandler });
+    } catch (err) {
+        return res.status(err.code || 500).json({ error: err.name, error_description: err.message });
+    }
+
+    // The library populated `response`; now you send it. For authorize that is a redirect:
+    res.set(response.headers);                // includes the `location` header
+    return res.status(response.status).end(); // 302 -> the browser follows `location`
+});
+```
+
+> **Do not reassign your framework's `req`/`res`** to the library's objects
+> (e.g. `res = new Response(res)`). Doing so discards framework methods such as
+> `res.redirect()`, and is a common cause of a request appearing to "hang".
+
+If you use Express or Koa, prefer the official adapters
+([express-oauth-server](https://www.npmjs.com/package/@node-oauth/express-oauth-server),
+[koa-oauth-server](https://npmjs.org/package/koa-oauth-server)), which take care of
+all of this for you.
+
 The most crucial part in this setup is the `model`.
 It acts as the bridge between the OAuth2 server library and your system.
 
