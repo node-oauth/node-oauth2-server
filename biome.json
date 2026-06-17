@@ -18,7 +18,24 @@
 		"rules": {
 			"preset": "recommended",
 			"suspicious": {
-				"noRedundantUseStrict": "off"
+				"noRedundantUseStrict": "off",
+				"noPrototypeBuiltins": "off",
+				"useIsArray": "off"
+			},
+			"complexity": {
+				"useArrowFunction": "off",
+				"useDateNow": "off",
+				"useOptionalChain": "off",
+				"useLiteralKeys": "off",
+				"noUselessThisAlias": "off"
+			},
+			"correctness": {
+				"noUnusedFunctionParameters": "off",
+				"noUnusedVariables": "off"
+			},
+			"style": {
+				"useNodejsImportProtocol": "off",
+				"useTemplate": "off"
 			}
 		}
 	},
