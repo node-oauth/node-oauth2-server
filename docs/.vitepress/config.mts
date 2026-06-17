@@ -24,6 +24,7 @@ export default defineConfig({
                     {text: 'Token types', link: '/guide/token-types'},
                     {text: 'PKCE', link: '/guide/pkce'},
                     {text: 'Adapters', link: '/guide/adapters'},
+                    {text: 'Compliance', link: '/guide/compliance'},
                     {text: 'Migrating to v5', link: '/guide/migrating-to-v5'},
                     {text: 'Contributing', link: '/guide/contributing'},
                 ]
