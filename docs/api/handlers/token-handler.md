@@ -24,7 +24,6 @@ Constructor.
 * [TokenHandler](#TokenHandler)
     * [.handle()](#TokenHandler+handle)
     * [.getClient()](#TokenHandler+getClient)
-    * [.getClientCredentials()](#TokenHandler+getClientCredentials)
     * [.handleGrantType()](#TokenHandler+handleGrantType)
     * [.getAccessTokenLifetime()](#TokenHandler+getAccessTokenLifetime)
     * [.getRefreshTokenLifetime()](#TokenHandler+getRefreshTokenLifetime)
@@ -44,17 +43,15 @@ Token Handler.
 ### tokenHandler.getClient()
 Get the client from the model.
 
-**Kind**: instance method of [<code>TokenHandler</code>](#TokenHandler)  
-<a name="TokenHandler+getClientCredentials"></a>
-
-### tokenHandler.getClientCredentials()
-Get client credentials.
-
-The client credentials may be sent using the HTTP Basic authentication scheme or, alternatively,
-the `client_id` and `client_secret` can be embedded in the body.
+Client authentication is delegated to the configured authentication
+methods (see the client authentication guide). The single method
+that matches the request resolves and verifies the client; supported out
+of the box are HTTP Basic, request-body credentials and public clients,
+plus any methods added via `extendedClientAuthentication` (e.g. JWT
+client assertions).
 
 **Kind**: instance method of [<code>TokenHandler</code>](#TokenHandler)  
-**See**: https://tools.ietf.org/html/rfc6749#section-2.3.1  
+**See**: https://datatracker.ietf.org/doc/html/rfc6749#section-2.3.1  
 <a name="TokenHandler+handleGrantType"></a>
 
 ### tokenHandler.handleGrantType()
