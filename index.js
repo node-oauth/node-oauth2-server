@@ -15,6 +15,12 @@ exports.Response = require('./lib/response');
 exports.AbstractGrantType = require('./lib/grant-types/abstract-grant-type');
 
 /**
+ * Export the JWT bearer authorization grant (register via `extendedGrantTypes`).
+ */
+
+exports.JwtBearerGrantType = require('./lib/grant-types/jwt-bearer-grant-type');
+
+/**
  * Export client authentication helpers for pluggable `token_endpoint_auth_method`s.
  */
 

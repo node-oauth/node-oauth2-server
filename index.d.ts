@@ -164,6 +164,14 @@ declare namespace OAuth2Server {
         abstract handle(request: Request, client: Client): Promise<Token | Falsey>;
     }
 
+    /**
+     * The JWT bearer authorization grant (RFC 7523 §2.1). Register via
+     * `extendedGrantTypes` under `urn:ietf:params:oauth:grant-type:jwt-bearer`.
+     */
+    class JwtBearerGrantType extends AbstractGrantType {
+        handle(request: Request, client: Client): Promise<Token | Falsey>;
+    }
+
     interface ServerOptions extends AuthenticateOptions, AuthorizeOptions, TokenOptions {
         /**
          * Model object
@@ -270,6 +278,40 @@ declare namespace OAuth2Server {
     }
 
     /**
+     * A trusted issuer for the JWT bearer authorization grant: the verification
+     * key material plus the audience the assertion's `aud` claim must contain.
+     */
+    interface JWTBearerIssuer {
+        /** The value(s) the assertion's `aud` claim must contain (e.g. the token endpoint URL). */
+        audience: string | string[];
+        /** A JWK Set (RFC 7517) of the issuer's public keys (asymmetric assertions). */
+        jwks?: object;
+        /** A URL of the issuer's JWK Set, fetched and cached by the server (asymmetric assertions). */
+        jwksUri?: string;
+        /** A shared secret used as the HMAC key (HS* assertions). */
+        secret?: string;
+        [key: string]: any;
+    }
+
+    /** Parameters passed to `getJWTBearerUser` for the JWT bearer grant. */
+    interface JWTBearerUserParams {
+        /** The verified assertion issuer (`iss`). */
+        issuer: string;
+        /** The verified assertion subject (`sub`) — the principal the token is for. */
+        subject: string;
+        /** The (resolved) client making the request. */
+        client: Client;
+        /** The requested scope (from the `scope` body parameter). */
+        scope?: string[];
+        /** The assertion `jti`, if present. */
+        jti?: string;
+        /** Stable single-use id: the `jti`, or a signing-input fingerprint when the assertion has no `jti`. */
+        assertionId: string;
+        /** The assertion `exp` (epoch seconds). */
+        exp?: number;
+    }
+
+    /**
      * For returning falsey parameters in cases of failure
      */
     type Falsey = '' | 0 | false | null | undefined;
@@ -304,6 +346,20 @@ declare namespace OAuth2Server {
          * for single-use replay protection.
          */
         saveClientAssertionJti?(jti: string, exp?: number): Promise<void>;
+
+        /**
+         * Required by the JWT bearer authorization grant (`JwtBearerGrantType`). Invoked to
+         * resolve a trusted assertion issuer's verification keys and expected audience.
+         * Return a falsy value to reject the issuer as untrusted.
+         */
+        getJWTBearerIssuer?(issuer: string): Promise<JWTBearerIssuer | Falsey>;
+
+        /**
+         * Required by the JWT bearer authorization grant (`JwtBearerGrantType`). Invoked to
+         * resolve and authorize the principal (`sub`) the access token is issued for.
+         * Return a falsy value to deny the grant.
+         */
+        getJWTBearerUser?(params: JWTBearerUserParams): Promise<User | Falsey>;
     }
 
     interface RequestAuthenticationModel {
