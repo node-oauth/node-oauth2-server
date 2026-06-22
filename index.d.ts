@@ -253,6 +253,30 @@ declare namespace OAuth2Server {
          * Require PKCE for the authorization code grant: reject token exchanges for codes issued without a `code_challenge`. Recommended by OAuth 2.1.
          */
         requirePKCE?: boolean;
+
+        /**
+         * Additional client authentication methods (`token_endpoint_auth_method`),
+         * keyed by name. Merged over the built-in `client_secret_basic`,
+         * `client_secret_post` and `none` methods.
+         */
+        extendedClientAuthentication?: Record<string, ClientAuthentication>;
+    }
+
+    /**
+     * A client authentication method — an OAuth `token_endpoint_auth_method`.
+     */
+    interface ClientAuthentication {
+        /** Whether this method presents client credentials (vs. identifying a public client). */
+        readonly requiresCredentials: boolean;
+
+        /** Does the request present credentials for this method? */
+        matches(request: Request): boolean;
+
+        /** Verify the presented credentials and resolve the authenticated client. */
+        authenticate(request: Request, context: { model: object }): Promise<Client>;
+
+        /** The `token_endpoint_auth_method` this request presents, for registered-method enforcement. */
+        presentedMethod(request: Request): string;
     }
 
     /**
@@ -278,6 +302,18 @@ declare namespace OAuth2Server {
          *
          */
         saveToken(token: Omit<Token, 'client' | 'user'>, client: Client, user: User): Promise<Token | Falsey>;
+
+        /**
+         * Optional. Invoked to check whether a JWT client assertion `jti` has already
+         * been used (single-use replay protection for JWT client authentication).
+         */
+        isClientAssertionJtiUsed?(jti: string): Promise<boolean>;
+
+        /**
+         * Optional. Invoked to record a JWT client assertion `jti` (with its `exp`)
+         * for single-use replay protection.
+         */
+        saveClientAssertionJti?(jti: string, exp?: number): Promise<void>;
     }
 
     interface RequestAuthenticationModel {
@@ -416,6 +452,15 @@ declare namespace OAuth2Server {
         grants: string | string[];
         accessTokenLifetime?: number;
         refreshTokenLifetime?: number;
+        /**
+         * Optional registered `token_endpoint_auth_method` (RFC 7591). When set, the
+         * token endpoint rejects any client authentication method other than this one.
+         */
+        tokenEndpointAuthMethod?: string;
+        /** Optional JWK Set (RFC 7517) of the client's public keys, for `private_key_jwt`. */
+        jwks?: object;
+        /** Optional URL of the client's JWK Set, fetched and cached by the server, for `private_key_jwt`. */
+        jwksUri?: string;
         [key: string]: any;
     }
 
