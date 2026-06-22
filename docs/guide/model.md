@@ -25,6 +25,21 @@ Model functions used during request authentication:
 - [verifyScope](../api/model.md#modelverifyscopeaccesstoken-scope--codepromisebooleancode)
 
 
+## Client Authentication
+
+See the [client authentication guide](./client-authentication.md) for how clients authenticate at the
+token endpoint (`client_secret_basic`, `client_secret_post`, public clients and JWT client assertions).
+
+- [getClient](../api/model.md#modelgetclientclientid-clientsecret--code-promiseclientdata-code) — resolves the client. Called **without** a secret for public (`none`) and JWT clients, so only verify `clientSecret` when it is supplied.
+
+**Optional (single-use replay protection for JWT client assertions):**
+- `isClientAssertionJtiUsed` — checks whether a `jti` has been used
+- `saveClientAssertionJti` — records a used `jti`
+
+The client returned by `getClient` may also carry `tokenEndpointAuthMethod`, `secret`, `jwks` or `jwksUri`
+(see [`ClientData`](../api/model.md)).
+
+
 ## Grant Types
 
 For each [grant type](./grant-types.md) there are different model required, optional or unused.

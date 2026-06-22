@@ -23,6 +23,7 @@ export default defineConfig({
                     {text: 'Model', link: '/guide/model'},
                     {text: 'Token types', link: '/guide/token-types'},
                     {text: 'PKCE', link: '/guide/pkce'},
+                    {text: 'Client authentication', link: '/guide/client-authentication'},
                     {text: 'Adapters', link: '/guide/adapters'},
                     {text: 'Compliance', link: '/guide/compliance'},
                     {text: 'Migrating to v5', link: '/guide/migrating-to-v5'},
@@ -71,6 +72,16 @@ export default defineConfig({
                         ]
                     },
                     {
+                        text: 'Client Authentication', items: [
+                            { text: 'Abstract', link: '/api/client-authentication/abstract-client-authentication' },
+                            { text: 'Abstract Client Secret', link: '/api/client-authentication/abstract-client-secret-authentication' },
+                            { text: 'Client Secret Basic', link: '/api/client-authentication/client-secret-basic' },
+                            { text: 'Client Secret Post', link: '/api/client-authentication/client-secret-post' },
+                            { text: 'None (public client)', link: '/api/client-authentication/none' },
+                            { text: 'JWT Bearer', link: '/api/client-authentication/jwt-bearer-client-authentication' },
+                        ]
+                    },
+                    {
                         text: 'Models', items: [
                             { text: 'Token Model', link: '/api/models/token-model' },
                         ]
@@ -96,6 +107,7 @@ export default defineConfig({
                         text: 'Utils', items: [
                             { text: 'Crypto', link: '/api/utils/crypto-util' },
                             { text: 'Date', link: '/api/utils/date-util' },
+                            { text: 'JWS', link: '/api/utils/jws-util' },
                             { text: 'Scope', link: '/api/utils/scope-util' },
                             { text: 'String', link: '/api/utils/string-util' },
                             { text: 'Token', link: '/api/utils/token-util' },
