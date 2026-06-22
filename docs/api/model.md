@@ -62,6 +62,8 @@ as well as generators, are supported.
         * [.validateRedirectUri(redirectUri, client)](#Model+validateRedirectUri) ⇒ <code>Promise.&lt;boolean&gt;</code>
         * [.isClientAssertionJtiUsed(jti)](#Model+isClientAssertionJtiUsed) ⇒ <code>Promise.&lt;boolean&gt;</code>
         * [.saveClientAssertionJti(jti, exp)](#Model+saveClientAssertionJti) ⇒ <code>Promise.&lt;void&gt;</code>
+        * [.getJWTBearerIssuer(issuer)](#Model+getJWTBearerIssuer) ⇒ <code>Promise.&lt;object&gt;</code>
+        * [.getJWTBearerUser(params)](#Model+getJWTBearerUser) ⇒ <code>Promise.&lt;object&gt;</code>
     * _static_
         * [.from(impl)](#Model.from) ⇒ [<code>Model</code>](#Model)
 
@@ -647,6 +649,41 @@ both this and `isClientAssertionJtiUsed` are implemented.
 | --- | --- | --- |
 | jti | <code>string</code> | The `jti` claim of the client assertion. |
 | exp | <code>number</code> | The assertion's `exp` (epoch seconds), for use as a TTL. |
+
+<a name="Model+getJWTBearerIssuer"></a>
+
+### model.getJWTBearerIssuer(issuer) ⇒ <code>Promise.&lt;object&gt;</code>
+Invoked to resolve a trusted issuer for the JWT bearer authorization grant.
+**Required** when the `urn:ietf:params:oauth:grant-type:jwt-bearer` grant is enabled.
+
+**Invoked during:**
+- JWT bearer authorization grant (`JwtBearerGrantType`)
+
+**Kind**: instance method of [<code>Model</code>](#Model)  
+**Returns**: <code>Promise.&lt;object&gt;</code> - Resolves to the issuer's verification key material and the
+  expected audience: `{ audience, jwks | jwksUri | secret }`. Resolve to a falsy value
+  to reject the issuer as untrusted (`invalid_grant`).  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| issuer | <code>string</code> | The assertion's `iss` claim. |
+
+<a name="Model+getJWTBearerUser"></a>
+
+### model.getJWTBearerUser(params) ⇒ <code>Promise.&lt;object&gt;</code>
+Invoked to resolve and authorize the principal a JWT bearer assertion is issued for.
+**Required** when the `urn:ietf:params:oauth:grant-type:jwt-bearer` grant is enabled.
+
+**Invoked during:**
+- JWT bearer authorization grant (`JwtBearerGrantType`)
+
+**Kind**: instance method of [<code>Model</code>](#Model)  
+**Returns**: <code>Promise.&lt;object&gt;</code> - Resolves to the authorized user, or a falsy value to deny the
+  grant (`invalid_grant`). Single-use (`jti`) replay protection can be enforced here.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| params | <code>object</code> | `{ issuer, subject, client, scope, jti, assertionId, exp }` from the verified assertion. `assertionId` is the `jti`, or a fingerprint of the assertion's signing input when it has no `jti` — use it for single-use replay protection. |
 
 <a name="Model.from"></a>
 
