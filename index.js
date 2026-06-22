@@ -15,6 +15,13 @@ exports.Response = require('./lib/response');
 exports.AbstractGrantType = require('./lib/grant-types/abstract-grant-type');
 
 /**
+ * Export client authentication helpers for pluggable `token_endpoint_auth_method`s.
+ */
+
+exports.AbstractClientAuthentication = require('./lib/client-authentication/abstract-client-authentication');
+exports.JwtBearerClientAuthentication = require('./lib/client-authentication/jwt-bearer-client-authentication');
+
+/**
  * Export error classes.
  */
 
