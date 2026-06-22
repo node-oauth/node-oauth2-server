@@ -103,6 +103,16 @@ Model functions used by the [password grant](grant-types.md#password-grant-type)
 - [saveToken](../api/model.md#modelsavetokentoken-client-user--codepromiseobjectcode)
 - [validateScope](../api/model.md#modelvalidatescopeuser-client-scope--codepromisebooleancode)
 
+### JWT Bearer Grant
+
+Model functions used by the [JWT bearer authorization grant](grant-types.md#jwt-bearer-grant-type)
+(`JwtBearerGrantType`, registered via `extendedGrantTypes`):
+
+- [getClient](../api/model.md#modelgetclientclientid-clientsecret--code-promiseclientdata-code)
+- [saveToken](../api/model.md#modelsavetokentoken-client-user--codepromiseobjectcode)
+- `getJWTBearerIssuer` — resolve a trusted issuer's verification keys and expected audience
+- `getJWTBearerUser` — resolve and authorize the assertion subject (and optionally enforce `jti` single-use)
+
 ### Extension Grants
 
 The authorization server may also implement custom grant types to issue access (and optionally refresh) tokens.

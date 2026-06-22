@@ -62,6 +62,7 @@ export default defineConfig({
                             { text: 'Client Credentials', link: '/api/grant-types/client-credentials-grant-type' },
                             { text: 'Password', link: '/api/grant-types/password-grant-type' },
                             { text: 'Refresh Token', link: '/api/grant-types/refresh-token-grant-type' },
+                            { text: 'JWT Bearer', link: '/api/grant-types/jwt-bearer-grant-type' },
                         ]
                     },
                     {
