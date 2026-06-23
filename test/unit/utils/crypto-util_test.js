@@ -13,7 +13,7 @@ describe(cryptoUtil.createHash.name, function () {
     } catch (e) {
       e.should.be.instanceOf(TypeError);
       e.message.should.include(
-        'he "data" argument must be of type string or an instance of Buffer, TypedArray, or DataView.'
+        'he "data" argument must be of type string or an instance of Buffer, TypedArray, or DataView.',
       );
     }
   });

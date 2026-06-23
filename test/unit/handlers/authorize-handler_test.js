@@ -22,11 +22,11 @@ describe('AuthorizeHandler', function () {
         generateAuthorizationCode: sinon.stub().returns({}),
         getAccessToken: function () {},
         getClient: function () {},
-        saveAuthorizationCode: function () {}
+        saveAuthorizationCode: function () {},
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model: model
+        model: model,
       });
 
       return handler
@@ -45,19 +45,19 @@ describe('AuthorizeHandler', function () {
         getAccessToken: function () {},
         getClient: sinon.stub().returns({
           grants: ['authorization_code'],
-          redirectUris: ['http://example.com/cb']
+          redirectUris: ['http://example.com/cb'],
         }),
-        saveAuthorizationCode: function () {}
+        saveAuthorizationCode: function () {},
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model: model
+        model: model,
       });
       const request = new Request({
         body: { client_id: 12345, client_secret: 'secret' },
         headers: {},
         method: {},
-        query: {}
+        query: {},
       });
 
       return handler
@@ -75,22 +75,22 @@ describe('AuthorizeHandler', function () {
   describe('getUser()', function () {
     it('should call `authenticateHandler.getUser()`', function () {
       const authenticateHandler = {
-        handle: sinon.stub().returns(Promise.resolve({}))
+        handle: sinon.stub().returns(Promise.resolve({})),
       };
       const model = Model.from({
         getClient: function () {},
-        saveAuthorizationCode: function () {}
+        saveAuthorizationCode: function () {},
       });
       const handler = new AuthorizeHandler({
         authenticateHandler: authenticateHandler,
         authorizationCodeLifetime: 120,
-        model: model
+        model: model,
       });
       const request = new Request({
         body: {},
         headers: {},
         method: {},
-        query: {}
+        query: {},
       });
       const response = new Response();
 
@@ -111,11 +111,11 @@ describe('AuthorizeHandler', function () {
       const model = Model.from({
         getAccessToken: function () {},
         getClient: function () {},
-        saveAuthorizationCode: sinon.stub().returns({})
+        saveAuthorizationCode: sinon.stub().returns({}),
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model: model
+        model: model,
       });
 
       return handler
@@ -127,7 +127,7 @@ describe('AuthorizeHandler', function () {
             authorizationCode: 'foo',
             expiresAt: 'bar',
             redirectUri: 'baz',
-            scope: ['qux']
+            scope: ['qux'],
           });
           model.saveAuthorizationCode.firstCall.args[1].should.equal('biz');
           model.saveAuthorizationCode.firstCall.args[2].should.equal('boz');
@@ -140,11 +140,11 @@ describe('AuthorizeHandler', function () {
       const model = Model.from({
         getAccessToken: function () {},
         getClient: function () {},
-        saveAuthorizationCode: sinon.stub().returns({})
+        saveAuthorizationCode: sinon.stub().returns({}),
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model: model
+        model: model,
       });
 
       return handler
@@ -158,7 +158,7 @@ describe('AuthorizeHandler', function () {
             redirectUri: 'baz',
             scope: ['qux'],
             codeChallenge: 'codeChallenge',
-            codeChallengeMethod: 'codeChallengeMethod'
+            codeChallengeMethod: 'codeChallengeMethod',
           });
           model.saveAuthorizationCode.firstCall.args[1].should.equal('biz');
           model.saveAuthorizationCode.firstCall.args[2].should.equal('boz');
@@ -172,24 +172,24 @@ describe('AuthorizeHandler', function () {
     it('should call `model.validateRedirectUri()`', function () {
       const client = {
         grants: ['authorization_code'],
-        redirectUris: ['http://example.com/cb']
+        redirectUris: ['http://example.com/cb'],
       };
       const redirect_uri = 'http://example.com/cb/2';
       const model = Model.from({
         getAccessToken: function () {},
         getClient: sinon.stub().returns(client),
         saveAuthorizationCode: function () {},
-        validateRedirectUri: sinon.stub().returns(true)
+        validateRedirectUri: sinon.stub().returns(true),
       });
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model: model
+        model: model,
       });
       const request = new Request({
         body: { client_id: 12345, client_secret: 'secret', redirect_uri },
         headers: {},
         method: {},
-        query: {}
+        query: {},
       });
 
       return handler
@@ -212,7 +212,7 @@ describe('AuthorizeHandler', function () {
     it('should be successful validation', function () {
       const client = {
         grants: ['authorization_code'],
-        redirectUris: ['http://example.com/cb']
+        redirectUris: ['http://example.com/cb'],
       };
       const redirect_uri = 'http://example.com/cb';
       const model = Model.from({
@@ -221,18 +221,18 @@ describe('AuthorizeHandler', function () {
         saveAuthorizationCode: function () {},
         validateRedirectUri: function (redirectUri, client) {
           return client.redirectUris.includes(redirectUri);
-        }
+        },
       });
 
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model: model
+        model: model,
       });
       const request = new Request({
         body: { client_id: 12345, client_secret: 'secret', redirect_uri },
         headers: {},
         method: {},
-        query: {}
+        query: {},
       });
 
       return handler.getClient(request).then((client) => {
@@ -243,7 +243,7 @@ describe('AuthorizeHandler', function () {
     it('should be unsuccessful validation', function () {
       const client = {
         grants: ['authorization_code'],
-        redirectUris: ['http://example.com/cb']
+        redirectUris: ['http://example.com/cb'],
       };
       const redirect_uri = 'http://example.com/callback';
       const model = Model.from({
@@ -252,18 +252,18 @@ describe('AuthorizeHandler', function () {
         saveAuthorizationCode: function () {},
         validateRedirectUri: function (redirectUri, client) {
           return client.redirectUris.includes(redirectUri);
-        }
+        },
       });
 
       const handler = new AuthorizeHandler({
         authorizationCodeLifetime: 120,
-        model: model
+        model: model,
       });
       const request = new Request({
         body: { client_id: 12345, client_secret: 'secret', redirect_uri },
         headers: {},
         method: {},
-        query: {}
+        query: {},
       });
 
       return handler

@@ -20,14 +20,14 @@ describe('PKCE', function () {
         [false, 'foo_code', '123123123123123123123123123123123123123123123'],
         [false, '', '123123123123123123123123123123123123123123123'],
         [false, undefined, '123123123123123123123123123123123123123123123'],
-        [false, 'foo_code', 'bar']
+        [false, 'foo_code', 'bar'],
       ].forEach((triple) => {
         should.equal(
           triple[0],
           pkce.isPKCERequest({
             grantType: triple[1],
-            codeVerifier: triple[2]
-          })
+            codeVerifier: triple[2],
+          }),
         );
       });
     });
@@ -42,10 +42,10 @@ describe('PKCE', function () {
         [false, '123123123112312312311231231231123123123112+'], // invalid chars
         [
           false,
-          '123123123112312312311231231231123123123112312312311231231231123123123112312312311231231231123123123112312312311231231231123123123'
+          '123123123112312312311231231231123123123112312312311231231231123123123112312312311231231231123123123112312312311231231231123123123',
         ], // too long
         // invalid chars
-        [true, '-_.~abcdefghijklmnopqrstuvwxyz0123456789ABCDEFHIJKLMNOPQRSTUVWXYZ']
+        [true, '-_.~abcdefghijklmnopqrstuvwxyz0123456789ABCDEFHIJKLMNOPQRSTUVWXYZ'],
       ].forEach((pair) => {
         should.equal(pair[0], pkce.codeChallengeMatchesABNF(pair[1]));
       });
@@ -59,14 +59,14 @@ describe('PKCE', function () {
         [undefined, undefined, verifier],
         [undefined, null, verifier],
         [undefined, '', verifier],
-        [undefined, 'foo', verifier]
+        [undefined, 'foo', verifier],
       ].forEach((triple) => {
         should.equal(
           triple[0],
           pkce.getHashForCodeChallenge({
             method: triple[1],
-            verifier: triple[2]
-          })
+            verifier: triple[2],
+          }),
         );
       });
     });
@@ -77,14 +77,14 @@ describe('PKCE', function () {
         [undefined, 'plain', ''],
         [undefined, 'S256', ''],
         [undefined, 'plain', null],
-        [undefined, 'S256', null]
+        [undefined, 'S256', null],
       ].forEach((triple) => {
         should.equal(
           triple[0],
           pkce.getHashForCodeChallenge({
             method: triple[1],
-            verifier: triple[2]
-          })
+            verifier: triple[2],
+          }),
         );
       });
     });

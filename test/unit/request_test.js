@@ -15,15 +15,15 @@ const should = require('chai').should();
 function generateBaseRequest() {
   return {
     query: {
-      foo: 'bar'
+      foo: 'bar',
     },
     method: 'GET',
     headers: {
-      bar: 'foo'
+      bar: 'foo',
     },
     body: {
-      foobar: 'barfoo'
-    }
+      foobar: 'barfoo',
+    },
   };
 }
 
@@ -34,7 +34,7 @@ describe('Request', function () {
       [null, TypeError, "Cannot destructure property 'headers'"],
       [{}, InvalidArgumentError, 'Missing parameter: `headers`'],
       [{ headers: {} }, InvalidArgumentError, 'Missing parameter: `method`'],
-      [{ headers: {}, method: 'GET' }, InvalidArgumentError, 'Missing parameter: `query`']
+      [{ headers: {}, method: 'GET' }, InvalidArgumentError, 'Missing parameter: `query`'],
     ];
 
     args.forEach(([value, error, message]) => {
@@ -98,7 +98,7 @@ describe('Request', function () {
     const originalRequest = generateBaseRequest();
     originalRequest.headers = {
       Foo: 'bar',
-      BAR: 'foo'
+      BAR: 'foo',
     };
 
     const request = new Request(originalRequest);
@@ -111,11 +111,11 @@ describe('Request', function () {
   it('should include additional properties passed in the request', function () {
     const originalRequest = generateBaseRequest();
     originalRequest.custom = {
-      newFoo: 'newBar'
+      newFoo: 'newBar',
     };
 
     originalRequest.custom2 = {
-      newBar: 'newFoo'
+      newBar: 'newFoo',
     };
 
     const request = new Request(originalRequest);
@@ -130,11 +130,11 @@ describe('Request', function () {
   it('should include additional properties passed in the request', function () {
     const originalRequest = generateBaseRequest();
     originalRequest.custom = {
-      newFoo: 'newBar'
+      newFoo: 'newBar',
     };
 
     originalRequest.custom2 = {
-      newBar: 'newFoo'
+      newBar: 'newFoo',
     };
 
     const request = new Request(originalRequest);
@@ -151,12 +151,12 @@ describe('Request', function () {
       query: {},
       method: 'GET',
       headers: {
-        'content-type': 'application/json'
+        'content-type': 'application/json',
       },
       get() {
         // malicious attempt to override the 'get' method
         return 'text/html';
-      }
+      },
     });
 
     request.get('content-type').should.equal('application/json');

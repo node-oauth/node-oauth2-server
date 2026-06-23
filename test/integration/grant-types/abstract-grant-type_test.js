@@ -42,7 +42,7 @@ describe('AbstractGrantType integration', function () {
     it('should set the `accessTokenLifetime`', function () {
       const grantType = new AbstractGrantType({
         accessTokenLifetime: 123,
-        model: {}
+        model: {},
       });
 
       grantType.accessTokenLifetime.should.equal(123);
@@ -52,7 +52,7 @@ describe('AbstractGrantType integration', function () {
       const model = Model.from({ async generateAccessToken() {} });
       const grantType = new AbstractGrantType({
         accessTokenLifetime: 123,
-        model: model
+        model: model,
       });
 
       grantType.model.should.equal(model);
@@ -62,7 +62,7 @@ describe('AbstractGrantType integration', function () {
       const grantType = new AbstractGrantType({
         accessTokenLifetime: 123,
         model: {},
-        refreshTokenLifetime: 456
+        refreshTokenLifetime: 456,
       });
 
       grantType.refreshTokenLifetime.should.equal(456);
@@ -74,7 +74,7 @@ describe('AbstractGrantType integration', function () {
       const handler = new AbstractGrantType({
         accessTokenLifetime: 123,
         model: {},
-        refreshTokenLifetime: 456
+        refreshTokenLifetime: 456,
       });
       const accessToken = await handler.generateAccessToken();
       accessToken.should.be.a.sha256();
@@ -84,12 +84,12 @@ describe('AbstractGrantType integration', function () {
       const model = Model.from({
         generateAccessToken: async function () {
           return 'long-hash-foo-bar';
-        }
+        },
       });
       const handler = new AbstractGrantType({
         accessTokenLifetime: 123,
         model: model,
-        refreshTokenLifetime: 456
+        refreshTokenLifetime: 456,
       });
       const accessToken = await handler.generateAccessToken();
       accessToken.should.equal('long-hash-foo-bar');
@@ -99,12 +99,12 @@ describe('AbstractGrantType integration', function () {
       const model = Model.from({
         generateAccessToken: function () {
           return 'long-hash-foo-bar';
-        }
+        },
       });
       const handler = new AbstractGrantType({
         accessTokenLifetime: 123,
         model: model,
-        refreshTokenLifetime: 456
+        refreshTokenLifetime: 456,
       });
       const accessToken = await handler.generateAccessToken();
       accessToken.should.equal('long-hash-foo-bar');
@@ -116,7 +116,7 @@ describe('AbstractGrantType integration', function () {
       const handler = new AbstractGrantType({
         accessTokenLifetime: 123,
         model: {},
-        refreshTokenLifetime: 456
+        refreshTokenLifetime: 456,
       });
       const refreshToken = await handler.generateRefreshToken();
       refreshToken.should.be.a.sha256();
@@ -126,12 +126,12 @@ describe('AbstractGrantType integration', function () {
       const model = Model.from({
         generateRefreshToken: async function () {
           return 'long-hash-foo-bar';
-        }
+        },
       });
       const handler = new AbstractGrantType({
         accessTokenLifetime: 123,
         model: model,
-        refreshTokenLifetime: 456
+        refreshTokenLifetime: 456,
       });
       const refreshToken = await handler.generateRefreshToken();
       refreshToken.should.equal('long-hash-foo-bar');
@@ -141,12 +141,12 @@ describe('AbstractGrantType integration', function () {
       const model = Model.from({
         generateRefreshToken: function () {
           return 'long-hash-foo-bar';
-        }
+        },
       });
       const handler = new AbstractGrantType({
         accessTokenLifetime: 123,
         model: model,
-        refreshTokenLifetime: 456
+        refreshTokenLifetime: 456,
       });
       const refreshToken = await handler.generateRefreshToken();
       refreshToken.should.equal('long-hash-foo-bar');
@@ -158,7 +158,7 @@ describe('AbstractGrantType integration', function () {
       const handler = new AbstractGrantType({
         accessTokenLifetime: 123,
         model: {},
-        refreshTokenLifetime: 456
+        refreshTokenLifetime: 456,
       });
 
       handler.getAccessTokenExpiresAt().should.be.an.instanceOf(Date);
@@ -170,7 +170,7 @@ describe('AbstractGrantType integration', function () {
       const handler = new AbstractGrantType({
         accessTokenLifetime: 123,
         model: {},
-        refreshTokenLifetime: 456
+        refreshTokenLifetime: 456,
       });
 
       handler.getRefreshTokenExpiresAt().should.be.an.instanceOf(Date);
@@ -182,13 +182,13 @@ describe('AbstractGrantType integration', function () {
       const handler = new AbstractGrantType({
         accessTokenLifetime: 123,
         model: {},
-        refreshTokenLifetime: 456
+        refreshTokenLifetime: 456,
       });
       const request = new Request({
         body: { scope: 'øå€£‰' },
         headers: {},
         method: {},
-        query: {}
+        query: {},
       });
 
       try {
@@ -205,13 +205,13 @@ describe('AbstractGrantType integration', function () {
       const handler = new AbstractGrantType({
         accessTokenLifetime: 123,
         model: {},
-        refreshTokenLifetime: 456
+        refreshTokenLifetime: 456,
       });
       const request = new Request({
         body: {},
         headers: {},
         method: {},
-        query: {}
+        query: {},
       });
 
       should.not.exist(handler.getScope(request));
@@ -221,13 +221,13 @@ describe('AbstractGrantType integration', function () {
       const handler = new AbstractGrantType({
         accessTokenLifetime: 123,
         model: {},
-        refreshTokenLifetime: 456
+        refreshTokenLifetime: 456,
       });
       const request = new Request({
         body: { scope: 'foo' },
         headers: {},
         method: {},
-        query: {}
+        query: {},
       });
 
       handler.getScope(request).should.eql(['foo']);
@@ -242,7 +242,7 @@ describe('AbstractGrantType integration', function () {
       const handler = new AbstractGrantType({
         accessTokenLifetime: 123,
         model: {},
-        refreshTokenLifetime: 456
+        refreshTokenLifetime: 456,
       });
       const validated = await handler.validateScope(user, client, scope);
       validated.should.eql(scope);
@@ -261,12 +261,12 @@ describe('AbstractGrantType integration', function () {
           _scope.should.eql(scope);
 
           return scope;
-        }
+        },
       });
       const handler = new AbstractGrantType({
         accessTokenLifetime: 123,
         model,
-        refreshTokenLifetime: 456
+        refreshTokenLifetime: 456,
       });
       const validated = await handler.validateScope(user, client, scope);
       validated.should.eql(scope);
@@ -287,12 +287,12 @@ describe('AbstractGrantType integration', function () {
             _scope.should.eql(scope);
 
             return type;
-          }
+          },
         });
         const handler = new AbstractGrantType({
           accessTokenLifetime: 123,
           model,
-          refreshTokenLifetime: 456
+          refreshTokenLifetime: 456,
         });
 
         try {

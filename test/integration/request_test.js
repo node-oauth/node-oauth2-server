@@ -52,7 +52,7 @@ describe('Request integration', function () {
         body: 'foo',
         headers: {},
         method: {},
-        query: {}
+        query: {},
       });
 
       request.body.should.equal('foo');
@@ -63,7 +63,7 @@ describe('Request integration', function () {
         body: {},
         headers: { foo: 'bar', QuX: 'biz' },
         method: {},
-        query: {}
+        query: {},
       });
 
       request.headers.should.eql({ foo: 'bar', qux: 'biz' });
@@ -74,7 +74,7 @@ describe('Request integration', function () {
         body: {},
         headers: {},
         method: 'biz',
-        query: {}
+        query: {},
       });
 
       request.method.should.equal('biz');
@@ -85,7 +85,7 @@ describe('Request integration', function () {
         body: {},
         headers: {},
         method: {},
-        query: 'baz'
+        query: 'baz',
       });
 
       request.query.should.equal('baz');
@@ -98,7 +98,7 @@ describe('Request integration', function () {
         body: {},
         headers: {},
         method: {},
-        query: {}
+        query: {},
       });
 
       (undefined === request.get('content-type')).should.be.true;
@@ -108,10 +108,10 @@ describe('Request integration', function () {
       const request = new Request({
         body: {},
         headers: {
-          'content-type': 'text/html; charset=utf-8'
+          'content-type': 'text/html; charset=utf-8',
         },
         method: {},
-        query: {}
+        query: {},
       });
 
       request.get('Content-Type').should.equal('text/html; charset=utf-8');
@@ -124,10 +124,10 @@ describe('Request integration', function () {
         body: {},
         headers: {
           'content-type': 'application/json',
-          'transfer-encoding': 'chunked'
+          'transfer-encoding': 'chunked',
         },
         method: {},
-        query: {}
+        query: {},
       });
 
       request.is(['html', 'json']).should.equal('json');
@@ -138,10 +138,10 @@ describe('Request integration', function () {
         body: {},
         headers: {
           'content-type': 'application/json',
-          'transfer-encoding': 'chunked'
+          'transfer-encoding': 'chunked',
         },
         method: {},
-        query: {}
+        query: {},
       });
 
       request.is('html', 'json').should.equal('json');
@@ -152,10 +152,10 @@ describe('Request integration', function () {
         body: {},
         headers: {
           'content-type': 'text/html; charset=utf-8',
-          'transfer-encoding': 'chunked'
+          'transfer-encoding': 'chunked',
         },
         method: {},
-        query: {}
+        query: {},
       });
 
       request.is('html').should.equal('html');
@@ -166,10 +166,10 @@ describe('Request integration', function () {
         body: {},
         headers: {
           'content-type': 'text/html; charset=utf-8',
-          'transfer-encoding': 'chunked'
+          'transfer-encoding': 'chunked',
         },
         method: {},
-        query: {}
+        query: {},
       });
 
       request.is('json').should.be.false;
@@ -180,7 +180,7 @@ describe('Request integration', function () {
         body: {},
         headers: {},
         method: {},
-        query: {}
+        query: {},
       });
 
       request.is('text/html').should.be.false;

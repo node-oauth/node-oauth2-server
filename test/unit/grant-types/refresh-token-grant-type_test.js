@@ -29,18 +29,18 @@ describe('RefreshTokenGrantType', function () {
           accessToken: 'foo',
           client: {},
           refreshTokenExpiresAt: new Date(new Date() / 2),
-          user: {}
-        })
+          user: {},
+        }),
       });
       const handler = new RefreshTokenGrantType({
         accessTokenLifetime: 120,
-        model: model
+        model: model,
       });
       const request = new Request({
         body: { refresh_token: 'bar' },
         headers: {},
         method: {},
-        query: {}
+        query: {},
       });
       const client = {};
 
@@ -61,17 +61,17 @@ describe('RefreshTokenGrantType', function () {
       const model = Model.from({
         getRefreshToken: sinon.stub().returns({ accessToken: 'foo', client: {}, user: {} }),
         saveToken: function () {},
-        revokeToken: function () {}
+        revokeToken: function () {},
       });
       const handler = new RefreshTokenGrantType({
         accessTokenLifetime: 120,
-        model: model
+        model: model,
       });
       const request = new Request({
         body: { refresh_token: 'bar' },
         headers: {},
         method: {},
-        query: {}
+        query: {},
       });
       const client = {};
 
@@ -95,13 +95,13 @@ describe('RefreshTokenGrantType', function () {
           accessToken: 'foo',
           client: {},
           refreshTokenExpiresAt: new Date(new Date() / 2),
-          user: {}
+          user: {},
         }),
-        saveToken: function () {}
+        saveToken: function () {},
       });
       const handler = new RefreshTokenGrantType({
         accessTokenLifetime: 120,
-        model: model
+        model: model,
       });
       const token = {};
 
@@ -123,14 +123,14 @@ describe('RefreshTokenGrantType', function () {
           accessToken: 'foo',
           client: {},
           refreshTokenExpiresAt: new Date(new Date() / 2),
-          user: {}
+          user: {},
         }),
-        saveToken: function () {}
+        saveToken: function () {},
       });
       const handler = new RefreshTokenGrantType({
         accessTokenLifetime: 120,
         model: model,
-        alwaysIssueNewRefreshToken: false
+        alwaysIssueNewRefreshToken: false,
       });
       const token = {};
 
@@ -149,14 +149,14 @@ describe('RefreshTokenGrantType', function () {
           accessToken: 'foo',
           client: {},
           refreshTokenExpiresAt: new Date(new Date() / 2),
-          user: {}
+          user: {},
         }),
-        saveToken: function () {}
+        saveToken: function () {},
       });
       const handler = new RefreshTokenGrantType({
         accessTokenLifetime: 120,
         model: model,
-        alwaysIssueNewRefreshToken: true
+        alwaysIssueNewRefreshToken: true,
       });
       const token = {};
 
@@ -179,11 +179,11 @@ describe('RefreshTokenGrantType', function () {
       const model = Model.from({
         getRefreshToken: function () {},
         revokeToken: function () {},
-        saveToken: sinon.stub().returns(true)
+        saveToken: sinon.stub().returns(true),
       });
       const handler = new RefreshTokenGrantType({
         accessTokenLifetime: 120,
-        model: model
+        model: model,
       });
 
       sinon.stub(handler, 'generateAccessToken').returns('foo');
@@ -201,7 +201,7 @@ describe('RefreshTokenGrantType', function () {
             accessTokenExpiresAt: 'biz',
             refreshToken: 'bar',
             refreshTokenExpiresAt: 'baz',
-            scope: ['foobar']
+            scope: ['foobar'],
           });
           model.saveToken.firstCall.args[1].should.equal(client);
           model.saveToken.firstCall.args[2].should.equal(user);
@@ -216,12 +216,12 @@ describe('RefreshTokenGrantType', function () {
       const model = Model.from({
         getRefreshToken: function () {},
         revokeToken: function () {},
-        saveToken: sinon.stub().returns(true)
+        saveToken: sinon.stub().returns(true),
       });
       const handler = new RefreshTokenGrantType({
         accessTokenLifetime: 120,
         model: model,
-        alwaysIssueNewRefreshToken: false
+        alwaysIssueNewRefreshToken: false,
       });
 
       sinon.stub(handler, 'generateAccessToken').returns('foo');
@@ -237,7 +237,7 @@ describe('RefreshTokenGrantType', function () {
           model.saveToken.firstCall.args[0].should.eql({
             accessToken: 'foo',
             accessTokenExpiresAt: 'biz',
-            scope: ['foobar']
+            scope: ['foobar'],
           });
           model.saveToken.firstCall.args[1].should.equal(client);
           model.saveToken.firstCall.args[2].should.equal(user);
@@ -252,12 +252,12 @@ describe('RefreshTokenGrantType', function () {
       const model = Model.from({
         getRefreshToken: function () {},
         revokeToken: function () {},
-        saveToken: sinon.stub().returns(true)
+        saveToken: sinon.stub().returns(true),
       });
       const handler = new RefreshTokenGrantType({
         accessTokenLifetime: 120,
         model: model,
-        alwaysIssueNewRefreshToken: true
+        alwaysIssueNewRefreshToken: true,
       });
 
       sinon.stub(handler, 'generateAccessToken').returns('foo');
@@ -275,7 +275,7 @@ describe('RefreshTokenGrantType', function () {
             accessTokenExpiresAt: 'biz',
             refreshToken: 'bar',
             refreshTokenExpiresAt: 'baz',
-            scope: ['foobar']
+            scope: ['foobar'],
           });
           model.saveToken.firstCall.args[1].should.equal(client);
           model.saveToken.firstCall.args[2].should.equal(user);

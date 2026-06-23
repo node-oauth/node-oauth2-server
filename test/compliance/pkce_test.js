@@ -66,13 +66,13 @@ describe('PKCE Compliance (RFC 7636)', function () {
   const userDoc = {
     id: 'pkce-user-1',
     username: 'pkceuser',
-    password: 'pkcepass'
+    password: 'pkcepass',
   };
   const clientDoc = {
     id: 'pkce-client',
     secret: 'pkce-secret',
     grants: ['authorization_code'],
-    redirectUris: ['https://client.example/callback']
+    redirectUris: ['https://client.example/callback'],
   };
 
   /**
@@ -94,7 +94,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
       user: userDoc,
       scope: ['read'],
       codeChallenge,
-      codeChallengeMethod: method
+      codeChallengeMethod: method,
     };
     // store in DB so getAuthorizationCode can find it
     db.authorizationCodes.set(codeValue, codeDoc);
@@ -113,13 +113,13 @@ describe('PKCE Compliance (RFC 7636)', function () {
         grant_type: 'authorization_code',
         code,
         redirect_uri: 'https://client.example/callback',
-        code_verifier: codeVerifier
+        code_verifier: codeVerifier,
       },
       headers: {
         authorization: 'Basic ' + Buffer.from(clientDoc.id + ':' + clientDoc.secret).toString('base64'),
-        'content-type': 'application/x-www-form-urlencoded'
+        'content-type': 'application/x-www-form-urlencoded',
       },
-      method: 'POST'
+      method: 'POST',
     });
   }
 
@@ -155,8 +155,8 @@ describe('PKCE Compliance (RFC 7636)', function () {
 
         validateScope: async function (user, client, scope) {
           return scope;
-        }
-      }
+        },
+      },
     });
   });
 
@@ -210,7 +210,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
         throw new Error(
           'Server issued a token for a 1-character code_verifier ("z"). ' +
             'RFC 7636 §4.1 ABNF requires 43..128 unreserved characters; accepting shorter ' +
-            'values breaks the entropy guarantee of Appendix B.'
+            'values breaks the entropy guarantee of Appendix B.',
         );
       }
     });
@@ -236,7 +236,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
         throw new Error(
           'Server issued a token for a 42-character code_verifier. ' +
             'RFC 7636 §4.1 ABNF minimum is 43 characters; server-side enforcement ' +
-            'is needed to preserve the entropy guarantee of Appendix B.'
+            'is needed to preserve the entropy guarantee of Appendix B.',
         );
       }
     });
@@ -262,7 +262,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
         throw new Error(
           'Server issued a token for a 129-character code_verifier. ' +
             'RFC 7636 §4.1 ABNF maximum is 128 characters; server-side enforcement ' +
-            'is needed to preserve the entropy guarantee of Appendix B.'
+            'is needed to preserve the entropy guarantee of Appendix B.',
         );
       }
     });
@@ -287,7 +287,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
       if (tokenIssued) {
         throw new Error(
           'Server issued a token for a code_verifier containing ' +
-            'forbidden characters (space). RFC 7636 §4.1 restricts to unreserved characters.'
+            'forbidden characters (space). RFC 7636 §4.1 restricts to unreserved characters.',
         );
       }
     });
@@ -341,7 +341,8 @@ describe('PKCE Compliance (RFC 7636)', function () {
 
       if (codeStillExists) {
         throw new Error(
-          'Authorization code was NOT revoked after a failed ' + 'code_verifier attempt. An attacker can keep guessing.'
+          'Authorization code was NOT revoked after a failed ' +
+            'code_verifier attempt. An attacker can keep guessing.',
         );
       }
     });
@@ -377,7 +378,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
         throw new Error(
           `Brute-forced code_verifier in ${tries} tries ` +
             `(guess="${successfulGuess}"). The authorization code was not ` +
-            'consumed after failed attempts, allowing online guessing.'
+            'consumed after failed attempts, allowing online guessing.',
         );
       }
     });
@@ -421,7 +422,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
         throw new Error(
           'Authorization code was still valid after a prior ' +
             'failed PKCE attempt. The code should have been revoked on the first ' +
-            'failed verification to prevent further guessing.'
+            'failed verification to prevent further guessing.',
         );
       }
     });
@@ -475,7 +476,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
         user: userDoc,
         scope: ['read'],
         codeChallenge: verifier, // plain: challenge === verifier
-        codeChallengeMethod: 'plain' // RFC 7636 §4.3 default
+        codeChallengeMethod: 'plain', // RFC 7636 §4.3 default
       };
       db.authorizationCodes.set(codeValue, codeDoc);
 
@@ -504,7 +505,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
           'Server issued a token using "plain" PKCE method. ' +
             'While RFC 7636 §4.3 requires server support for "plain", the OAuth 2.0 ' +
             'Security BCP and OAuth 2.1 deprecate it because code_challenge === code_verifier ' +
-            'offers zero cryptographic protection.'
+            'offers zero cryptographic protection.',
         );
       }
     });
@@ -534,8 +535,8 @@ describe('PKCE Compliance (RFC 7636)', function () {
           },
           validateScope: async function (user, client, scope) {
             return scope;
-          }
-        }
+          },
+        },
       });
 
       const verifier = 'a'.repeat(43); // valid ABNF-length verifier
@@ -548,7 +549,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
         user: userDoc,
         scope: ['read'],
         codeChallenge: verifier, // plain: challenge === verifier
-        codeChallengeMethod: 'plain'
+        codeChallengeMethod: 'plain',
       });
 
       const request = tokenRequest(codeValue, verifier);
@@ -568,7 +569,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
         throw new Error(
           'Server with enablePlainPKCE=false still issued ' +
             'a token using "plain" PKCE method. The option should cause the server to ' +
-            'reject any plain code_challenge_method.'
+            'reject any plain code_challenge_method.',
         );
       }
 
@@ -599,7 +600,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
         user: userDoc,
         scope: ['read'],
         codeChallenge: verifier,
-        codeChallengeMethod: 'plain'
+        codeChallengeMethod: 'plain',
       });
 
       // The attacker uses the stolen code_challenge directly as code_verifier
@@ -620,7 +621,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
         throw new Error(
           'Attacker redeemed an authorization code by using ' +
             'the intercepted code_challenge as code_verifier (plain method). ' +
-            'This defeats PKCE entirely for public clients.'
+            'This defeats PKCE entirely for public clients.',
         );
       }
     });
@@ -647,7 +648,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
         user: userDoc,
         scope: ['read'],
         codeChallenge: verifier,
-        codeChallengeMethod: 'forged-xyz' // invalid method stored in DB that could cause a "plain" fallback if not handled properly
+        codeChallengeMethod: 'forged-xyz', // invalid method stored in DB that could cause a "plain" fallback if not handled properly
       });
 
       // The attacker uses the stolen code_challenge directly as code_verifier
@@ -669,7 +670,7 @@ describe('PKCE Compliance (RFC 7636)', function () {
         throw new Error(
           'Attacker redeemed an authorization code by using ' +
             'the intercepted code_challenge as code_verifier (custom method). ' +
-            'This defeats PKCE entirely for public clients.'
+            'This defeats PKCE entirely for public clients.',
         );
       }
     });

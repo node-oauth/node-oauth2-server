@@ -44,16 +44,16 @@ describe('Server integration', function () {
         getAccessToken: function () {
           return {
             user: {},
-            accessTokenExpiresAt: new Date(new Date().getTime() + 10000)
+            accessTokenExpiresAt: new Date(new Date().getTime() + 10000),
           };
-        }
+        },
       });
       const server = new Server({ model: model });
       const request = new Request({
         body: {},
         headers: { Authorization: 'Bearer foo' },
         method: {},
-        query: {}
+        query: {},
       });
       const response = new Response({ body: {}, headers: {} });
 
@@ -72,16 +72,16 @@ describe('Server integration', function () {
         getAccessToken: async function (token) {
           return {
             user: {},
-            accessTokenExpiresAt: new Date(new Date().getTime() + 10000)
+            accessTokenExpiresAt: new Date(new Date().getTime() + 10000),
           };
-        }
+        },
       });
       const server = new Server({ model: model });
       const request = new Request({
         body: {},
         headers: { Authorization: 'Bearer foo' },
         method: {},
-        query: {}
+        query: {},
       });
       const response = new Response({ body: {}, headers: {} });
       const handler = server.authenticate(request, response);
@@ -96,29 +96,29 @@ describe('Server integration', function () {
         getAccessToken: function () {
           return {
             user: {},
-            accessTokenExpiresAt: new Date(new Date().getTime() + 10000)
+            accessTokenExpiresAt: new Date(new Date().getTime() + 10000),
           };
         },
         getClient: function () {
           return {
             grants: ['authorization_code'],
-            redirectUris: ['http://example.com/cb']
+            redirectUris: ['http://example.com/cb'],
           };
         },
         saveAuthorizationCode: function () {
           return { authorizationCode: 123 };
-        }
+        },
       });
       const server = new Server({ model: model });
       const request = new Request({
         body: {
           client_id: 1234,
           client_secret: 'secret',
-          response_type: 'code'
+          response_type: 'code',
         },
         headers: { Authorization: 'Bearer foo' },
         method: {},
-        query: { state: 'foobar' }
+        query: { state: 'foobar' },
       });
       const response = new Response({ body: {}, headers: {} });
 
@@ -136,29 +136,29 @@ describe('Server integration', function () {
         getAccessToken: function () {
           return {
             user: {},
-            accessTokenExpiresAt: new Date(new Date().getTime() + 10000)
+            accessTokenExpiresAt: new Date(new Date().getTime() + 10000),
           };
         },
         getClient: function () {
           return {
             grants: ['authorization_code'],
-            redirectUris: ['http://example.com/cb']
+            redirectUris: ['http://example.com/cb'],
           };
         },
         saveAuthorizationCode: function () {
           return { authorizationCode: 123 };
-        }
+        },
       });
       const server = new Server({ model: model });
       const request = new Request({
         body: {
           client_id: 1234,
           client_secret: 'secret',
-          response_type: 'code'
+          response_type: 'code',
         },
         headers: { Authorization: 'Bearer foo' },
         method: {},
-        query: { state: 'foobar' }
+        query: { state: 'foobar' },
       });
       const response = new Response({ body: {}, headers: {} });
       const handler = server.authorize(request, response);
@@ -181,7 +181,7 @@ describe('Server integration', function () {
         },
         validateScope: function () {
           return ['foo'];
-        }
+        },
       });
       const server = new Server({ model: model });
       const request = new Request({
@@ -191,14 +191,14 @@ describe('Server integration', function () {
           grant_type: 'password',
           username: 'foo',
           password: 'pass',
-          scope: 'foo'
+          scope: 'foo',
         },
         headers: {
           'content-type': 'application/x-www-form-urlencoded',
-          'transfer-encoding': 'chunked'
+          'transfer-encoding': 'chunked',
         },
         method: 'POST',
-        query: {}
+        query: {},
       });
       const response = new Response({ body: {}, headers: {} });
 
@@ -221,7 +221,7 @@ describe('Server integration', function () {
         },
         saveToken: function () {
           return { accessToken: 1234, client: {}, user: {} };
-        }
+        },
       });
       const server = new Server({ model: model });
       const request = new Request({
@@ -230,14 +230,14 @@ describe('Server integration', function () {
           client_secret: 'secret',
           grant_type: 'password',
           username: 'foo',
-          password: 'pass'
+          password: 'pass',
         },
         headers: {
           'content-type': 'application/x-www-form-urlencoded',
-          'transfer-encoding': 'chunked'
+          'transfer-encoding': 'chunked',
         },
         method: 'POST',
-        query: {}
+        query: {},
       });
       const response = new Response({ body: {}, headers: {} });
       const handler = server.token(request, response);

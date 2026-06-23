@@ -18,11 +18,11 @@ describe('ClientCredentialsGrantType', function () {
     it('should call `model.getUserFromClient()`', function () {
       const model = Model.from({
         getUserFromClient: sinon.stub().returns(true),
-        saveToken: function () {}
+        saveToken: function () {},
       });
       const handler = new ClientCredentialsGrantType({
         accessTokenLifetime: 120,
-        model: model
+        model: model,
       });
       const client = {};
 
@@ -44,11 +44,11 @@ describe('ClientCredentialsGrantType', function () {
       const user = {};
       const model = Model.from({
         getUserFromClient: function () {},
-        saveToken: sinon.stub().returns(true)
+        saveToken: sinon.stub().returns(true),
       });
       const handler = new ClientCredentialsGrantType({
         accessTokenLifetime: 120,
-        model: model
+        model: model,
       });
 
       sinon.stub(handler, 'validateScope').returns(['foobar']);
@@ -63,7 +63,7 @@ describe('ClientCredentialsGrantType', function () {
           model.saveToken.firstCall.args[0].should.eql({
             accessToken: 'foo',
             accessTokenExpiresAt: 'biz',
-            scope: ['foobar']
+            scope: ['foobar'],
           });
           model.saveToken.firstCall.args[1].should.equal(client);
           model.saveToken.firstCall.args[2].should.equal(user);
