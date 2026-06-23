@@ -44,7 +44,7 @@
 		"formatter": {
 			"quoteStyle": "single",
 			"indentStyle": "space",
-			"trailingCommas": "none",
+			"trailingCommas": "all",
 			"lineWidth": 120
 		}
 	},
