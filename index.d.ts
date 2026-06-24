@@ -53,18 +53,18 @@ declare namespace OAuth2Server {
      */
     class Request {
         body?: any;
-        headers?: Record<string, string>;
+        headers?: Record<string, any>;
         method?: string;
-        query?: Record<string, string>;
+        query?: Record<string, any>;
 
         /**
          * Instantiates Request using the supplied options.
          *
          */
         constructor(options: {
-            headers: Record<string, string>,
+            headers: Record<string, any>,
             method: string,
-            query: Record<string, string>,
+            query: Record<string, any>,
             body?: any
         } & Record<string, any> | http.IncomingMessage);
 
