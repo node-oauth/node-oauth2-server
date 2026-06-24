@@ -10,8 +10,7 @@
 		"includes": ["index.js", "lib/**/*.js", "test/**/*.js"]
 	},
 	"formatter": {
-		"enabled": true,
-		"indentStyle": "tab"
+		"enabled": true
 	},
 	"linter": {
 		"enabled": true,
