@@ -354,6 +354,55 @@ describe('AuthorizeHandler integration', function () {
       }
     });
 
+    it('should redirect with a `server_error` if an `InvalidArgumentError` is thrown while handling the request', async function () {
+      // A model returning a falsy `authorizationCode` makes `CodeResponseType`
+      // throw an `InvalidArgumentError`. That is an internal error, not an OAuth
+      // error, so it must reach the client as a standard `server_error` rather
+      // than the non-standard `invalid_argument`.
+      const model = createModel({
+        getAccessToken: async function () {
+          return {
+            user: {},
+            accessTokenExpiresAt: new Date(new Date().getTime() + 10000),
+          };
+        },
+        getClient: async function () {
+          return { grants: ['authorization_code'], redirectUris: ['http://example.com/cb'] };
+        },
+        saveAuthorizationCode: async function () {
+          return { authorizationCode: undefined, client: {} };
+        },
+      });
+      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model });
+      const request = new Request({
+        body: {
+          client_id: 12345,
+          response_type: 'code',
+        },
+        headers: {
+          Authorization: 'Bearer foo',
+        },
+        method: {},
+        query: {
+          state: 'foobar',
+        },
+      });
+      const response = new Response({ body: {}, headers: {} });
+
+      try {
+        await handler.handle(request, response);
+        should.fail();
+      } catch (e) {
+        e.should.be.an.instanceOf(ServerError);
+        e.inner.should.be.an.instanceOf(InvalidArgumentError);
+        e.message.should.equal('Missing parameter: `code`');
+        const location = new URL(response.get('location'));
+        location.searchParams.get('error').should.equal('server_error');
+        location.searchParams.get('error_description').should.equal('Missing parameter: `code`');
+        location.searchParams.get('state').should.equal('foobar');
+      }
+    });
+
     it('should redirect to a successful response with `code` and `state` if successful', async function () {
       const client = {
         id: 'client-12343434',
