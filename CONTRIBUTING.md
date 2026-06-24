@@ -190,6 +190,34 @@ generated from our internal JSDoc comments.
 Instead, update the comments directly within the code and run `npm run docs:api`
 to generate the api docs.
 
+### Documentation Pull Requests
+
+Documentation fixes are a valuable contribution. However, the PR workflow for
+**docs-only changes** differs from the regular development workflow:
+
+- Open your pull request targeting the **`master`** branch, not `development`
+
+This is because the published docs at [readthedocs.io](https://node-oauth2-server.readthedocs.io)
+always reflect the `master` branch. A docs fix merged into `development` would
+either require waiting for the next release cycle or force merging potentially
+unstable code from `development` into `master`.
+
+To contribute a docs-only fix:
+
+```bash
+git clone git@github.com:node-oauth/node-oauth2-server.git
+cd node-oauth2-server
+git checkout master            # start from master, not development
+git checkout -b docs/fix-xyz   # create a descriptive branch
+```
+
+Make your changes in the `docs/` directory (guide pages) or as JSDoc comments
+in the source files (API docs are generated automatically). Then open your PR
+targeting `master`.
+
+> **Note:** if your change touches both documentation and code, please follow
+> the standard development workflow and target `development` instead.
+
 ### Building the docs
 
 Run `npm run docs:build` to build the docs.
