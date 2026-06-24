@@ -44,6 +44,7 @@ Instantiates `OAuth2Server` using the supplied model.
 | [options.alwaysIssueNewRefreshToken] | <code>boolean</code> | <code>true</code> | Always revoke the used refresh token and issue a new one for the `refresh_token` grant. |
 | [options.extendedGrantTypes] | <code>object</code> | <code>object</code> | Additional supported grant types. |
 | [options.enablePlainPKCE] | <code>boolean</code> | <code>false</code> | Allow the use of the `plain` code challenge method for PKCE. This is not recommended for production environments. |
+| [options.requirePKCE] | <code>boolean</code> | <code>false</code> | Require PKCE for the `authorization_code` grant: `authorize` rejects requests without a `code_challenge`, and the token exchange rejects authorization codes that were issued without one. Recommended by OAuth 2.1. |
 
 **Example**  
 ```js

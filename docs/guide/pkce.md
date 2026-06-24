@@ -29,6 +29,39 @@ Figure 2: Abstract Protocol Flow
 
 See [Section 1 of RFC 7636](https://datatracker.ietf.org/doc/html/rfc7636#section-1.1).
 
+## Requiring PKCE
+
+By default PKCE is *optional*: the library verifies a `code_challenge` when one is
+present (and enforces the
+[RFC 7636 §4.6](https://datatracker.ietf.org/doc/html/rfc7636#section-4.6)
+downgrade protection — a `code_verifier` with no stored challenge is rejected),
+but a client may also complete the `authorization_code` flow without it.
+
+[OAuth 2.1](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-v2-1) makes
+PKCE **mandatory** for the authorization code grant — for all clients, public and
+confidential — and
+[RFC 9700 (OAuth 2.0 Security BCP) §2.1.1](https://www.rfc-editor.org/rfc/rfc9700#section-2.1.1)
+recommends that authorization servers require it, partly to defend against PKCE
+*downgrade* attacks. To enforce this, enable `requirePKCE`:
+
+```js
+const server = new OAuth2Server({
+  model,
+  requirePKCE: true
+})
+```
+
+When enabled:
+
+- the **authorization** endpoint rejects requests without a `code_challenge`
+  (`invalid_request`), so no PKCE-less codes are ever issued; and
+- the **token** endpoint rejects authorization codes that were issued without a
+  `code_challenge` (`invalid_grant`) — covering codes minted before the option
+  was turned on, or through another path.
+
+`requirePKCE` defaults to `false` to preserve backwards compatibility. It is a
+strong candidate to become the default in a future major release.
+
 ## 1. Authorization request
 
 <div id="PKCE#authorizationRequest">
