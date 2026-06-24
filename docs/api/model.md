@@ -60,6 +60,10 @@ as well as generators, are supported.
         * [.generateAuthorizationCode(client, user, scope)](#Model+generateAuthorizationCode) ⇒ <code>Promise.&lt;string&gt;</code>
         * [.validateScope(user, client, scope)](#Model+validateScope) ⇒ <code>Promise.&lt;boolean&gt;</code>
         * [.validateRedirectUri(redirectUri, client)](#Model+validateRedirectUri) ⇒ <code>Promise.&lt;boolean&gt;</code>
+        * [.isClientAssertionJtiUsed(jti)](#Model+isClientAssertionJtiUsed) ⇒ <code>Promise.&lt;boolean&gt;</code>
+        * [.saveClientAssertionJti(jti, exp)](#Model+saveClientAssertionJti) ⇒ <code>Promise.&lt;void&gt;</code>
+        * [.getJWTBearerIssuer(issuer)](#Model+getJWTBearerIssuer) ⇒ <code>Promise.&lt;object&gt;</code>
+        * [.getJWTBearerUser(params)](#Model+getJWTBearerUser) ⇒ <code>Promise.&lt;object&gt;</code>
     * _static_
         * [.from(impl)](#Model.from) ⇒ [<code>Model</code>](#Model)
 
@@ -610,6 +614,77 @@ See: https://datatracker.ietf.org/doc/html/rfc6819
 | redirectUri | <code>string</code> | The redirect URI to validate |
 | client | <code>object</code> | The associated client. |
 
+<a name="Model+isClientAssertionJtiUsed"></a>
+
+### model.isClientAssertionJtiUsed(jti) ⇒ <code>Promise.&lt;boolean&gt;</code>
+Invoked to check whether a JWT client assertion `jti` has already been used,
+for single-use replay protection of JWT client authentication.
+This model function is **optional**. Replay protection is only enforced when
+both this and `saveClientAssertionJti` are implemented.
+
+**Invoked during:**
+- JWT client authentication (`private_key_jwt` / `client_secret_jwt`)
+
+**Kind**: instance method of [<code>Model</code>](#Model)  
+**Returns**: <code>Promise.&lt;boolean&gt;</code> - Resolves `true` if the `jti` has already been used.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| jti | <code>string</code> | The `jti` claim of the client assertion. |
+
+<a name="Model+saveClientAssertionJti"></a>
+
+### model.saveClientAssertionJti(jti, exp) ⇒ <code>Promise.&lt;void&gt;</code>
+Invoked to record a JWT client assertion `jti` (with its expiry) for single-use
+replay protection. Store it with a TTL until `exp` so the record self-expires.
+This model function is **optional**. Replay protection is only enforced when
+both this and `isClientAssertionJtiUsed` are implemented.
+
+**Invoked during:**
+- JWT client authentication (`private_key_jwt` / `client_secret_jwt`)
+
+**Kind**: instance method of [<code>Model</code>](#Model)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| jti | <code>string</code> | The `jti` claim of the client assertion. |
+| exp | <code>number</code> | The assertion's `exp` (epoch seconds), for use as a TTL. |
+
+<a name="Model+getJWTBearerIssuer"></a>
+
+### model.getJWTBearerIssuer(issuer) ⇒ <code>Promise.&lt;object&gt;</code>
+Invoked to resolve a trusted issuer for the JWT bearer authorization grant.
+**Required** when the `urn:ietf:params:oauth:grant-type:jwt-bearer` grant is enabled.
+
+**Invoked during:**
+- JWT bearer authorization grant (`JwtBearerGrantType`)
+
+**Kind**: instance method of [<code>Model</code>](#Model)  
+**Returns**: <code>Promise.&lt;object&gt;</code> - Resolves to the issuer's verification key material and the
+  expected audience: `{ audience, jwks | jwksUri | secret }`. Resolve to a falsy value
+  to reject the issuer as untrusted (`invalid_grant`).  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| issuer | <code>string</code> | The assertion's `iss` claim. |
+
+<a name="Model+getJWTBearerUser"></a>
+
+### model.getJWTBearerUser(params) ⇒ <code>Promise.&lt;object&gt;</code>
+Invoked to resolve and authorize the principal a JWT bearer assertion is issued for.
+**Required** when the `urn:ietf:params:oauth:grant-type:jwt-bearer` grant is enabled.
+
+**Invoked during:**
+- JWT bearer authorization grant (`JwtBearerGrantType`)
+
+**Kind**: instance method of [<code>Model</code>](#Model)  
+**Returns**: <code>Promise.&lt;object&gt;</code> - Resolves to the authorized user, or a falsy value to deny the
+  grant (`invalid_grant`). Single-use (`jti`) replay protection can be enforced here.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| params | <code>object</code> | `{ issuer, subject, client, scope, jti, assertionId, exp }` from the verified assertion. `assertionId` is the `jti`, or a fingerprint of the assertion's signing input when it has no `jti` — use it for single-use replay protection. |
+
 <a name="Model.from"></a>
 
 ### Model.from(impl) ⇒ [<code>Model</code>](#Model)
@@ -687,4 +762,8 @@ An `Object` representing the client and associated data.
 | grants | <code>Array.&lt;string&gt;</code> | Grant types allowed for the client. |
 | accessTokenLifetime | <code>number</code> | Client-specific lifetime of generated access tokens in seconds. |
 | refreshTokenLifetime | <code>number</code> | Client-specific lifetime of generated refresh tokens in seconds. |
+| tokenEndpointAuthMethod | <code>string</code> | Optional. Registered `token_endpoint_auth_method` (RFC 7591). When set, the token endpoint rejects any other client authentication method. |
+| secret | <code>string</code> | Optional. Client secret; also reused as the HMAC key for `client_secret_jwt` authentication. |
+| jwks | <code>object</code> | Optional. JWK Set (RFC 7517) of the client's public keys, used to verify a `private_key_jwt` client assertion. |
+| jwksUri | <code>string</code> | Optional. URL of the client's JWK Set, fetched and cached by the server, used to verify a `private_key_jwt` client assertion. |
 
