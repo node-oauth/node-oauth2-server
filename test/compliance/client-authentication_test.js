@@ -29,24 +29,24 @@ require('chai').should();
 const db = new DB();
 
 const auth = new OAuth2Server({
-  model: createModel(db)
+  model: createModel(db),
 });
 
-const user = db.saveUser({ id: 1, username: 'test', password: 'test'});
+const user = db.saveUser({ id: 1, username: 'test', password: 'test' });
 const client = db.saveClient({ id: 'a', secret: 'b', grants: ['password'] });
 const scope = 'read write';
 
-function createDefaultRequest () {
+function createDefaultRequest() {
   return createRequest({
     body: {
       grant_type: 'password',
       username: user.username,
       password: user.password,
-      scope
+      scope,
     },
     headers: {
-      'authorization': 'Basic ' + Buffer.from(client.id + ':' + client.secret).toString('base64'),
-      'content-type': 'application/x-www-form-urlencoded'
+      authorization: 'Basic ' + Buffer.from(client.id + ':' + client.secret).toString('base64'),
+      'content-type': 'application/x-www-form-urlencoded',
     },
     method: 'POST',
   });
@@ -60,11 +60,12 @@ describe('Client Authentication Compliance', function () {
 
       delete request.headers.authorization;
 
-      await auth.token(request, response, {})
+      await auth
+        .token(request, response, {})
         .then((token) => {
           throw new Error('Should not be here');
-        }).
-        catch(err => {
+        })
+        .catch((err) => {
           err.name.should.equal('invalid_client');
         });
     });
@@ -84,11 +85,12 @@ describe('Client Authentication Compliance', function () {
 
       request.headers.authorization = 'Basic ' + Buffer.from('a:c').toString('base64');
 
-      await auth.token(request, response, {})
+      await auth
+        .token(request, response, {})
         .then((token) => {
           throw new Error('Should not be here');
-        }).
-        catch(err => {
+        })
+        .catch((err) => {
           err.name.should.equal('invalid_client');
         });
     });
@@ -116,11 +118,12 @@ describe('Client Authentication Compliance', function () {
       request.body.client_id = 'a';
       request.body.client_secret = 'c';
 
-      await auth.token(request, response, {})
+      await auth
+        .token(request, response, {})
         .then((token) => {
           throw new Error('Should not be here');
         })
-        .catch(err => {
+        .catch((err) => {
           err.name.should.equal('invalid_client');
         });
     });

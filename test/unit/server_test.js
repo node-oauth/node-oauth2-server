@@ -15,11 +15,11 @@ const sinon = require('sinon');
  * Test `Server`.
  */
 
-describe('Server', function() {
-  describe('authenticate()', function() {
-    it('should call `handle`', function() {
+describe('Server', function () {
+  describe('authenticate()', function () {
+    it('should call `handle`', function () {
       const model = Model.from({
-        getAccessToken: function() {}
+        getAccessToken: function () {},
       });
       const server = new Server({ model: model });
 
@@ -33,12 +33,12 @@ describe('Server', function() {
     });
   });
 
-  describe('authorize()', function() {
-    it('should call `handle`', function() {
+  describe('authorize()', function () {
+    it('should call `handle`', function () {
       const model = Model.from({
-        getAccessToken: function() {},
-        getClient: function() {},
-        saveAuthorizationCode: function() {}
+        getAccessToken: function () {},
+        getClient: function () {},
+        saveAuthorizationCode: function () {},
       });
       const server = new Server({ model: model });
 
@@ -52,11 +52,11 @@ describe('Server', function() {
     });
   });
 
-  describe('token()', function() {
-    it('should call `handle`', function() {
+  describe('token()', function () {
+    it('should call `handle`', function () {
       const model = Model.from({
-        getClient: function() {},
-        saveToken: function() {}
+        getClient: function () {},
+        saveToken: function () {},
       });
       const server = new Server({ model: model });
 

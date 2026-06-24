@@ -14,16 +14,16 @@ const should = require('chai').should();
 function generateBaseResponse() {
   return {
     headers: {
-      bar: 'foo'
+      bar: 'foo',
     },
     body: {
-      foobar: 'barfoo'
-    }
+      foobar: 'barfoo',
+    },
   };
 }
 
-describe('Request', function() {
-  it('should instantiate with a basic request', function() {
+describe('Request', function () {
+  it('should instantiate with a basic request', function () {
     const originalResponse = generateBaseResponse();
 
     const response = new Response(originalResponse);
@@ -32,7 +32,7 @@ describe('Request', function() {
     response.status.should.eql(200);
   });
 
-  it('should allow a response to be passed without a body', function() {
+  it('should allow a response to be passed without a body', function () {
     const originalResponse = generateBaseResponse();
     delete originalResponse.body;
 
@@ -42,7 +42,7 @@ describe('Request', function() {
     response.status.should.eql(200);
   });
 
-  it('should allow a response to be passed without headers', function() {
+  it('should allow a response to be passed without headers', function () {
     const originalResponse = generateBaseResponse();
     delete originalResponse.headers;
 
@@ -52,11 +52,11 @@ describe('Request', function() {
     response.status.should.eql(200);
   });
 
-  it('should convert all header keys to lowercase', function() {
+  it('should convert all header keys to lowercase', function () {
     const originalResponse = generateBaseResponse();
     originalResponse.headers = {
       Foo: 'bar',
-      BAR: 'foo'
+      BAR: 'foo',
     };
 
     const response = new Response(originalResponse);
@@ -66,14 +66,14 @@ describe('Request', function() {
     should.not.exist(response.headers.BAR);
   });
 
-  it('should include additional properties passed in the response', function() {
+  it('should include additional properties passed in the response', function () {
     const originalResponse = generateBaseResponse();
     originalResponse.custom = {
-      newFoo: 'newBar'
+      newFoo: 'newBar',
     };
 
     originalResponse.custom2 = {
-      newBar: 'newFoo'
+      newBar: 'newFoo',
     };
 
     const response = new Response(originalResponse);
@@ -86,32 +86,32 @@ describe('Request', function() {
   it('should not allow overwriting methods on the Response prototype via custom properties', () => {
     const response = new Response({
       headers: {
-        'content-type': 'application/json'
+        'content-type': 'application/json',
       },
       get() {
         // malicious attempt to override the 'get' method
         return 'text/html';
-      }
+      },
     });
 
     response.get('content-type').should.equal('application/json');
   });
 
-  it('should allow getting of headers using `response.get`', function() {
+  it('should allow getting of headers using `response.get`', function () {
     const originalResponse = generateBaseResponse();
 
     const response = new Response(originalResponse);
     response.get('bar').should.eql(originalResponse.headers.bar);
   });
 
-  it('should allow getting of headers using `response.get`', function() {
+  it('should allow getting of headers using `response.get`', function () {
     const originalResponse = generateBaseResponse();
 
     const response = new Response(originalResponse);
     response.get('bar').should.eql(originalResponse.headers.bar);
   });
 
-  it('should allow setting of headers using `response.set`', function() {
+  it('should allow setting of headers using `response.set`', function () {
     const originalResponse = generateBaseResponse();
 
     const response = new Response(originalResponse);
@@ -121,7 +121,7 @@ describe('Request', function() {
     response.headers.newheader.should.eql('newvalue');
   });
 
-  it('should process redirect', function() {
+  it('should process redirect', function () {
     const originalResponse = generateBaseResponse();
 
     const response = new Response(originalResponse);

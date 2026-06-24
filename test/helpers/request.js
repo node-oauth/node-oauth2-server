@@ -6,7 +6,7 @@ module.exports = (request) => {
     body: {},
     headers: {},
     method: 'GET',
-    ...request
+    ...request,
   });
 
   req.is = function (header) {

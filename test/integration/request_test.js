@@ -12,9 +12,9 @@ const should = require('chai').should();
  * Test `Request` integration.
  */
 
-describe('Request integration', function() {
-  describe('constructor()', function() {
-    it('should throw an error if `headers` is missing', function() {
+describe('Request integration', function () {
+  describe('constructor()', function () {
+    it('should throw an error if `headers` is missing', function () {
       try {
         new Request({ body: {} });
 
@@ -25,7 +25,7 @@ describe('Request integration', function() {
       }
     });
 
-    it('should throw an error if `method` is missing', function() {
+    it('should throw an error if `method` is missing', function () {
       try {
         new Request({ body: {}, headers: {} });
 
@@ -36,7 +36,7 @@ describe('Request integration', function() {
       }
     });
 
-    it('should throw an error if `query` is missing', function() {
+    it('should throw an error if `query` is missing', function () {
       try {
         new Request({ body: {}, headers: {}, method: {} });
 
@@ -47,111 +47,141 @@ describe('Request integration', function() {
       }
     });
 
-    it('should set the `body`', function() {
-      const request = new Request({ body: 'foo', headers: {}, method: {}, query: {} });
+    it('should set the `body`', function () {
+      const request = new Request({
+        body: 'foo',
+        headers: {},
+        method: {},
+        query: {},
+      });
 
       request.body.should.equal('foo');
     });
 
-    it('should set the `headers`', function() {
-      const request = new Request({ body: {}, headers: { foo: 'bar', QuX: 'biz' }, method: {}, query: {} });
+    it('should set the `headers`', function () {
+      const request = new Request({
+        body: {},
+        headers: { foo: 'bar', QuX: 'biz' },
+        method: {},
+        query: {},
+      });
 
       request.headers.should.eql({ foo: 'bar', qux: 'biz' });
     });
 
-    it('should set the `method`', function() {
-      const request = new Request({ body: {}, headers: {}, method: 'biz', query: {} });
+    it('should set the `method`', function () {
+      const request = new Request({
+        body: {},
+        headers: {},
+        method: 'biz',
+        query: {},
+      });
 
       request.method.should.equal('biz');
     });
 
-    it('should set the `query`', function() {
-      const request = new Request({ body: {}, headers: {}, method: {}, query: 'baz' });
+    it('should set the `query`', function () {
+      const request = new Request({
+        body: {},
+        headers: {},
+        method: {},
+        query: 'baz',
+      });
 
       request.query.should.equal('baz');
     });
   });
 
-  describe('get()', function() {
-    it('should return `undefined` if the field does not exist', function() {
-      const request = new Request({ body: {}, headers: {}, method: {}, query: {} });
+  describe('get()', function () {
+    it('should return `undefined` if the field does not exist', function () {
+      const request = new Request({
+        body: {},
+        headers: {},
+        method: {},
+        query: {},
+      });
 
       (undefined === request.get('content-type')).should.be.true;
     });
 
-    it('should return the value if the field exists', function() {
+    it('should return the value if the field exists', function () {
       const request = new Request({
         body: {},
         headers: {
-          'content-type': 'text/html; charset=utf-8'
+          'content-type': 'text/html; charset=utf-8',
         },
         method: {},
-        query: {}
+        query: {},
       });
 
       request.get('Content-Type').should.equal('text/html; charset=utf-8');
     });
   });
 
-  describe('is()', function() {
-    it('should accept an array of `types`', function() {
+  describe('is()', function () {
+    it('should accept an array of `types`', function () {
       const request = new Request({
         body: {},
         headers: {
           'content-type': 'application/json',
-          'transfer-encoding': 'chunked'
+          'transfer-encoding': 'chunked',
         },
         method: {},
-        query: {}
+        query: {},
       });
 
       request.is(['html', 'json']).should.equal('json');
     });
 
-    it('should accept multiple `types` as arguments', function() {
+    it('should accept multiple `types` as arguments', function () {
       const request = new Request({
         body: {},
         headers: {
           'content-type': 'application/json',
-          'transfer-encoding': 'chunked'
+          'transfer-encoding': 'chunked',
         },
         method: {},
-        query: {}
+        query: {},
       });
 
       request.is('html', 'json').should.equal('json');
     });
 
-    it('should return the first matching type', function() {
+    it('should return the first matching type', function () {
       const request = new Request({
         body: {},
         headers: {
           'content-type': 'text/html; charset=utf-8',
-          'transfer-encoding': 'chunked'
+          'transfer-encoding': 'chunked',
         },
         method: {},
-        query: {}
+        query: {},
       });
 
       request.is('html').should.equal('html');
     });
 
-    it('should return `false` if none of the `types` match', function() {
+    it('should return `false` if none of the `types` match', function () {
       const request = new Request({
         body: {},
         headers: {
           'content-type': 'text/html; charset=utf-8',
-          'transfer-encoding': 'chunked'
+          'transfer-encoding': 'chunked',
         },
         method: {},
-        query: {}
+        query: {},
       });
 
       request.is('json').should.be.false;
     });
 
-    it('should return `false` if the request has no body', function() {
-      const request = new Request({ body: {}, headers: {}, method: {}, query: {} });
+    it('should return `false` if the request has no body', function () {
+      const request = new Request({
+        body: {},
+        headers: {},
+        method: {},
+        query: {},
+      });
 
       request.is('text/html').should.be.false;
     });

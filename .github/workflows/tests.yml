@@ -14,7 +14,7 @@ on:
 
 jobs:
   lint:
-    name: Javascript standard lint
+    name: Javascript Biome lint/format
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -28,8 +28,10 @@ jobs:
         with:
           node-version: 24
           cache: npm
-      - run: npm clean-install
-      - run: npm run lint
+      - run: |
+          npm clean-install
+          npm run lint
+          npm run format
 
   unittest:
     name: unit tests

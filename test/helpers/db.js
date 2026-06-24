@@ -1,35 +1,35 @@
 class DB {
-  constructor () {
+  constructor() {
     this.users = new Map();
     this.clients = [];
     this.accessTokens = new Map();
-    this.refreshTokens= new Map();
+    this.refreshTokens = new Map();
   }
 
-  saveUser (user) {
+  saveUser(user) {
     this.users.set(user.id, user);
 
     return user;
   }
 
-  findUser (username, password) {
-    return Array.from(this.users.values()).find(user => {
+  findUser(username, password) {
+    return Array.from(this.users.values()).find((user) => {
       return user.username === username && user.password === password;
     });
   }
 
-  findUserById (id) {
+  findUserById(id) {
     return this.users.get(id);
   }
 
-  saveClient (client) {
+  saveClient(client) {
     this.clients.push(client);
 
     return client;
   }
 
-  findClient (clientId, clientSecret) {
-    return this.clients.find(client => {
+  findClient(clientId, clientSecret) {
+    return this.clients.find((client) => {
       if (clientSecret) {
         return client.id === clientId && client.secret === clientSecret;
       } else {
@@ -38,31 +38,31 @@ class DB {
     });
   }
 
-  findClientById (id) {
-    return this.clients.find(client => client.id === id);
+  findClientById(id) {
+    return this.clients.find((client) => client.id === id);
   }
 
-  saveAccessToken (accessToken, meta) {
+  saveAccessToken(accessToken, meta) {
     this.accessTokens.set(accessToken, meta);
   }
 
-  findAccessToken (accessToken) {
+  findAccessToken(accessToken) {
     return this.accessTokens.get(accessToken);
   }
 
-  deleteAccessToken (accessToken) {
+  deleteAccessToken(accessToken) {
     this.accessTokens.delete(accessToken);
   }
 
-  saveRefreshToken (refreshToken, meta) {
+  saveRefreshToken(refreshToken, meta) {
     this.refreshTokens.set(refreshToken, meta);
   }
 
-  findRefreshToken (refreshToken) {
+  findRefreshToken(refreshToken) {
     return this.refreshTokens.get(refreshToken);
   }
 
-  deleteRefreshToken (refreshToken) {
+  deleteRefreshToken(refreshToken) {
     this.refreshTokens.delete(refreshToken);
   }
 }

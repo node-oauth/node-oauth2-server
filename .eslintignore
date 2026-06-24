@@ -1,5 +1,0 @@
-.github
-.nyc_output
-coverage
-docs/*
-node_modules

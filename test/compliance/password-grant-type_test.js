@@ -67,24 +67,24 @@ require('chai').should();
 const db = new DB();
 
 const auth = new OAuth2Server({
-  model: createModel(db)
+  model: createModel(db),
 });
 
-const user = db.saveUser({ id: 1, username: 'test', password: 'test'});
+const user = db.saveUser({ id: 1, username: 'test', password: 'test' });
 const client = db.saveClient({ id: 'a', secret: 'b', grants: ['password'] });
 const scope = 'read write';
 
-function createDefaultRequest () {
+function createDefaultRequest() {
   return createRequest({
     body: {
       grant_type: 'password',
       username: user.username,
       password: user.password,
-      scope
+      scope,
     },
     headers: {
-      'authorization': 'Basic ' + Buffer.from(client.id + ':' + client.secret).toString('base64'),
-      'content-type': 'application/x-www-form-urlencoded'
+      authorization: 'Basic ' + Buffer.from(client.id + ':' + client.secret).toString('base64'),
+      'content-type': 'application/x-www-form-urlencoded',
     },
     method: 'POST',
   });
@@ -92,7 +92,7 @@ function createDefaultRequest () {
 
 describe('PasswordGrantType Compliance', function () {
   describe('Authenticate', function () {
-    it ('Succesfull authorization', async function () {
+    it('Succesfull authorization', async function () {
       const request = createDefaultRequest();
       const response = new Response({});
 
@@ -113,7 +113,7 @@ describe('PasswordGrantType Compliance', function () {
       db.refreshTokens.has(token.refreshToken).should.equal(true);
     });
 
-    it ('Succesfull authorization and authentication', async function () {
+    it('Succesfull authorization and authentication', async function () {
       const tokenRequest = createDefaultRequest();
       const tokenResponse = new Response({});
 
@@ -122,72 +122,65 @@ describe('PasswordGrantType Compliance', function () {
       const authenticationRequest = createRequest({
         body: {},
         headers: {
-          'Authorization': `Bearer ${token.accessToken}`
+          Authorization: `Bearer ${token.accessToken}`,
         },
         method: 'GET',
-        query: {}
+        query: {},
       });
       const authenticationResponse = new Response({});
 
-      const authenticated = await auth.authenticate(
-        authenticationRequest,
-        authenticationResponse,
-        {});
+      const authenticated = await auth.authenticate(authenticationRequest, authenticationResponse, {});
 
       authenticated.scope.should.eql(['read', 'write']);
       authenticated.user.should.be.an('object');
       authenticated.client.should.be.an('object');
     });
 
-    it ('Username missing', async function () {
+    it('Username missing', async function () {
       const request = createDefaultRequest();
       const response = new Response({});
 
       delete request.body.username;
 
-      await auth.token(request, response, {})
-        .catch(err => {
-          err.name.should.equal('invalid_request');
-        });
+      await auth.token(request, response, {}).catch((err) => {
+        err.name.should.equal('invalid_request');
+      });
     });
 
-    it ('Password missing', async function () {
+    it('Password missing', async function () {
       const request = createDefaultRequest();
       const response = new Response({});
 
       delete request.body.password;
 
-      await auth.token(request, response, {})
-        .catch(err => {
-          err.name.should.equal('invalid_request');
-        });
+      await auth.token(request, response, {}).catch((err) => {
+        err.name.should.equal('invalid_request');
+      });
     });
 
-    it ('Wrong username', async function () {
+    it('Wrong username', async function () {
       const request = createDefaultRequest();
       const response = new Response({});
 
       request.body.username = 'wrong';
 
-      await auth.token(request, response, {})
-        .catch(err => {
-          err.name.should.equal('invalid_grant');
-        });
+      await auth.token(request, response, {}).catch((err) => {
+        err.name.should.equal('invalid_grant');
+      });
     });
 
-    it ('Wrong password', async function () {
+    it('Wrong password', async function () {
       const request = createDefaultRequest();
       const response = new Response({});
 
       request.body.password = 'wrong';
 
-      await auth.token(request, response, {})
-        .catch(err => {
-          err.name.should.equal('invalid_grant');
-        });
+      await auth.token(request, response, {}).catch((err) => {
+        err.name.should.equal('invalid_grant');
+      });
     });
 
-    it ('Client not found', async function () {
+    it('Client not found', async function () {
       const request = createDefaultRequest();
       const response = new Response({});
 
@@ -196,13 +189,12 @@ describe('PasswordGrantType Compliance', function () {
 
       request.headers.authorization = 'Basic ' + Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
 
-      await auth.token(request, response, {})
-        .catch(err => {
-          err.name.should.equal('invalid_client');
-        });
+      await auth.token(request, response, {}).catch((err) => {
+        err.name.should.equal('invalid_client');
+      });
     });
 
-    it ('Client secret not required', async function () {
+    it('Client secret not required', async function () {
       const request = createDefaultRequest();
       const response = new Response({});
 
@@ -210,25 +202,26 @@ describe('PasswordGrantType Compliance', function () {
 
       const token = await auth.token(request, response, {
         requireClientAuthentication: {
-          password: false
-        }
+          password: false,
+        },
       });
 
       token.accessToken.should.be.a('string');
     });
 
-    it ('Client secret required', async function () {
+    it('Client secret required', async function () {
       const request = createDefaultRequest();
       const response = new Response({});
 
       delete request.body.client_secret;
 
-      await auth.token(request, response, {
-        requireClientAuthentication: {
-          password: false
-        }
-      })
-        .catch(err => {
+      await auth
+        .token(request, response, {
+          requireClientAuthentication: {
+            password: false,
+          },
+        })
+        .catch((err) => {
           err.name.should.equal('invalid_client');
         });
     });

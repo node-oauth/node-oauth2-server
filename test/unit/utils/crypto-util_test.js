@@ -12,7 +12,9 @@ describe(cryptoUtil.createHash.name, function () {
       cryptoUtil.createHash({});
     } catch (e) {
       e.should.be.instanceOf(TypeError);
-      e.message.should.include('he "data" argument must be of type string or an instance of Buffer, TypedArray, or DataView.');
+      e.message.should.include(
+        'he "data" argument must be of type string or an instance of Buffer, TypedArray, or DataView.',
+      );
     }
   });
 });
