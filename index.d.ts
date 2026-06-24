@@ -228,6 +228,9 @@ declare namespace OAuth2Server {
 
         /**
          * Require a client secret. Defaults to true for all grant types.
+         * Setting a grant to `false` disables the client_secret presence check for
+         * that grant for ALL clients (not just public ones); per-client
+         * (public vs confidential) enforcement must be done in model.getClient.
          */
         requireClientAuthentication?: Record<string, boolean>;
 
