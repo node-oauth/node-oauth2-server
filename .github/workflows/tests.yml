@@ -7,14 +7,13 @@ on:
   push:
     branches:
       - master    # although master is push protected we still keep it
-      - development
   pull_request:   # runs on all PR
     branches-ignore:
       - release-* # on release, we run an extended workflow so no need for this
 
 jobs:
   lint:
-    name: Javascript Biome lint/format
+    name: Lint commit messages and code
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -22,14 +21,27 @@ jobs:
         with:
           persist-credentials: false
           show-progress: false
+          fetch-depth: 0
 
       - name: setup node
         uses: actions/setup-node@v6
         with:
           node-version: 24
           cache: npm
-      - run: |
-          npm clean-install
+
+      - name: Install npm dependencies
+        run: npm clean-install
+
+      - name: Validate pushed commits with commitlint
+        if: github.event_name == 'push'
+        run: npx commitlint --from ${{ github.event.before }} --to ${{ github.sha }} --verbose
+
+      - name: Validate PR commits with commitlint
+        if: github.event_name == 'pull_request'
+        run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
+
+      - name: Lint and format code
+        run: |
           npm run lint
           npm run format
 
@@ -62,3 +74,37 @@ jobs:
       with:
         path: './coverage/lcov.info'
         min_coverage: 98
+
+  release:
+    name: Release
+    concurrency: release
+    if: ${{ github.event_name == 'push' && github.actor != 'dependabot[bot]' }}
+    runs-on: ubuntu-latest
+    needs: [lint, unittest]
+    permissions:
+      contents: write # to be able to publish a GitHub release & commit changelog changes
+      issues: write # to be able to comment on released issues
+      pull-requests: write # to be able to comment on released pull requests
+      id-token: write # to enable use of OIDC for npm provenance
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm clean-install
+      - name: Verify the integrity of provenance attestations and registry signatures for installed dependencies
+        run: npm audit signatures
+      - name: Release
+        env:
+          NPM_CONFIG_PROVENANCE: true
+          # Prefer a dedicated PAT (e.g. to push the release commit/tag to the
+          # protected `master` branch); fall back to the built-in token otherwise.
+          GITHUB_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
+

@@ -61,22 +61,31 @@ First, clone and install this project from source via
 ```bash
 git clone git@github.com:node-oauth/node-oauth2-server.git
 cd node-oauth2-server
-git checkout development # important! do not work on master!
 npm install
 ```
+
+> **Note:** CI runs on **Node 24 (npm 11)**. Use a matching version locally, and
+> regenerate `package-lock.json` with npm 11 if you change dependencies. Older npm
+> versions rewrite the lock file — dropping the cross-platform optional
+> dependencies that `npm ci` needs — which breaks CI even when it installs fine on
+> your machine.
 
 From here you can run several scripts for development purposes:
 
 ```bash
-npm run test           # runs the tests once
+npm run test           # runs the linter, then the tests once
 npm run test:coverage  # runs the tests including coverage
-npm run docs           # generates the API docs
+npm run lint           # runs the linter
+npm run lint:fix       # runs the linter and auto-fixes what it can
+npm run docs:api       # regenerates the API docs from JSDoc comments
+npm run docs:dev       # serves the documentation site locally
 ```
 
-To work on a new feature or a fix please create a new branch:
+Make sure your `master` is up to date, then create a branch for your work:
 
 ```bash
-git checkout -b feature-xyz # or fix-xyz
+git switch master && git pull
+git switch -c feature-xyz # or fix-xyz
 ```
 
 ### Coding rules
@@ -86,15 +95,34 @@ git checkout -b feature-xyz # or fix-xyz
 
 ### Commit message convention
 
-We use a commit convention, inspired by [angular commit message format](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-commit-message-format)
-with ticket number at the end of summary:
+We follow [Conventional Commits](https://www.conventionalcommits.org/). Every
+commit is linted in CI against
+[`@commitlint/config-conventional`](https://github.com/conventional-changelog/commitlint/tree/master/%40commitlint/config-conventional),
+and releases are produced automatically from the commit history by
+[semantic-release](https://github.com/semantic-release/semantic-release) — so the
+format is **required**, not just a style preference. Non-conforming commits fail
+CI.
 
 ```
-<type>(<scope>): <short summary> #<issue number>
+<type>(<optional scope>): <short summary>
 ```
 
-Summary in present tense. Not capitalized. No period at the end.
-The `<type>` and `<summary>` fields are mandatory, the `(<scope>)` and `#<number>` fields are optional.
+The summary is written in the imperative mood, lower-case, with no trailing
+period. The `<type>` and `<summary>` are mandatory; the `(<scope>)` is optional.
+
+**Release-triggering types** — these appear in the changelog and, on merge to
+`master`, trigger a release:
+
+- `fix:` — patch release
+- `feat:` — minor release
+- `feat!:` (or any commit with a `BREAKING CHANGE:` footer) — major release
+
+**Non-release types:** `docs`, `test`, `refactor`, `perf`, `style`, `build`,
+`ci`, `chore`.
+
+Do **not** reference issues or PRs in the commit summary or body — link them from
+the pull request description instead. References in commit messages get replayed
+(re-notifying the linked thread) every time history is rebased or squashed.
 
 ### Run the tests before committing
 
@@ -127,12 +155,10 @@ Note: sometimes a pull request (PR) is also referred to as merge request (MR).
 
 There are a few basic requirements for your pull request to become accepted:
 
-- Make sure to open your pull request to target the `development` branch and not 
-`master`
-- Make sure you are working on a branch, other than `development`; usually you
-  can name the branch after the feature or fix you want to provide
-- Resolve any merge conflicts (usually by keeping your branch updated with 
-  `development`)
+- Open your pull request against the `master` branch
+- Make sure you are working on a dedicated branch, not `master`; usually you can
+  name the branch after the feature or fix you want to provide
+- Resolve any merge conflicts by keeping your branch up to date with `master`
 - Have a clear description on what the PR does, including any steps necessary
   for testing, reviewing, reproduction etc.
 - Link to the existing issue
@@ -142,11 +168,11 @@ There are a few basic requirements for your pull request to become accepted:
 
 Also make sure, to comply with the following list:
 
-- Do not work on `development` directly
+- Do not work on `master` directly
 - Do not implement multiple features in one pull request (this includes bumping
   versions of dependencies that are not related to the PR/issue)
-- Do not bump the release version (unless you are a maintainer)
-- Do not edit the Changelog as this will be done after your PR is merged
+- Do not bump the release version or edit `CHANGELOG.md` — both are produced
+  automatically by semantic-release when your PR is merged
 - Do not introduce tight dependencies to a certain package that has not been
   approved during the discussion in the issue
 
