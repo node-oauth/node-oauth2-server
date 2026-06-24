@@ -1,5 +1,5 @@
 const Model = require('../../../lib/model');
-const {expect} = require('chai');
+const { expect } = require('chai');
 
 describe('ModelWrapper', () => {
   const expectThrows = async (fn) => {
@@ -28,6 +28,5 @@ describe('ModelWrapper', () => {
     await expectThrows(() => m.verifyScope());
     await expectThrows(() => m.validateRedirectUri());
     await expectThrows(() => m.validateScope());
-
   });
 });

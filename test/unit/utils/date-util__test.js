@@ -3,7 +3,7 @@ const dateUtil = require('../../../lib/utils/date-util');
 const sinon = require('sinon');
 require('chai').should();
 
-describe('DateUtil', function() {
+describe('DateUtil', function () {
   describe('getLifetimeFromExpiresAt', () => {
     const now = new Date('2023-01-01T00:00:00.000Z');
 
