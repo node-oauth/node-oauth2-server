@@ -168,7 +168,7 @@ declare namespace OAuth2Server {
         /**
          * Model object
          */
-        model: AuthorizationCodeModel | ClientCredentialsModel | RefreshTokenModel | PasswordModel | ExtensionModel;
+        model: AuthorizationCodeModel | ClientCredentialsModel | RefreshTokenModel | PasswordModel | JwtBearerModel | ExtensionModel;
     }
 
     interface AuthenticateOptions {
@@ -253,6 +253,29 @@ declare namespace OAuth2Server {
          * Require PKCE for the authorization code grant: reject token exchanges for codes issued without a `code_challenge`. Recommended by OAuth 2.1.
          */
         requirePKCE?: boolean;
+
+        /**
+         * Required if the `jwt-bearer` (ID-JAG) grant is used. This Resource AS's own issuer
+         * identifier (RFC 8414) — the value assertions must present as their `aud` claim.
+         */
+        tokenEndpointUri?: string;
+
+        /**
+         * `jwt-bearer` (ID-JAG) grant: allowed clock-skew tolerance, in seconds, applied to
+         * `exp`/`iat`/`nbf` (default = 60).
+         */
+        idJagClockSkew?: number;
+
+        /**
+         * `jwt-bearer` (ID-JAG) grant: signature algorithm allow-list (default = `['RS256', 'ES256', 'PS256']`).
+         */
+        jwtBearerAllowedAlgorithms?: string[];
+
+        /**
+         * `jwt-bearer` (ID-JAG) grant: allow public clients to use this grant. Not recommended
+         * for production environments (default = false).
+         */
+        jwtBearerAllowPublicClients?: boolean;
     }
 
     /**
@@ -395,6 +418,70 @@ declare namespace OAuth2Server {
          *
          */
         validateScope?(user: User, client: Client, scope?: string[]): Promise<string[] | Falsey>;
+    }
+
+    /**
+     * Model required by the built-in `jwt-bearer` (ID-JAG) grant. Implements the
+     * Identity Assertion Authorization Grant profile of RFC 7523, letting this
+     * library act as the Resource Authorization Server side of a Cross App
+     * Access exchange.
+     */
+    interface JwtBearerModel extends BaseModel {
+        /**
+         * Invoked to confirm the assertion's `iss` claim identifies an Identity Provider this
+         * Resource AS trusts, before any cryptographic verification is attempted. Return a
+         * falsy value to reject an untrusted issuer.
+         *
+         */
+        getTrustedIssuer(issuer: string): Promise<object | Falsey>;
+
+        /**
+         * Invoked to resolve the public key used to verify the assertion's signature, for the
+         * given issuer and (optional) key id (`kid` header claim). May return a PEM string, a
+         * JWK object, or a `KeyObject`.
+         *
+         */
+        getRequestingIssuerKey(issuer: string, kid: string | undefined): Promise<string | object | Falsey>;
+
+        /**
+         * Invoked, once the assertion's signature and claims are verified, to resolve the local
+         * user identified by the assertion's `sub` claim. `issuer` is required because `sub` is
+         * only unique within a given IdP.
+         *
+         */
+        getUserFromIdJagAssertion(issuer: string, subject: string, client: Client): Promise<User | Falsey>;
+
+        /**
+         * Invoked to authorize the asserted identity for the target resource, after the user has
+         * been resolved. `assertion` is the verified JWT payload, letting deployments apply
+         * policy based on custom claims without re-parsing the JWT.
+         *
+         */
+        validateIdJagPermission(client: Client, user: User, scope: string[] | Falsey, assertion: object): Promise<boolean>;
+
+        /**
+         * Invoked to atomically check-and-record the assertion's `jti` claim for replay
+         * protection, keyed by `issuer` + `jti` (`jti` uniqueness is per-issuer). Must return
+         * `true` only if this `(issuer, jti)` pair has not been seen before, and must record it
+         * with a TTL of at least `exp` (plus any configured clock skew). Mutually exclusive with
+         * `isJtiUsed`/`recordJti` below — implement either this method, or both of those.
+         *
+         */
+        validateJti?(jti: string, issuer: string, exp: number): Promise<boolean>;
+
+        /**
+         * Invoked, together with `recordJti`, as a non-atomic alternative to `validateJti`, to
+         * check whether an `(issuer, jti)` pair has already been used.
+         *
+         */
+        isJtiUsed?(jti: string, issuer: string): Promise<boolean>;
+
+        /**
+         * Invoked, together with `isJtiUsed`, to record an `(issuer, jti)` pair with a TTL of at
+         * least `exp` (plus any configured clock skew).
+         *
+         */
+        recordJti?(jti: string, issuer: string, exp: number): Promise<void>;
     }
 
     interface ExtensionModel extends BaseModel, RequestAuthenticationModel {}
