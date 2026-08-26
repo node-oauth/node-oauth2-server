@@ -28,6 +28,7 @@
   "dependencies": {
     "@node-oauth/formats": "1.0.0",
     "basic-auth": "2.0.1",
+    "jose": "6.2.3",
     "type-is": "2.1.0"
   },
   "devDependencies": {
@@ -41,7 +42,7 @@
   },
   "license": "MIT",
   "engines": {
-    "node": ">=16.0.0"
+    "node": "^20.19.0 || >=22.12.0"
   },
   "scripts": {
     "pretest": "npx @biomejs/biome check .",
