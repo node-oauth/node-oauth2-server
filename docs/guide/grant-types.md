@@ -51,6 +51,54 @@ The client can request an access token using only its client credentials (or oth
 when requesting access to the protected resources under its control.
 The client credentials grant type **must** only be used by confidential clients.
 
+## JWT Bearer Grant (ID-JAG)
+
+**Defined in:** [RFC 7523, Section 2.1](https://www.rfc-editor.org/rfc/rfc7523#section-2.1), profiled by the
+[Identity Assertion Authorization Grant (ID-JAG) draft](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-identity-assertion-authz-grant).
+
+**Model requirements:** [Model for JWT Bearer Grant](./model.md#jwt-bearer-grant-id-jag)
+
+This built-in grant (`urn:ietf:params:oauth:grant-type:jwt-bearer`) lets this library act as the
+**Resource Authorization Server** side of a Cross App Access exchange: it consumes an ID-JAG
+assertion — a JWT minted by an external Identity Provider that asserts a user's identity to a
+specific client/resource — and, once the assertion's signature and claims are verified, issues a
+locally-scoped access token. Minting the ID-JAG itself (the IdP side, via
+[RFC 8693 Token Exchange](https://www.rfc-editor.org/rfc/rfc8693)) is out of scope for this
+library.
+
+Per [ID-JAG Section 8.1](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-identity-assertion-authz-grant),
+this grant is restricted to **confidential clients** by default; a client must authenticate with
+its `client_secret` (Basic auth or the `client_secret` body parameter). This can be relaxed for
+non-production environments via `jwtBearerAllowPublicClients`.
+
+A client must have the grant URN in its `grants` array to use it, just like any other grant:
+
+```js
+const client = {
+  id: 'my-client',
+  grants: ['urn:ietf:params:oauth:grant-type:jwt-bearer'],
+  // ...
+};
+```
+
+The server must be configured with `tokenEndpointUri` — this Resource AS's own
+[RFC 8414](https://www.rfc-editor.org/rfc/rfc8414) issuer identifier, which assertions must
+present as their `aud` claim:
+
+```js
+const oauth = new OAuth2Server({
+  model: require('./model'),
+  tokenEndpointUri: 'https://rs.example.com',
+  // idJagClockSkew: 60,                 // optional, seconds (default 60)
+  // jwtBearerAllowedAlgorithms: [...],   // optional (default ['RS256', 'ES256', 'PS256'])
+  // jwtBearerAllowPublicClients: false,  // optional, non-production only
+});
+```
+
+Signature verification uses only Node's built-in `crypto` module (`RS256`, `ES256`, `PS256`) — no
+additional dependency is required. `alg: none` and HMAC (`HS*`) algorithms are never accepted,
+since the Resource AS has no symmetric secret shared with the IdP.
+
 ## Extension Grants
 
 **Defined in:** [Section 4.5 of RFC 6749](https://www.rfc-editor.org/rfc/rfc6749#section-4.4).
