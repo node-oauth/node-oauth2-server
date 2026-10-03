@@ -416,6 +416,7 @@ declare namespace OAuth2Server {
         grants: string | string[];
         accessTokenLifetime?: number;
         refreshTokenLifetime?: number;
+        type?: 'public' | 'confidential';
         [key: string]: any;
     }
 
