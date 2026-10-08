@@ -816,6 +816,98 @@ describe('TokenHandler integration', function () {
         .catch(should.fail);
     });
 
+    describe('with a public client and no `client_secret`', function () {
+      it('should return the client without requiring a secret', function () {
+        const client = { id: 'foo', grants: ['authorization_code'], type: 'public' };
+        const model = Model.from({
+          getClient: function () {
+            return client;
+          },
+          saveToken: function () {},
+        });
+        const handler = new TokenHandler({
+          accessTokenLifetime: 120,
+          model: model,
+          refreshTokenLifetime: 120,
+        });
+        const request = new Request({
+          body: { client_id: 'foo', grant_type: 'authorization_code' },
+          headers: {},
+          method: {},
+          query: {},
+        });
+
+        return handler
+          .getClient(request)
+          .then(function (data) {
+            data.should.equal(client);
+          })
+          .catch(should.fail);
+      });
+    });
+
+    describe('with a confidential client (explicit type) and no `client_secret`', function () {
+      it('should throw an error', function () {
+        const client = { id: 'foo', grants: ['authorization_code'], type: 'confidential' };
+        const model = Model.from({
+          getClient: function () {
+            return client;
+          },
+          saveToken: function () {},
+        });
+        const handler = new TokenHandler({
+          accessTokenLifetime: 120,
+          model: model,
+          refreshTokenLifetime: 120,
+        });
+        const request = new Request({
+          body: { client_id: 'foo', grant_type: 'authorization_code' },
+          headers: {},
+          method: {},
+          query: {},
+        });
+
+        return handler
+          .getClient(request)
+          .then(should.fail)
+          .catch(function (e) {
+            e.should.be.an.instanceOf(InvalidClientError);
+            e.message.should.equal('Invalid client: client is invalid');
+          });
+      });
+    });
+
+    describe('with a confidential client (no type, default) and no `client_secret`', function () {
+      it('should throw an error', function () {
+        const client = { id: 'foo', grants: ['password'] };
+        const model = Model.from({
+          getClient: function () {
+            return client;
+          },
+          saveToken: function () {},
+        });
+        const handler = new TokenHandler({
+          accessTokenLifetime: 120,
+          model: model,
+          refreshTokenLifetime: 120,
+        });
+        const request = new Request({
+          body: { client_id: 'foo', grant_type: 'password' },
+          headers: {},
+          method: {},
+          query: {},
+        });
+
+        return handler
+          .getClient(request)
+          .then(should.fail)
+          .catch(function (e) {
+            e.should.be.an.instanceOf(InvalidClientError);
+            e.message.should.equal('Invalid client: client is invalid');
+          });
+      });
+    });
+
     describe('with `password` grant type and `requireClientAuthentication` is false', function () {
       it('should return a client ', function () {
         const client = { id: 12345, grants: [] };
@@ -959,7 +1051,7 @@ describe('TokenHandler integration', function () {
       }
     });
 
-    it('should throw an error if `client_secret` is missing', async function () {
+    it('should return credentials with only `clientId` when `client_secret` is missing', function () {
       const model = Model.from({
         getClient: function () {},
         saveToken: function () {},
@@ -976,14 +1068,8 @@ describe('TokenHandler integration', function () {
         query: {},
       });
 
-      try {
-        await handler.getClientCredentials(request);
-
-        should.fail();
-      } catch (e) {
-        e.should.be.an.instanceOf(InvalidClientError);
-        e.message.should.equal('Invalid client: cannot retrieve client credentials');
-      }
+      const credentials = handler.getClientCredentials(request);
+      credentials.should.eql({ clientId: 'foo' });
     });
 
     describe('with `client_id` and grant type is `password` and `requireClientAuthentication` is false', function () {
