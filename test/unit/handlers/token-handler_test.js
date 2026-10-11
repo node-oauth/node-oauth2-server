@@ -56,7 +56,7 @@ describe('TokenHandler', function () {
         refreshTokenLifetime: 120,
       });
       const request = new Request({
-        body: { client_id: 'foo', grant_type: 'authorization_code' },
+        body: { client_id: 'foo', grant_type: 'authorization_code', code_verifier: 'verifier' },
         headers: {},
         method: {},
         query: {},

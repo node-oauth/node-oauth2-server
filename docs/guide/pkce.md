@@ -173,26 +173,41 @@ there. A client that obtained its tokens via PKCE refreshes them like any other
 client — by presenting its `refresh_token` (and, if it is a confidential client,
 its `client_secret`).
 
-PKCE is **not** client authentication, and never a substitute for a `client_secret`:
+PKCE is **not** client authentication, and never a substitute for a `client_secret`.
+Declare the client type ([RFC 6749 §2.1](https://datatracker.ietf.org/doc/html/rfc6749#section-2.1))
+by returning a `type` property from `model.getClient()`:
 
-- A **confidential** client (one issued a `client_secret`) must authenticate with
-  its secret on **every** token request, including `refresh_token`. PKCE is
-  additive. Your `model.getClient(clientId, clientSecret)` is responsible for
-  rejecting (returning a falsy value) a confidential client that fails to present
-  its secret.
-- A **public** client has no secret. If you choose to issue refresh tokens to
-  public clients (weigh the security implications first — see
-  [RFC 9700](https://www.rfc-editor.org/rfc/rfc9700)), relax client authentication
-  for that grant:
+```js
+async getClient(clientId, clientSecret) {
+  const client = await db.findClient(clientId);
+  if (!client) return null;
+  // a provided secret must always match, also for public clients
+  if (clientSecret !== null && client.secret !== clientSecret) return null;
+  return { id: client.id, grants: client.grants, type: client.type }; // 'public' or 'confidential'
+}
+```
 
-      const server = new OAuth2Server({
-        model,
-        requireClientAuthentication: { refresh_token: false } // allow refresh without a client_secret
-      })
+The token endpoint then decides whether a `client_secret` is required:
 
-  `requireClientAuthentication: { refresh_token: false }` disables the
-  `client_secret` **presence** check for the `refresh_token` grant for **all**
-  clients, not just public ones, so per-client (public vs confidential)
-  enforcement must be done in your `model.getClient`. The library does not yet
-  model the public/confidential distinction itself (tracked in
-  [#81](https://github.com/node-oauth/node-oauth2-server/issues/81)).
+- A **confidential** client (`type: 'confidential'`) must authenticate with its
+  secret on **every** token request, including `refresh_token`. PKCE is additive
+  and does not waive the secret.
+- A **public** client (`type: 'public'`) has no secret. It must use PKCE for the
+  `authorization_code` grant
+  ([RFC 9700 §2.1.1](https://www.rfc-editor.org/rfc/rfc9700#section-2.1.1)), may
+  use `refresh_token` without a secret (weigh the security implications first, see
+  [RFC 9700](https://www.rfc-editor.org/rfc/rfc9700)), and is never allowed to use
+  the `client_credentials` grant
+  ([RFC 6749 §4.4](https://datatracker.ietf.org/doc/html/rfc6749#section-4.4)).
+- A client **without** `type` keeps the previous behaviour: a secret is required,
+  except for `authorization_code` requests that use PKCE. Your `model.getClient`
+  is responsible for rejecting such a client if it should have presented its
+  secret. Set `type: 'confidential'` to let the library enforce this.
+
+An explicit `requireClientAuthentication` entry for a grant type always takes
+precedence over the client type, for **all** clients:
+
+    const server = new OAuth2Server({
+      model,
+      requireClientAuthentication: { refresh_token: false } // allow refresh without a client_secret
+    })

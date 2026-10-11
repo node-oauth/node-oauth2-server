@@ -617,6 +617,291 @@ describe('TokenHandler integration', function () {
         })
         .catch(should.fail);
     });
+
+    describe('with client types', function () {
+      const grants = ['authorization_code', 'client_credentials', 'refresh_token'];
+      const clients = {
+        public: { id: 'public', type: 'public', grants },
+        other: { id: 'other', type: 'public', grants },
+        confidential: { id: 'confidential', type: 'confidential', secret: 'secret', grants },
+        legacy: { id: 'legacy', secret: 'secret', grants },
+      };
+      const codeVerifier = stringUtil.base64URLEncode(crypto.randomBytes(32));
+      const codeChallenge = stringUtil.base64URLEncode(crypto.createHash('sha256').update(codeVerifier).digest());
+
+      // codes and refresh tokens are named after the client they were issued to: `code-<id>`, `token-<id>`
+      const model = Model.from({
+        getClient: function (clientId, clientSecret) {
+          const client = clients[clientId];
+          if (!client) return null;
+          // a provided secret must always match, also for public clients
+          if (clientSecret !== null && client.secret !== clientSecret) return null;
+          return { id: client.id, grants: client.grants, type: client.type };
+        },
+        getAuthorizationCode: function (code) {
+          return {
+            authorizationCode: code,
+            client: { id: code.replace('code-', '') },
+            expiresAt: new Date(new Date().getTime() * 2),
+            user: {},
+            codeChallengeMethod: 'S256',
+            codeChallenge: codeChallenge,
+          };
+        },
+        revokeAuthorizationCode: function () {
+          return true;
+        },
+        getRefreshToken: function (refreshToken) {
+          return { refreshToken: refreshToken, client: { id: refreshToken.replace('token-', '') }, user: {} };
+        },
+        revokeToken: function () {
+          return true;
+        },
+        getUserFromClient: function () {
+          return {};
+        },
+        saveToken: function (token, client, user) {
+          return Object.assign({}, token, { client: client, user: user });
+        },
+      });
+
+      const requestToken = async function (body, { headers, requireClientAuthentication } = {}) {
+        const handler = new TokenHandler({
+          accessTokenLifetime: 120,
+          model: model,
+          refreshTokenLifetime: 120,
+          requireClientAuthentication: requireClientAuthentication,
+        });
+        const request = new Request({
+          body: body,
+          headers: Object.assign(
+            { 'content-type': 'application/x-www-form-urlencoded', 'transfer-encoding': 'chunked' },
+            headers,
+          ),
+          method: 'POST',
+          query: {},
+        });
+        const response = new Response({ body: {}, headers: {} });
+
+        await handler.handle(request, response);
+
+        return response;
+      };
+
+      const shouldFail = async function (promise, ErrorType, message) {
+        try {
+          await promise;
+        } catch (e) {
+          e.should.be.an.instanceOf(ErrorType);
+          e.message.should.equal(message);
+          return e;
+        }
+
+        should.fail();
+      };
+
+      const authorizationCode = function (clientId, extra) {
+        return Object.assign(
+          {
+            grant_type: 'authorization_code',
+            client_id: clientId,
+            code: `code-${clientId}`,
+            code_verifier: codeVerifier,
+          },
+          extra,
+        );
+      };
+
+      const refreshToken = function (clientId, extra) {
+        return Object.assign(
+          { grant_type: 'refresh_token', client_id: clientId, refresh_token: `token-${clientId}` },
+          extra,
+        );
+      };
+
+      const clientCredentials = function (clientId, extra) {
+        return Object.assign({ grant_type: 'client_credentials', client_id: clientId }, extra);
+      };
+
+      const invalidClient = 'Invalid client: client is invalid';
+
+      describe('with a public client', function () {
+        it('should return a token for `authorization_code` with a valid S256 code verifier and no secret', async function () {
+          const response = await requestToken(authorizationCode('public'));
+
+          should.exist(response.body.access_token);
+          response.body.token_type.should.equal('Bearer');
+        });
+
+        it('should throw an error for `authorization_code` without a code verifier', async function () {
+          await shouldFail(
+            requestToken(authorizationCode('public', { code_verifier: undefined })),
+            InvalidClientError,
+            invalidClient,
+          );
+        });
+
+        it('should throw an error for `authorization_code` with an invalid code verifier', async function () {
+          await shouldFail(
+            requestToken(
+              authorizationCode('public', { code_verifier: stringUtil.base64URLEncode(crypto.randomBytes(32)) }),
+            ),
+            InvalidGrantError,
+            'Invalid grant: code verifier is invalid',
+          );
+        });
+
+        it('should return a token for `refresh_token` without a secret', async function () {
+          const response = await requestToken(refreshToken('public'));
+
+          should.exist(response.body.access_token);
+        });
+
+        it('should throw an error for `client_credentials` without a secret', async function () {
+          await shouldFail(requestToken(clientCredentials('public')), InvalidClientError, invalidClient);
+        });
+
+        it('should throw an error for `client_credentials` even if `requireClientAuthentication` is false for it', async function () {
+          await shouldFail(
+            requestToken(clientCredentials('public'), { requireClientAuthentication: { client_credentials: false } }),
+            UnauthorizedClientError,
+            'Unauthorized client: `grant_type` is invalid',
+          );
+        });
+
+        it('should throw an error if `requireClientAuthentication` is true for `authorization_code`', async function () {
+          await shouldFail(
+            requestToken(authorizationCode('public'), { requireClientAuthentication: { authorization_code: true } }),
+            InvalidClientError,
+            invalidClient,
+          );
+        });
+
+        it('should throw an error if `requireClientAuthentication` is true for `refresh_token`', async function () {
+          await shouldFail(
+            requestToken(refreshToken('public'), { requireClientAuthentication: { refresh_token: true } }),
+            InvalidClientError,
+            invalidClient,
+          );
+        });
+
+        it('should throw an error if it supplies a `client_secret` in the body', async function () {
+          await shouldFail(
+            requestToken(authorizationCode('public', { client_secret: 'wrong' })),
+            InvalidClientError,
+            invalidClient,
+          );
+        });
+
+        it('should throw a 401 error if it supplies credentials in the Authorization header', async function () {
+          const e = await shouldFail(
+            requestToken(authorizationCode('public', { client_id: undefined }), {
+              headers: { authorization: util.format('Basic %s', Buffer.from('public:wrong').toString('base64')) },
+            }),
+            InvalidClientError,
+            invalidClient,
+          );
+
+          e.code.should.equal(401);
+        });
+
+        it('should throw an error for an authorization code issued to another client', async function () {
+          await shouldFail(
+            requestToken(authorizationCode('public', { code: 'code-other' })),
+            InvalidGrantError,
+            'Invalid grant: authorization code is invalid',
+          );
+        });
+
+        it('should throw an error for a refresh token issued to another client', async function () {
+          await shouldFail(
+            requestToken(refreshToken('public', { refresh_token: 'token-other' })),
+            InvalidGrantError,
+            'Invalid grant: refresh token was issued to another client',
+          );
+        });
+      });
+
+      describe('with a confidential client', function () {
+        it('should throw an error for `authorization_code` with a valid code verifier and no secret', async function () {
+          await shouldFail(requestToken(authorizationCode('confidential')), InvalidClientError, invalidClient);
+        });
+
+        it('should return a token for `authorization_code` with a valid code verifier and a secret', async function () {
+          const response = await requestToken(authorizationCode('confidential', { client_secret: 'secret' }));
+
+          should.exist(response.body.access_token);
+        });
+
+        it('should throw an error for `authorization_code` with a valid code verifier and a wrong secret', async function () {
+          await shouldFail(
+            requestToken(authorizationCode('confidential', { client_secret: 'wrong' })),
+            InvalidClientError,
+            invalidClient,
+          );
+        });
+
+        it('should throw an error for `refresh_token` without a secret', async function () {
+          await shouldFail(requestToken(refreshToken('confidential')), InvalidClientError, invalidClient);
+        });
+
+        it('should return a token for `refresh_token` without a secret if `requireClientAuthentication` is false for it', async function () {
+          const response = await requestToken(refreshToken('confidential'), {
+            requireClientAuthentication: { refresh_token: false },
+          });
+
+          should.exist(response.body.access_token);
+        });
+
+        it('should return a token for `client_credentials` with a secret', async function () {
+          const response = await requestToken(clientCredentials('confidential', { client_secret: 'secret' }));
+
+          should.exist(response.body.access_token);
+        });
+
+        it('should throw an error for an authorization code issued to another client, even with a valid secret', async function () {
+          await shouldFail(
+            requestToken(authorizationCode('confidential', { client_secret: 'secret', code: 'code-other' })),
+            InvalidGrantError,
+            'Invalid grant: authorization code is invalid',
+          );
+        });
+      });
+
+      describe('with a client without `type` (legacy)', function () {
+        it('should return a token for `authorization_code` with a valid code verifier and no secret', async function () {
+          const response = await requestToken(authorizationCode('legacy'));
+
+          should.exist(response.body.access_token);
+        });
+
+        it('should throw an error for `authorization_code` without a code verifier and no secret', async function () {
+          await shouldFail(
+            requestToken(authorizationCode('legacy', { code_verifier: undefined })),
+            InvalidClientError,
+            invalidClient,
+          );
+        });
+
+        it('should throw an error for `refresh_token` without a secret', async function () {
+          await shouldFail(requestToken(refreshToken('legacy')), InvalidClientError, invalidClient);
+        });
+
+        it('should throw an error for a wrong secret', async function () {
+          await shouldFail(
+            requestToken(refreshToken('legacy', { client_secret: 'wrong' })),
+            InvalidClientError,
+            invalidClient,
+          );
+        });
+
+        it('should return a token for `client_credentials` with a secret', async function () {
+          const response = await requestToken(clientCredentials('legacy', { client_secret: 'secret' }));
+
+          should.exist(response.body.access_token);
+        });
+      });
+    });
   });
 
   describe('getClient()', function () {
@@ -816,9 +1101,8 @@ describe('TokenHandler integration', function () {
         .catch(should.fail);
     });
 
-    describe('with a public client and no `client_secret`', function () {
-      it('should return the client without requiring a secret', function () {
-        const client = { id: 'foo', grants: ['authorization_code'], type: 'public' };
+    describe('client authentication by client type', function () {
+      const getClient = function ({ client, body, requireClientAuthentication }) {
         const model = Model.from({
           getClient: function () {
             return client;
@@ -829,82 +1113,127 @@ describe('TokenHandler integration', function () {
           accessTokenLifetime: 120,
           model: model,
           refreshTokenLifetime: 120,
+          requireClientAuthentication: requireClientAuthentication,
         });
-        const request = new Request({
-          body: { client_id: 'foo', grant_type: 'authorization_code' },
-          headers: {},
-          method: {},
-          query: {},
-        });
+        const request = new Request({ body: body, headers: {}, method: {}, query: {} });
 
-        return handler
-          .getClient(request)
-          .then(function (data) {
-            data.should.equal(client);
+        return handler.getClient(request);
+      };
+
+      const shouldReject = function (promise) {
+        return promise.then(should.fail).catch(function (e) {
+          e.should.be.an.instanceOf(InvalidClientError);
+          e.message.should.equal('Invalid client: client is invalid');
+        });
+      };
+
+      describe('with a public client and no `client_secret`', function () {
+        it('should return the client for `authorization_code` with PKCE', function () {
+          const client = { id: 'foo', grants: ['authorization_code'], type: 'public' };
+
+          return getClient({
+            client,
+            body: { client_id: 'foo', grant_type: 'authorization_code', code_verifier: 'verifier' },
           })
-          .catch(should.fail);
+            .then(function (data) {
+              data.should.equal(client);
+            })
+            .catch(should.fail);
+        });
+
+        it('should throw an error for `authorization_code` without PKCE', function () {
+          const client = { id: 'foo', grants: ['authorization_code'], type: 'public' };
+
+          return shouldReject(getClient({ client, body: { client_id: 'foo', grant_type: 'authorization_code' } }));
+        });
+
+        it('should return the client for `refresh_token`', function () {
+          const client = { id: 'foo', grants: ['refresh_token'], type: 'public' };
+
+          return getClient({ client, body: { client_id: 'foo', grant_type: 'refresh_token' } })
+            .then(function (data) {
+              data.should.equal(client);
+            })
+            .catch(should.fail);
+        });
+
+        it('should throw an error for `client_credentials`', function () {
+          const client = { id: 'foo', grants: ['client_credentials'], type: 'public' };
+
+          return shouldReject(getClient({ client, body: { client_id: 'foo', grant_type: 'client_credentials' } }));
+        });
+
+        it('should throw an error if `requireClientAuthentication` is explicitly true for the grant', function () {
+          const client = { id: 'foo', grants: ['authorization_code'], type: 'public' };
+
+          return shouldReject(
+            getClient({
+              client,
+              body: { client_id: 'foo', grant_type: 'authorization_code', code_verifier: 'verifier' },
+              requireClientAuthentication: { authorization_code: true },
+            }),
+          );
+        });
       });
-    });
 
-    describe('with a confidential client (explicit type) and no `client_secret`', function () {
-      it('should throw an error', function () {
-        const client = { id: 'foo', grants: ['authorization_code'], type: 'confidential' };
-        const model = Model.from({
-          getClient: function () {
-            return client;
-          },
-          saveToken: function () {},
-        });
-        const handler = new TokenHandler({
-          accessTokenLifetime: 120,
-          model: model,
-          refreshTokenLifetime: 120,
-        });
-        const request = new Request({
-          body: { client_id: 'foo', grant_type: 'authorization_code' },
-          headers: {},
-          method: {},
-          query: {},
+      describe('with a confidential client and no `client_secret`', function () {
+        it('should throw an error', function () {
+          const client = { id: 'foo', grants: ['authorization_code'], type: 'confidential' };
+
+          return shouldReject(getClient({ client, body: { client_id: 'foo', grant_type: 'authorization_code' } }));
         });
 
-        return handler
-          .getClient(request)
-          .then(should.fail)
-          .catch(function (e) {
-            e.should.be.an.instanceOf(InvalidClientError);
-            e.message.should.equal('Invalid client: client is invalid');
-          });
+        it('should throw an error for `authorization_code` with PKCE', function () {
+          const client = { id: 'foo', grants: ['authorization_code'], type: 'confidential' };
+
+          return shouldReject(
+            getClient({
+              client,
+              body: { client_id: 'foo', grant_type: 'authorization_code', code_verifier: 'verifier' },
+            }),
+          );
+        });
+
+        it('should return the client if `requireClientAuthentication` is explicitly false for the grant', function () {
+          const client = { id: 'foo', grants: ['refresh_token'], type: 'confidential' };
+
+          return getClient({
+            client,
+            body: { client_id: 'foo', grant_type: 'refresh_token' },
+            requireClientAuthentication: { refresh_token: false },
+          })
+            .then(function (data) {
+              data.should.equal(client);
+            })
+            .catch(should.fail);
+        });
       });
-    });
 
-    describe('with a confidential client (no type, default) and no `client_secret`', function () {
-      it('should throw an error', function () {
-        const client = { id: 'foo', grants: ['password'] };
-        const model = Model.from({
-          getClient: function () {
-            return client;
-          },
-          saveToken: function () {},
-        });
-        const handler = new TokenHandler({
-          accessTokenLifetime: 120,
-          model: model,
-          refreshTokenLifetime: 120,
-        });
-        const request = new Request({
-          body: { client_id: 'foo', grant_type: 'password' },
-          headers: {},
-          method: {},
-          query: {},
+      describe('with a client without `type` (legacy) and no `client_secret`', function () {
+        it('should throw an error', function () {
+          const client = { id: 'foo', grants: ['password'] };
+
+          return shouldReject(getClient({ client, body: { client_id: 'foo', grant_type: 'password' } }));
         });
 
-        return handler
-          .getClient(request)
-          .then(should.fail)
-          .catch(function (e) {
-            e.should.be.an.instanceOf(InvalidClientError);
-            e.message.should.equal('Invalid client: client is invalid');
-          });
+        it('should throw an error for `refresh_token`', function () {
+          const client = { id: 'foo', grants: ['refresh_token'] };
+
+          return shouldReject(getClient({ client, body: { client_id: 'foo', grant_type: 'refresh_token' } }));
+        });
+
+        it('should return the client for `authorization_code` with PKCE', function () {
+          const client = { id: 'foo', grants: ['authorization_code'] };
+
+          return getClient({
+            client,
+            body: { client_id: 'foo', grant_type: 'authorization_code', code_verifier: 'verifier' },
+          })
+            .then(function (data) {
+              data.should.equal(client);
+            })
+            .catch(should.fail);
+        });
       });
     });
 
@@ -1240,6 +1569,37 @@ describe('TokenHandler integration', function () {
       });
       const request = new Request({
         body: { grant_type: 'password' },
+        headers: {},
+        method: {},
+        query: {},
+      });
+
+      try {
+        await handler.handleGrantType(request, client);
+
+        should.fail();
+      } catch (e) {
+        e.should.be.an.instanceOf(UnauthorizedClientError);
+        e.message.should.equal('Unauthorized client: `grant_type` is invalid');
+      }
+    });
+
+    it('should throw an error if a public client uses `client_credentials`', async function () {
+      const client = { grants: ['client_credentials'], type: 'public' };
+      const model = Model.from({
+        getClient: function () {},
+        getUserFromClient: function () {
+          return {};
+        },
+        saveToken: function () {},
+      });
+      const handler = new TokenHandler({
+        accessTokenLifetime: 120,
+        model: model,
+        refreshTokenLifetime: 120,
+      });
+      const request = new Request({
+        body: { grant_type: 'client_credentials' },
         headers: {},
         method: {},
         query: {},
