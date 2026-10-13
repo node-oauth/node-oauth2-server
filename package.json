@@ -27,7 +27,7 @@
   ],
   "dependencies": {
     "@node-oauth/formats": "1.0.0",
-    "basic-auth": "2.0.1",
+    "basic-auth": "3.0.0",
     "type-is": "2.1.0"
   },
   "devDependencies": {
