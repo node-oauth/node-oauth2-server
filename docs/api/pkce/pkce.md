@@ -22,22 +22,23 @@ DIGIT = %x30-39</p>
 ## pkce
 
 * [pkce](#module_pkce)
-    * [~getHashForCodeChallenge(method, verifier)](#module_pkce..getHashForCodeChallenge) ⇒ <code>String</code> \| <code>undefined</code>
+    * [~getHashForCodeChallenge(options)](#module_pkce..getHashForCodeChallenge) ⇒ <code>String</code> \| <code>undefined</code>
     * [~codeChallengeMatchesABNF(codeChallenge)](#module_pkce..codeChallengeMatchesABNF) ⇒ <code>Boolean</code>
-    * [~isPKCERequest(grantType, codeVerifier)](#module_pkce..isPKCERequest) ⇒ <code>boolean</code>
+    * [~isPKCERequest(options)](#module_pkce..isPKCERequest) ⇒ <code>boolean</code>
     * [~isValidMethod(method)](#module_pkce..isValidMethod) ⇒ <code>boolean</code>
 
 <a name="module_pkce..getHashForCodeChallenge"></a>
 
-### pkce~getHashForCodeChallenge(method, verifier) ⇒ <code>String</code> \| <code>undefined</code>
+### pkce~getHashForCodeChallenge(options) ⇒ <code>String</code> \| <code>undefined</code>
 Return hash for code-challenge method-type.
 
 **Kind**: inner method of [<code>pkce</code>](#module_pkce)  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| method | <code>String</code> | the code challenge method |
-| verifier | <code>String</code> | the code_verifier |
+| options | <code>object</code> | Inputs, e.g. `getHashForCodeChallenge({method: 'S256', verifier})`. |
+| options.method | <code>String</code> | the code challenge method |
+| options.verifier | <code>String</code> | the code_verifier |
 
 <a name="module_pkce..codeChallengeMatchesABNF"></a>
 
@@ -58,22 +59,23 @@ DIGIT = %x30-39
 
 <a name="module_pkce..isPKCERequest"></a>
 
-### pkce~isPKCERequest(grantType, codeVerifier) ⇒ <code>boolean</code>
-Check if the request is a PCKE request. We assume PKCE if grant type is
+### pkce~isPKCERequest(options) ⇒ <code>boolean</code>
+Check if the request is a PKCE request. We assume PKCE if grant type is
 'authorization_code' and code verifier is present.
 
 **Kind**: inner method of [<code>pkce</code>](#module_pkce)  
 
-| Param | Type |
-| --- | --- |
-| grantType | <code>String</code> | 
-| codeVerifier | <code>String</code> | 
+| Param | Type | Description |
+| --- | --- | --- |
+| options | <code>object</code> | Inputs, e.g. `isPKCERequest({grantType: 'authorization_code', codeVerifier})`. |
+| options.grantType | <code>String</code> |  |
+| options.codeVerifier | <code>String</code> |  |
 
 <a name="module_pkce..isValidMethod"></a>
 
 ### pkce~isValidMethod(method) ⇒ <code>boolean</code>
 Checks if the code challenge method is one of the supported methods
-'sha256' or 'plain'
+'S256' or 'plain'
 
 **Kind**: inner method of [<code>pkce</code>](#module_pkce)  
 

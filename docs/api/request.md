@@ -8,14 +8,15 @@ request signature.
 **Kind**: global class  
 
 * [Request](#Request)
-    * [new Request(headers, method, query, [body], ...otherOptions)](#new_Request_new)
-    * [.get(field)](#Request+get) ⇒ <code>string</code>
-    * [.is(...types)](#Request+is) ⇒ <code>boolean</code>
+    * [new Request(options)](#new_Request_new)
+    * [.get(field)](#Request+get) ⇒ <code>string</code> \| <code>undefined</code>
+    * [.is(...types)](#Request+is) ⇒ <code>string</code> \| <code>false</code>
 
 <a name="new_Request_new"></a>
 
-### new Request(headers, method, query, [body], ...otherOptions)
+### new Request(options)
 Creates a new request instance
+Additional properties on options are copied onto the wrapper.
 
 **Throws**:
 
@@ -24,22 +25,20 @@ Creates a new request instance
 
 | Param | Type | Description |
 | --- | --- | --- |
-| headers | <code>object</code> | key-value object of headers |
-| method | <code>string</code> | the HTTP method |
-| query | <code>object</code> | key-value object of query parameters |
-| [body] | <code>object</code> | optional key-value object of body parameters |
-| ...otherOptions | <code>object</code> | any other properties that should be assigned to the request by your webserver |
+| options | <code>object</code> | Wrapper options. |
+| options.headers | <code>object</code> | key-value object of headers |
+| options.method | <code>string</code> | the HTTP method |
+| options.query | <code>object</code> | key-value object of query parameters |
+| [options.body] | <code>object</code> | optional key-value object of body parameters |
 
 **Example**  
 ```js
-function (req, res, next) {
-  // most webservers follow a similar structure
-  const response = new Request(req);
-}
+const { Request } = require('@node-oauth/oauth2-server');
+const request = new Request({ method: 'GET', headers: {}, query: {} });
 ```
 <a name="Request+get"></a>
 
-### request.get(field) ⇒ <code>string</code>
+### request.get(field) ⇒ <code>string</code> \| <code>undefined</code>
 Get a request header (case-insensitive).
 
 **Kind**: instance method of [<code>Request</code>](#Request)  
@@ -50,7 +49,7 @@ Get a request header (case-insensitive).
 
 <a name="Request+is"></a>
 
-### request.is(...types) ⇒ <code>boolean</code>
+### request.is(...types) ⇒ <code>string</code> \| <code>false</code>
 Check if the content-type matches any of the given mime types.
 
 **Kind**: instance method of [<code>Request</code>](#Request)  
