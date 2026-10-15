@@ -164,14 +164,7 @@ Use trunk-based development with `master` as the trunk. The `development` branch
 branches from `master`, keep them closely aligned with it, and target pull requests to `master`. The `master` name is
 retained for historical continuity.
 
-Use the documented commit style when applicable:
-
-```text
-<type>(<scope>): <short summary> #<issue number>
-```
-
-The type and summary are required; scope and issue number are optional. Use a lowercase, present-tense summary with
-no trailing period.
+Follow the commit message convention in [`CONTRIBUTING.md`](./CONTRIBUTING.md).
 
 Keep commits focused, avoid unrelated dependency updates, describe test/reproduction steps in pull requests, and do not
 include secrets or real credentials in fixtures, examples, logs, or documentation.
