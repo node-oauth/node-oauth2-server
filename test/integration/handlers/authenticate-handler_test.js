@@ -45,33 +45,26 @@ describe('AuthenticateHandler integration', function () {
       }
     });
 
-    it('should throw an error if `scope` was given and `addAcceptedScopesHeader()` is missing', function () {
-      try {
-        new AuthenticateHandler({
-          model: { getAccessToken: function () {} },
-          scope: ['foobar'],
-        });
+    it('should default `addAcceptedScopesHeader` to `true` if `scope` was given', function () {
+      const handler = new AuthenticateHandler({
+        addAuthorizedScopesHeader: false,
+        model: { getAccessToken: function () {}, verifyScope: function () {} },
+        scope: ['foobar'],
+      });
 
-        should.fail();
-      } catch (e) {
-        e.should.be.an.instanceOf(InvalidArgumentError);
-        e.message.should.equal('Missing parameter: `addAcceptedScopesHeader`');
-      }
+      handler.addAcceptedScopesHeader.should.be.true;
+      handler.addAuthorizedScopesHeader.should.be.false;
     });
 
-    it('should throw an error if `scope` was given and `addAuthorizedScopesHeader()` is missing', function () {
-      try {
-        new AuthenticateHandler({
-          addAcceptedScopesHeader: true,
-          model: { getAccessToken: function () {} },
-          scope: ['foobar'],
-        });
+    it('should default `addAuthorizedScopesHeader` to `true` if `scope` was given', function () {
+      const handler = new AuthenticateHandler({
+        addAcceptedScopesHeader: false,
+        model: { getAccessToken: function () {}, verifyScope: function () {} },
+        scope: ['foobar'],
+      });
 
-        should.fail();
-      } catch (e) {
-        e.should.be.an.instanceOf(InvalidArgumentError);
-        e.message.should.equal('Missing parameter: `addAuthorizedScopesHeader`');
-      }
+      handler.addAcceptedScopesHeader.should.be.false;
+      handler.addAuthorizedScopesHeader.should.be.true;
     });
 
     it('should throw an error if `scope` was given and the model does not implement `verifyScope()`', function () {
