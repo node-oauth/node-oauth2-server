@@ -18,12 +18,15 @@ response signature.
 ### new Response(headers, [body], ...otherOptions)
 Create a new Response instance.
 
+The `status` always starts as `200` and is set by the handlers (for example
+`302` for a redirect, or the error's code), so it cannot be passed in.
+
 
 | Param | Type | Description |
 | --- | --- | --- |
 | headers | <code>object</code> | key-value object of headers |
 | [body] | <code>object</code> | optional key-value object of body parameters |
-| ...otherOptions | <code>object</code> | any other properties that should be assigned to the request by your webserver |
+| ...otherOptions | <code>object</code> | any other properties that should be assigned to the response by your webserver; properties the response already has (such as `status` or its methods) are not overwritten |
 
 **Example**  
 ```js
