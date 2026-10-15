@@ -103,6 +103,8 @@ Use the lockfile and install dependencies from the repository root:
 npm ci
 ```
 
+If you change dependencies, regenerate `package-lock.json` with npm 11 (the version CI uses), including when resolving merge conflicts. Older npm versions drop the cross-platform optional dependencies, and `npm ci` then fails in CI even though it works locally.
+
 Validation commands:
 
 ```bash
