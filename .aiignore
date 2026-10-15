@@ -5,6 +5,13 @@
 node_modules/
 .git/
 
+# Local secrets and credentials
+.env
+.env.*
+.npmrc
+*.pem
+*.key
+
 # Local IDE and operating-system files
 .idea/
 .vscode/
