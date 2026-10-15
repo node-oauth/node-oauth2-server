@@ -9,14 +9,17 @@ The *@node-oauth/oauth2-server* module is typically not used directly but throug
 
 Adapters typically do the following:
 
-- Inherit from `OAuth2Server </api/oauth2-server>`.
+- Inherit from [OAuth2Server](../api/server.md).
 
-- Override `authenticate() <OAuth2Server#authenticate>`, `authorize() <OAuth2Server#authorize>` and `token() <OAuth2Server#token>`.
+- Override [authenticate](../api/server.md#OAuth2Server+authenticate), [authorize](../api/server.md#OAuth2Server+authorize) and [token](../api/server.md#OAuth2Server+token).
 
   Each of these functions should:
 
-  - Create `Request </api/request>` and `Response </api/response>` objects from their framework-specific counterparts.
+  - Create [Request](../api/request.md) and [Response](../api/response.md) objects from their framework-specific counterparts.
   - Call the original function.
-  - Copy all fields from the `Response </api/response>` back to the framework-specific request object and send it.
+  - Copy all fields from the [Response](../api/response.md) back to the framework-specific response object and send it.
 
 Adapters should preserve functionality provided by *@node-oauth/oauth2-server* but are free to add additional features that make sense for the respective HTTP server framework.
+
+Handle rejected promises and preserve prepared authorization redirects as described
+in [Sending the response](./getting-started.md#sending-the-response).

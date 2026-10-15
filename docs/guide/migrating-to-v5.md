@@ -26,9 +26,12 @@ since callback support is dropped.
 Note: Synchronous model functions are still supported. However, we recommend to use Promise or async,
 if database operations (or other heavy operations) are part of a specific model function implementation.
 
-## Scope is now Array
+## Scope arrays inside the library
 
-In earlier versions we allowed <span class="title-ref">scope</span> to be strings with words, separated by empty space.
-With beginning of 5.0.0 the scope parameter needs to be an Array of strings.
+Model hooks use arrays such as `['read', 'write']`. HTTP requests still use a
+space-delimited string, for example `scope=read%20write`, and token JSON contains
+`"scope": "read write"`. HTTP scope arrays are unsupported and rejected.
 
-This implies to requests, responses and model implementations where scope is included.
+Omitted or null HTTP scope becomes `undefined` in hooks. Optional scope validators
+should account for this, for example by selecting a default scope array. The
+JavaScript `authenticate` option `scope` separately accepts a string or an array.

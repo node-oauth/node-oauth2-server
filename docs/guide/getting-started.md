@@ -24,8 +24,8 @@ resources, before starting to operate your own authorization server:
 - Supports `authorization code`, `client credentials`,
   `refresh token` and `password` (deprecated) grant, as well as
   `extension grants`, with scopes.
-- Can be used with *promises*, *ES6 generators* and *async*/*await*.
-- Fully `6749` and `6750` compliant.
+- Model hooks support synchronous values, native Promises and async/await.
+- Implements OAuth 2.0 flows with [integration responsibilities](./compliance.md).
 - Implicitly supports any form of storage, e.g. *PostgreSQL*, *MySQL*, *MongoDB*, *Redis*, etc.
 - Complete [test suite](https://github.com/node-oauth/node-oauth2-server/tree/master/test).
 
@@ -83,33 +83,78 @@ oauth.authenticate(request, response)
 
 ### Sending the response
 
-This library is **framework-agnostic and does not send the HTTP response for you**.
-`authenticate()`, `authorize()` and `token()` resolve with their result *and*
-populate the `Response` object you passed in — setting `response.status`,
-`response.headers` and `response.body`. It is up to you to copy those onto your
-framework's real response and send it. For `authorize()` this is how the redirect
-happens: the `location` header is set on the `Response`, but you still have to
-issue it.
+The library does not send HTTP responses. Copy the wrapper's headers to your
+framework response and handle each endpoint's contract:
 
-A minimal Express example for the authorization endpoint:
+- `authorize` prepares a 302 redirect on success and on errors inside its
+  redirect-capable block, then rejects on error. Forward a prepared redirect even
+  after rejection. Earlier client/user failures may leave no redirect.
+- `token` populates the token JSON on success and error JSON for failures inside
+  its catch block. Method/content-type checks occur before that block and can
+  leave the default 200/empty body. Success sets cache-control headers; error
+  handling does not set them.
+- `authenticate` returns the token and sets selected scope or challenge headers.
+  It does not set an error status/body. On success, continue to your protected
+  resource; on rejection, your integration must select the error response.
+
+The following Express example assumes `app`, `oauth`, `Request`, and
+`Response` from the setup above, plus login middleware that populates
+`req.session.user` before this route. Complete login before calling authorization.
 
 ```js
+const authenticateHandler = {
+    handle(request) {
+        return request.session.user;
+    }
+};
+
+// Use fixed public messages, never arbitrary exception text.
+function sendLocalError(res, err, response) {
+    const publicErrors = {
+        invalid_client: [400, 'Invalid client'],
+        invalid_request: [400, 'Invalid request'],
+        invalid_grant: [400, 'Invalid grant'],
+        unauthorized_client: [400, 'Unauthorized client'],
+        unsupported_grant_type: [400, 'Unsupported grant type'],
+        invalid_scope: [400, 'Invalid scope'],
+        invalid_token: [401, 'Invalid token'],
+        unauthorized_request: [401, 'Authentication required'],
+        insufficient_scope: [403, 'Insufficient scope'],
+        access_denied: [400, 'Access denied']
+    };
+    const known = err instanceof OAuth2Server.OAuthError && publicErrors[err.name];
+    const [status, description] = known || [500, 'Internal server error'];
+    res.set(response.headers);
+    return res.status(known && err.code === 401 ? 401 : status).json({
+        error: known ? err.name : 'server_error',
+        error_description: description
+    });
+}
+
 app.get('/authorize', async (req, res) => {
-    // Wrap the framework objects in NEW variables — see the warning below.
     const request = new Request(req);
-    const response = new Response(res);
+    const response = new Response();
 
     try {
         await oauth.authorize(request, response, { authenticateHandler });
     } catch (err) {
-        return res.status(err.code || 500).json({ error: err.name, error_description: err.message });
+        if (response.status !== 302 || !response.get('location')) {
+            return sendLocalError(res, err, response);
+        }
     }
 
-    // The library populated `response`; now you send it. For authorize that is a redirect:
-    res.set(response.headers);                // includes the `location` header
-    return res.status(response.status).end(); // 302 -> the browser follows `location`
+    // Includes denial redirects (allowed=false) and their state parameter.
+    res.set(response.headers);
+    return res.status(response.status).end();
 });
 ```
+
+For a token route, await `oauth.token(request, response)` in a try/catch.
+On success send `res.set(response.headers).status(response.status).json(response.body)`.
+On rejection use a local handler such as `sendLocalError`; do not send the
+wrapper's default 200. Your integration can add token endpoint cache headers to
+both success and error responses. For authentication failures, also copy the
+wrapper's challenge headers before sending the selected local error response.
 
 > **Do not reassign your framework's `req`/`res`** to the library's objects
 > (e.g. `res = new Response(res)`). Doing so discards framework methods such as

@@ -1,79 +1,125 @@
-
 # @node-oauth/oauth2-server
 
-Complete, compliant and well tested module for implementing an OAuth2 server in [Node.js](https://nodejs.org).
-
-[![Tests](https://github.com/node-oauth/node-oauth2-server/actions/workflows/tests.yml/badge.svg)](https://github.com/node-oauth/node-oauth2-server/actions/workflows/tests.yml)
-[![CodeQL Semantic Analysis](https://github.com/node-oauth/node-oauth2-server/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/node-oauth/node-oauth2-server/actions/workflows/codeql-analysis.yml)
-[![Documentation Status](https://readthedocs.org/projects/node-oauthoauth2-server/badge/?version=latest)](https://node-oauthoauth2-server.readthedocs.io/en/latest/?badge=latest)
 [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![npm Version](https://img.shields.io/npm/v/@node-oauth/oauth2-server?label=version)](https://www.npmjs.com/package/@node-oauth/oauth2-server)
 [![npm Downloads/Week](https://img.shields.io/npm/dw/@node-oauth/oauth2-server)](https://www.npmjs.com/package/@node-oauth/oauth2-server)
 [![GitHub License](https://img.shields.io/github/license/node-oauth/node-oauth2-server)](https://github.com/node-oauth/node-oauth2-server/blob/master/LICENSE)
+[![Tests](https://github.com/node-oauth/node-oauth2-server/actions/workflows/tests.yml/badge.svg)](https://github.com/node-oauth/node-oauth2-server/actions/workflows/tests.yml)
 [![Formatted with Biome](https://img.shields.io/badge/Formatted_with-Biome-60a5fa?style=flat&logo=biome)](https://biomejs.dev/)
+[![CodeQL Semantic Analysis](https://github.com/node-oauth/node-oauth2-server/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/node-oauth/node-oauth2-server/actions/workflows/codeql-analysis.yml)
+[![Deploy VitePress site to Pages](https://github.com/node-oauth/node-oauth2-server/actions/workflows/deploy_docs.yml/badge.svg)](https://github.com/node-oauth/node-oauth2-server/actions/workflows/deploy_docs.yml)
 
-NOTE: This project has been forked from [oauthjs/node-oauth2-server](https://github.com/oauthjs/node-oauth2-server) and is a continuation due to the project appearing to be abandoned. Please see [our issue board](https://github.com/node-oauth/node-oauth2-server/issues) to talk about next steps and the future of this project.
+A complete, compliant, and well-tested module for implementing an OAuth 2.0 server in [Node.js](https://nodejs.org).
+This project is a continuation of the
+abandoned [oauthjs/node-oauth2-server](https://github.com/oauthjs/node-oauth2-server) project.
 
-## Installation
+> [!NOTE]
+> 🛡️ If you intend to submit a security issue or vulnerability, please read
+> our [security policy](https://github.com/node-oauth/node-oauth2-server/security/policy) first.
+
+## Table of Contents
+
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+- [Features](#features)
+- [Installation and Usage](#installation-and-usage)
+  - [Express and Koa Users](#express-and-koa-users)
+  - [Installation](#installation)
+  - [Usage Guide](#usage-guide)
+  - [Examples](#examples)
+- [Migration Notes](#migration-notes)
+  - [Version 5 Notes](#version-5-notes)
+  - [Migrating from oauthjs/node-oauth2-server and 3.x](#migrating-from-oauthjsnode-oauth2-server-and-3x)
+  - [Supported Node.js Versions](#supported-nodejs-versions)
+- [Contributing to This Project](#contributing-to-this-project)
+  - [Reporting Security Vulnerabilities](#reporting-security-vulnerabilities)
+  - [Development, Issues, and Pull Requests](#development-issues-and-pull-requests)
+- [License](#license)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+## Features
+
+- Supports the `authorization_code`, `client_credentials`, `refresh_token`, and `password` grants, as well as *extension
+  grants*, with scopes.
+- Can be used with *promises*, *ES6 generators*, and *async*/*await*.
+- Fully [RFC 6749](https://tools.ietf.org/html/rfc6749.html) and [RFC 6750](https://tools.ietf.org/html/rfc6750.html)
+  compliant.
+- Storage-agnostic: supports any form of storage, including *PostgreSQL*, *MySQL*, *MongoDB*, and *Redis*.
+- Supports [PKCE](https://node-oauth.github.io/node-oauth2-server/guide/pkce.html).
+- Complete [test suite](https://github.com/node-oauth/node-oauth2-server/tree/master/test).
+
+## Installation and Usage
+
+### Express and Koa Users
+
+The `@node-oauth/oauth2-server` module is framework-agnostic.
+Most users should refer to our [Express (active, maintained by us)](https://github.com/node-oauth/express-oauth-server)
+or
+[Koa (not maintained by us)](https://github.com/oauthjs/koa-oauth-server/tree/master/examples) adapters.
+These adapters integrate the library with their respective frameworks.
+
+> [!TIP]
+> If you're using one of these frameworks, we strongly recommend using the corresponding wrapper module instead of
+> writing your own integration.
+
+### Installation
+
+The base installation is intended for users who want to fully customize the integration
+of this library into their stack.
 
 ```bash
 npm install @node-oauth/oauth2-server
 ```
 
-The `@node-oauth/oauth2-server` module is framework-agnostic but there are several officially supported wrappers available for popular HTTP server frameworks such as [Express](https://www.npmjs.com/package/@node-oauth/express-oauth-server) and [Koa (not maintained by us)](https://npmjs.org/package/koa-oauth-server).
-If you're using one of those frameworks it is strongly recommended to use the respective wrapper module instead of rolling your own.
+### Usage Guide
 
+Documentation is available at https://node-oauth.github.io/node-oauth2-server/.
 
-## Features
+Please open an issue if something is confusing or missing in the documentation.
 
-- Supports `authorization_code`, `client_credentials`, `refresh_token` and `password` grant, as well as *extension grants*, with scopes.
-- Can be used with *promises*, *ES6 generators* and *async*/*await* (using [Babel](https://babeljs.io)).
-- Fully [RFC 6749](https://tools.ietf.org/html/rfc6749.html) and [RFC 6750](https://tools.ietf.org/html/rfc6750.html) compliant.
-- Implicitly supports any form of storage, e.g. *PostgreSQL*, *MySQL*, *MongoDB*, *Redis*, etc.
-- Support for PKCE
-- Complete [test suite](https://github.com/node-oauth/node-oauth2-server/tree/master/test).
+### Examples
 
-## Documentation
+More examples can be found in our examples repository: https://github.com/node-oauth/node-oauth2-server-examples
 
-Documentation is hosted on Read the Docs. We have multiple versions of the docs available:
+## Migration Notes
 
-- [stable](https://node-oauthoauth2-server.readthedocs.io/en/master/) (master branch)
-- [development](https://node-oauthoauth2-server.readthedocs.io/en/development/) (development branch)
+### Version 5 Notes
 
-Please leave an issue if something is confusing or missing in the docs.
+Starting with version `5.x`, we removed support for callbacks.
+This version supports only promises and async/await.
 
-## Examples
+In this version, we also raised the minimum required Node.js version to 16, as Node.js 14 was deprecated.
 
-Most users should refer to our [Express (active)](https://github.com/node-oauth/express-oauth-server) or
-[Koa (not maintained by us)](https://github.com/oauthjs/koa-oauth-server/tree/master/examples) examples.
+### Migrating from [oauthjs/node-oauth2-server](https://github.com/oauthjs/node-oauth2-server) and 3.x
 
-More examples can be found here: https://github.com/14gasher/oauth-example
+Version 4.x should not introduce major breaking changes. However, it includes many improvements and fixes that may
+be incompatible with specific behavior in version 3.x and earlier.
 
-## Version 5 notes
+### Supported Node.js Versions
 
-Beginning with version `5.x` we removed dual support for callbacks and promises.
-With this version there is only support for Promises / async/await.
+We aim to maintain compatibility with older Node.js versions wherever possible.
+If our minimum supported Node.js version predates the currently supported or LTS releases, this reflects our
+commitment to backward compatibility and does not mean that this library is deprecated.
+This approach lets us provide a stable OAuth 2.0 server for legacy systems with the same features available to modern
+systems.
 
-With this version we also bumped the `engine` to Node 16 as 14 is now deprecated.
+## Contributing to This Project
 
-## Migrating from OAuthJs and 3.x
+### Reporting Security Vulnerabilities
 
-Version 4.x should not be hard-breaking, however, there were many improvements and fixes that may
-be incompatible with specific behaviour in <= 3.x
+If you intend to submit a security issue or vulnerability, please read
+our [security policy](https://github.com/node-oauth/node-oauth2-server/security/policy) first.
 
-For more info, please read the [changelog](./CHANGELOG.md) or open an issue, if you think something
-is unexpectedly not working.
+The policy is also available locally in [SECURITY.md](./SECURITY.md).
 
-## Supported NodeJs versions
+### Development, Issues, and Pull Requests
 
-This project supports the node versions along the
-[NodeJS LTS releases](https://nodejs.org/en/about/releases/), focusing on
+Please read our [contribution guide](./CONTRIBUTING.md) before contributing.
+Please open an issue before submitting a pull request to discuss whether your proposed contribution is suitable for
+the project.
 
-- Maintenance LTS
-- Active LTS
-- Current
+## License
 
-## Contributing to this project
-
-Please read our [contribution guide](./CONTRIBUTING.md) before taking actions.
-In any case, please open an issue before opening a pull request to find out whether your intended contribution will actually have a chance to be merged.
+This library is licensed under the MIT License. See the [LICENSE file](./LICENSE).
