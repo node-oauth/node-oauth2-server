@@ -286,6 +286,33 @@ describe('TokenHandler integration', function () {
         });
     });
 
+    it('should throw an error if the media type is malformed', function () {
+      const model = Model.from({
+        getClient: function () {},
+        saveToken: function () {},
+      });
+      const handler = new TokenHandler({
+        accessTokenLifetime: 120,
+        model: model,
+        refreshTokenLifetime: 120,
+      });
+      const request = new Request({
+        body: { grant_type: 'password' },
+        headers: { 'content-type': ';charset=utf-8', 'transfer-encoding': 'chunked' },
+        method: 'POST',
+        query: {},
+      });
+      const response = new Response({ body: {}, headers: {} });
+
+      return handler
+        .handle(request, response)
+        .then(should.fail)
+        .catch(function (e) {
+          e.should.be.an.instanceOf(InvalidRequestError);
+          e.message.should.equal('Invalid request: content must be application/x-www-form-urlencoded');
+        });
+    });
+
     it('should throw the error if an oauth error is thrown', function () {
       const model = Model.from({
         getClient: function () {},

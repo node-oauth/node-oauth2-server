@@ -525,6 +525,27 @@ describe('AuthenticateHandler integration', function () {
       }
     });
 
+    it('should throw an error if the media type is malformed', async function () {
+      const handler = new AuthenticateHandler({
+        model: { getAccessToken: function () {} },
+      });
+      const request = new Request({
+        body: { access_token: 'foo' },
+        headers: { 'content-type': ';charset=utf-8', 'transfer-encoding': 'chunked' },
+        method: 'POST',
+        query: {},
+      });
+
+      try {
+        await handler.getTokenFromRequestBody(request);
+
+        should.fail();
+      } catch (e) {
+        e.should.be.an.instanceOf(InvalidRequestError);
+        e.message.should.equal('Invalid request: content must be application/x-www-form-urlencoded');
+      }
+    });
+
     it('should return the bearer token', function () {
       const handler = new AuthenticateHandler({
         model: { getAccessToken: function () {} },
