@@ -32,6 +32,12 @@ describe('Response integration', function () {
 
       response.status.should.equal(200);
     });
+
+    it('should not set the `status` from the options', function () {
+      const response = new Response({ body: {}, headers: {}, status: 404 });
+
+      response.status.should.equal(200);
+    });
   });
 
   describe('get()', function () {
