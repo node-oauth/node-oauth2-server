@@ -622,6 +622,8 @@ describe('TokenHandler integration', function () {
       const grants = ['authorization_code', 'client_credentials', 'refresh_token'];
       const clients = {
         public: { id: 'public', type: 'public', grants },
+        // a public client whose model accepts a secret
+        publicWithSecret: { id: 'publicWithSecret', type: 'public', secret: 'secret', grants },
         other: { id: 'other', type: 'public', grants },
         confidential: { id: 'confidential', type: 'confidential', secret: 'secret', grants },
         legacy: { id: 'legacy', secret: 'secret', grants },
@@ -631,7 +633,8 @@ describe('TokenHandler integration', function () {
 
       let getClientCalls = 0;
 
-      // codes and refresh tokens are named after the client they were issued to: `code-<id>`, `token-<id>`
+      // codes and refresh tokens are named after the client they were issued to: `code-<id>`, `token-<id>`.
+      // `bare-<id>` codes were issued without a `code_challenge`.
       const model = Model.from({
         getClient: function (clientId, clientSecret) {
           getClientCalls++;
@@ -642,6 +645,15 @@ describe('TokenHandler integration', function () {
           return { id: client.id, grants: client.grants, type: client.type };
         },
         getAuthorizationCode: function (code) {
+          if (code.startsWith('bare-')) {
+            return {
+              authorizationCode: code,
+              client: { id: code.replace('bare-', '') },
+              expiresAt: new Date(new Date().getTime() * 2),
+              user: {},
+            };
+          }
+
           return {
             authorizationCode: code,
             client: { id: code.replace('code-', '') },
@@ -750,6 +762,30 @@ describe('TokenHandler integration', function () {
 
         it('should throw an error for `authorization_code` without a code verifier', async function () {
           await shouldFailEarly(requestToken(authorizationCode('public', { code_verifier: undefined })));
+        });
+
+        it('should throw an error for a code issued without a `code_challenge` if it supplies a secret', async function () {
+          await shouldFail(
+            requestToken(
+              authorizationCode('publicWithSecret', {
+                code: 'bare-publicWithSecret',
+                code_verifier: undefined,
+                client_secret: 'secret',
+              }),
+            ),
+            InvalidGrantError,
+            'Invalid grant: authorization code was issued without a `code_challenge`',
+          );
+        });
+
+        it('should throw an error for a code issued without a `code_challenge` if `requireClientAuthentication` is false for `authorization_code`', async function () {
+          await shouldFail(
+            requestToken(authorizationCode('public', { code: 'bare-public', code_verifier: undefined }), {
+              requireClientAuthentication: { authorization_code: false },
+            }),
+            InvalidGrantError,
+            'Invalid grant: authorization code was issued without a `code_challenge`',
+          );
         });
 
         it('should throw an error for `authorization_code` with an invalid code verifier', async function () {

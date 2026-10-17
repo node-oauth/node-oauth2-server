@@ -194,7 +194,9 @@ The token endpoint then decides whether a `client_secret` is required:
   and does not waive the secret.
 - A **public** client (`type: 'public'`) has no secret. It must use PKCE for the
   `authorization_code` grant
-  ([RFC 9700 §2.1.1](https://www.rfc-editor.org/rfc/rfc9700#section-2.1.1)), may
+  ([RFC 9700 §2.1.1](https://www.rfc-editor.org/rfc/rfc9700#section-2.1.1)), even
+  if it sends a `client_secret` or `requireClientAuthentication` waives it: a code
+  issued without a `code_challenge` is rejected with `invalid_grant`. It may
   use `refresh_token` without a secret (weigh the security implications first, see
   [RFC 9700](https://www.rfc-editor.org/rfc/rfc9700)), and is never allowed to use
   the `client_credentials` grant
