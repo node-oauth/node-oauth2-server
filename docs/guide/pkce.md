@@ -205,6 +205,8 @@ The token endpoint then decides whether a `client_secret` is required:
   except for `authorization_code` requests that use PKCE. Your `model.getClient`
   is responsible for rejecting such a client if it should have presented its
   secret. Set `type: 'confidential'` to let the library enforce this.
+- Any other `type` value (e.g. `'Confidential'` or `''`) throws a `ServerError`.
+  `undefined` and `null` count as no type.
 
 An explicit `requireClientAuthentication` entry for a grant type always takes
 precedence over the client type, for **all** clients:

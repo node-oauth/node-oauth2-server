@@ -1193,6 +1193,37 @@ describe('TokenHandler integration', function () {
         return shouldReject(promise, 'Invalid client: cannot retrieve client credentials');
       };
 
+      describe('with an unknown client `type`', function () {
+        ['Confidential', 'CONFIDENTIAL', '', 'native'].forEach(function (type) {
+          it(`should throw an error for type ${JSON.stringify(type)}`, function () {
+            const client = { id: 'foo', grants: ['authorization_code'], type };
+
+            return getClient({
+              client,
+              body: { client_id: 'foo', grant_type: 'authorization_code', code_verifier: 'verifier' },
+            })
+              .then(should.fail)
+              .catch(function (e) {
+                e.should.be.an.instanceOf(ServerError);
+                e.message.should.equal('Server error: `type` must be "public" or "confidential"');
+              });
+          });
+        });
+
+        it('should treat a `null` type as no type', function () {
+          const client = { id: 'foo', grants: ['authorization_code'], type: null };
+
+          return getClient({
+            client,
+            body: { client_id: 'foo', grant_type: 'authorization_code', code_verifier: 'verifier' },
+          })
+            .then(function (data) {
+              data.should.equal(client);
+            })
+            .catch(should.fail);
+        });
+      });
+
       describe('with a public client and no `client_secret`', function () {
         it('should return the client for `authorization_code` with PKCE', function () {
           const client = { id: 'foo', grants: ['authorization_code'], type: 'public' };
