@@ -163,7 +163,8 @@ By default, all grant types require the client to send its `client_secret` with 
 It must be an object with `grant_type` values as keys (`authorization_code`, `client_credentials`, `password` and `refresh_token`) set to `true` or `false`. 
 An entry takes precedence over the client `type` returned by `Model#getClient() <Model#getClient>` and applies to all clients.
 `false` disables only the *presence* check of the `client_secret`; a secret that is sent is still passed to `Model#getClient()`, which must verify it.
- Grants without an entry follow the client `type`: `confidential` clients and clients without `type` always require a secret, even with PKCE. `public` clients must use PKCE for `authorization_code`, may use `refresh_token` without a secret and cannot use `client_credentials`.
+Grants without an entry follow the client `type`: `confidential` clients and clients without `type` always require a secret, even with PKCE. `public` clients may use `refresh_token` without a secret.
+Public clients must use PKCE for `authorization_code`. The `client_credentials` grant type cannot be used with public clients.
 Any other `type` value throws a `ServerError`. See the PKCE guide for details.
 ```js
 let options = {

@@ -196,10 +196,11 @@ The token endpoint then decides whether a `client_secret` is required:
   `authorization_code` grant
   ([RFC 9700 §2.1.1](https://www.rfc-editor.org/rfc/rfc9700#section-2.1.1)), even
   if it sends a `client_secret` or `requireClientAuthentication` waives it: a code
-  issued without a `code_challenge` is rejected with `invalid_grant`. It may
-  use `refresh_token` without a secret (weigh the security implications first, see
-  [RFC 9700](https://www.rfc-editor.org/rfc/rfc9700)), and is never allowed to use
-  the `client_credentials` grant
+  issued without a `code_challenge` is rejected with `invalid_grant`. Unless
+  `requireClientAuthentication.refresh_token` is set, it may use `refresh_token`
+  without a secret (weigh the security implications first, see
+  [RFC 9700](https://www.rfc-editor.org/rfc/rfc9700)). The `client_credentials`
+  grant type cannot be used with public clients
   ([RFC 6749 §4.4](https://datatracker.ietf.org/doc/html/rfc6749#section-4.4)).
 - Any other `type` value (e.g. `'Confidential'` or `''`) throws a `ServerError`.
   `undefined` and `null` count as no type.
