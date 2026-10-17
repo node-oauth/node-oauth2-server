@@ -189,9 +189,9 @@ async getClient(clientId, clientSecret) {
 
 The token endpoint then decides whether a `client_secret` is required:
 
-- A **confidential** client (`type: 'confidential'`) must authenticate with its
-  secret on **every** token request, including `refresh_token`. PKCE is additive
-  and does not waive the secret.
+- A **confidential** client (`type: 'confidential'`, or no `type` at all) must
+  authenticate with its secret on **every** token request, including
+  `refresh_token`. PKCE is additive and does not waive the secret.
 - A **public** client (`type: 'public'`) has no secret. It must use PKCE for the
   `authorization_code` grant
   ([RFC 9700 §2.1.1](https://www.rfc-editor.org/rfc/rfc9700#section-2.1.1)), even
@@ -201,10 +201,6 @@ The token endpoint then decides whether a `client_secret` is required:
   [RFC 9700](https://www.rfc-editor.org/rfc/rfc9700)), and is never allowed to use
   the `client_credentials` grant
   ([RFC 6749 §4.4](https://datatracker.ietf.org/doc/html/rfc6749#section-4.4)).
-- A client **without** `type` keeps the previous behaviour: a secret is required,
-  except for `authorization_code` requests that use PKCE. Your `model.getClient`
-  is responsible for rejecting such a client if it should have presented its
-  secret. Set `type: 'confidential'` to let the library enforce this.
 - Any other `type` value (e.g. `'Confidential'` or `''`) throws a `ServerError`.
   `undefined` and `null` count as no type.
 
@@ -216,9 +212,8 @@ precedence over the client type, for **all** clients:
       requireClientAuthentication: { refresh_token: false } // allow refresh without a client_secret
     })
 
-An explicit `true` requires a secret for every client of that grant type. Unlike
-leaving the key unset, `requireClientAuthentication: { authorization_code: true }`
-also rejects a client without `type` that uses PKCE but sends no `client_secret`.
+An explicit `true` requires a secret for every client of that grant type,
+including public clients.
 
 A request without a `client_secret` is rejected before `model.getClient()` is
 called whenever no client type could accept it: the grant has no explicit

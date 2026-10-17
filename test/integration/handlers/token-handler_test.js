@@ -911,9 +911,21 @@ describe('TokenHandler integration', function () {
         });
       });
 
-      describe('with a client without `type` (legacy)', function () {
-        it('should return a token for `authorization_code` with a valid code verifier and no secret', async function () {
-          const response = await requestToken(authorizationCode('legacy'));
+      describe('with a client without `type` (treated as confidential)', function () {
+        it('should throw an error for `authorization_code` with a valid code verifier and no secret', async function () {
+          await shouldFail(requestToken(authorizationCode('legacy')), InvalidClientError, invalidClient);
+        });
+
+        it('should return a token for `authorization_code` with a valid code verifier and a secret', async function () {
+          const response = await requestToken(authorizationCode('legacy', { client_secret: 'secret' }));
+
+          should.exist(response.body.access_token);
+        });
+
+        it('should return a token for `authorization_code` with a valid code verifier and no secret if `requireClientAuthentication` is false for it', async function () {
+          const response = await requestToken(authorizationCode('legacy'), {
+            requireClientAuthentication: { authorization_code: false },
+          });
 
           should.exist(response.body.access_token);
         });
@@ -928,20 +940,6 @@ describe('TokenHandler integration', function () {
 
         it('should throw an error for `client_credentials` without a secret', async function () {
           await shouldFailEarly(requestToken(clientCredentials('legacy')));
-        });
-
-        it('should throw an error for `authorization_code` with a valid code verifier and no secret if `requireClientAuthentication` is true for it', async function () {
-          await shouldFailEarly(
-            requestToken(authorizationCode('legacy'), { requireClientAuthentication: { authorization_code: true } }),
-          );
-        });
-
-        it('should return a token for `authorization_code` with a valid code verifier and a secret if `requireClientAuthentication` is true for it', async function () {
-          const response = await requestToken(authorizationCode('legacy', { client_secret: 'secret' }), {
-            requireClientAuthentication: { authorization_code: true },
-          });
-
-          should.exist(response.body.access_token);
         });
 
         it('should throw an error for `refresh_token` without a secret', async function () {
@@ -1213,14 +1211,12 @@ describe('TokenHandler integration', function () {
         it('should treat a `null` type as no type', function () {
           const client = { id: 'foo', grants: ['authorization_code'], type: null };
 
-          return getClient({
-            client,
-            body: { client_id: 'foo', grant_type: 'authorization_code', code_verifier: 'verifier' },
-          })
-            .then(function (data) {
-              data.should.equal(client);
-            })
-            .catch(should.fail);
+          return shouldReject(
+            getClient({
+              client,
+              body: { client_id: 'foo', grant_type: 'authorization_code', code_verifier: 'verifier' },
+            }),
+          );
         });
       });
 
@@ -1306,7 +1302,7 @@ describe('TokenHandler integration', function () {
         });
       });
 
-      describe('with a client without `type` (legacy) and no `client_secret`', function () {
+      describe('with a client without `type` (treated as confidential) and no `client_secret`', function () {
         it('should throw an error', function () {
           const client = { id: 'foo', grants: ['password'] };
 
@@ -1343,17 +1339,15 @@ describe('TokenHandler integration', function () {
           return shouldReject(getClient({ client, body: { client_id: 'foo', grant_type: 'refresh_token' } }));
         });
 
-        it('should return the client for `authorization_code` with PKCE', function () {
+        it('should throw an error for `authorization_code` with PKCE', function () {
           const client = { id: 'foo', grants: ['authorization_code'] };
 
-          return getClient({
-            client,
-            body: { client_id: 'foo', grant_type: 'authorization_code', code_verifier: 'verifier' },
-          })
-            .then(function (data) {
-              data.should.equal(client);
-            })
-            .catch(should.fail);
+          return shouldReject(
+            getClient({
+              client,
+              body: { client_id: 'foo', grant_type: 'authorization_code', code_verifier: 'verifier' },
+            }),
+          );
         });
       });
     });
