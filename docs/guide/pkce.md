@@ -211,3 +211,13 @@ precedence over the client type, for **all** clients:
       model,
       requireClientAuthentication: { refresh_token: false } // allow refresh without a client_secret
     })
+
+An explicit `true` requires a secret for every client of that grant type. Unlike
+leaving the key unset, `requireClientAuthentication: { authorization_code: true }`
+also rejects a client without `type` that uses PKCE but sends no `client_secret`.
+
+A request without a `client_secret` is rejected before `model.getClient()` is
+called whenever no client type could accept it: the grant has no explicit
+`false` entry, and the request is neither `authorization_code` with a
+`code_verifier` nor `refresh_token`. In the remaining cases `model.getClient()`
+receives `null` as `clientSecret`, so it must handle a missing secret.

@@ -629,9 +629,12 @@ describe('TokenHandler integration', function () {
       const codeVerifier = stringUtil.base64URLEncode(crypto.randomBytes(32));
       const codeChallenge = stringUtil.base64URLEncode(crypto.createHash('sha256').update(codeVerifier).digest());
 
+      let getClientCalls = 0;
+
       // codes and refresh tokens are named after the client they were issued to: `code-<id>`, `token-<id>`
       const model = Model.from({
         getClient: function (clientId, clientSecret) {
+          getClientCalls++;
           const client = clients[clientId];
           if (!client) return null;
           // a provided secret must always match, also for public clients
@@ -683,6 +686,7 @@ describe('TokenHandler integration', function () {
         });
         const response = new Response({ body: {}, headers: {} });
 
+        getClientCalls = 0;
         await handler.handle(request, response);
 
         return response;
@@ -723,7 +727,18 @@ describe('TokenHandler integration', function () {
         return Object.assign({ grant_type: 'client_credentials', client_id: clientId }, extra);
       };
 
+      const passwordGrant = function (clientId, extra) {
+        return Object.assign({ grant_type: 'password', client_id: clientId, username: 'foo', password: 'bar' }, extra);
+      };
+
       const invalidClient = 'Invalid client: client is invalid';
+      const missingSecret = 'Invalid client: cannot retrieve client credentials';
+
+      // rejected before `model.getClient()` is called
+      const shouldFailEarly = async function (promise) {
+        await shouldFail(promise, InvalidClientError, missingSecret);
+        getClientCalls.should.equal(0);
+      };
 
       describe('with a public client', function () {
         it('should return a token for `authorization_code` with a valid S256 code verifier and no secret', async function () {
@@ -734,11 +749,7 @@ describe('TokenHandler integration', function () {
         });
 
         it('should throw an error for `authorization_code` without a code verifier', async function () {
-          await shouldFail(
-            requestToken(authorizationCode('public', { code_verifier: undefined })),
-            InvalidClientError,
-            invalidClient,
-          );
+          await shouldFailEarly(requestToken(authorizationCode('public', { code_verifier: undefined })));
         });
 
         it('should throw an error for `authorization_code` with an invalid code verifier', async function () {
@@ -758,7 +769,7 @@ describe('TokenHandler integration', function () {
         });
 
         it('should throw an error for `client_credentials` without a secret', async function () {
-          await shouldFail(requestToken(clientCredentials('public')), InvalidClientError, invalidClient);
+          await shouldFailEarly(requestToken(clientCredentials('public')));
         });
 
         it('should throw an error for `client_credentials` even if `requireClientAuthentication` is false for it', async function () {
@@ -770,18 +781,14 @@ describe('TokenHandler integration', function () {
         });
 
         it('should throw an error if `requireClientAuthentication` is true for `authorization_code`', async function () {
-          await shouldFail(
+          await shouldFailEarly(
             requestToken(authorizationCode('public'), { requireClientAuthentication: { authorization_code: true } }),
-            InvalidClientError,
-            invalidClient,
           );
         });
 
         it('should throw an error if `requireClientAuthentication` is true for `refresh_token`', async function () {
-          await shouldFail(
+          await shouldFailEarly(
             requestToken(refreshToken('public'), { requireClientAuthentication: { refresh_token: true } }),
-            InvalidClientError,
-            invalidClient,
           );
         });
 
@@ -876,11 +883,29 @@ describe('TokenHandler integration', function () {
         });
 
         it('should throw an error for `authorization_code` without a code verifier and no secret', async function () {
-          await shouldFail(
-            requestToken(authorizationCode('legacy', { code_verifier: undefined })),
-            InvalidClientError,
-            invalidClient,
+          await shouldFailEarly(requestToken(authorizationCode('legacy', { code_verifier: undefined })));
+        });
+
+        it('should throw an error for `password` without a secret', async function () {
+          await shouldFailEarly(requestToken(passwordGrant('legacy')));
+        });
+
+        it('should throw an error for `client_credentials` without a secret', async function () {
+          await shouldFailEarly(requestToken(clientCredentials('legacy')));
+        });
+
+        it('should throw an error for `authorization_code` with a valid code verifier and no secret if `requireClientAuthentication` is true for it', async function () {
+          await shouldFailEarly(
+            requestToken(authorizationCode('legacy'), { requireClientAuthentication: { authorization_code: true } }),
           );
+        });
+
+        it('should return a token for `authorization_code` with a valid code verifier and a secret if `requireClientAuthentication` is true for it', async function () {
+          const response = await requestToken(authorizationCode('legacy', { client_secret: 'secret' }), {
+            requireClientAuthentication: { authorization_code: true },
+          });
+
+          should.exist(response.body.access_token);
         });
 
         it('should throw an error for `refresh_token` without a secret', async function () {
@@ -1120,11 +1145,16 @@ describe('TokenHandler integration', function () {
         return handler.getClient(request);
       };
 
-      const shouldReject = function (promise) {
+      const shouldReject = function (promise, message = 'Invalid client: client is invalid') {
         return promise.then(should.fail).catch(function (e) {
           e.should.be.an.instanceOf(InvalidClientError);
-          e.message.should.equal('Invalid client: client is invalid');
+          e.message.should.equal(message);
         });
+      };
+
+      // rejected before the model is called, the client type is unknown at that point
+      const shouldRejectEarly = function (promise) {
+        return shouldReject(promise, 'Invalid client: cannot retrieve client credentials');
       };
 
       describe('with a public client and no `client_secret`', function () {
@@ -1144,7 +1174,7 @@ describe('TokenHandler integration', function () {
         it('should throw an error for `authorization_code` without PKCE', function () {
           const client = { id: 'foo', grants: ['authorization_code'], type: 'public' };
 
-          return shouldReject(getClient({ client, body: { client_id: 'foo', grant_type: 'authorization_code' } }));
+          return shouldRejectEarly(getClient({ client, body: { client_id: 'foo', grant_type: 'authorization_code' } }));
         });
 
         it('should return the client for `refresh_token`', function () {
@@ -1160,13 +1190,13 @@ describe('TokenHandler integration', function () {
         it('should throw an error for `client_credentials`', function () {
           const client = { id: 'foo', grants: ['client_credentials'], type: 'public' };
 
-          return shouldReject(getClient({ client, body: { client_id: 'foo', grant_type: 'client_credentials' } }));
+          return shouldRejectEarly(getClient({ client, body: { client_id: 'foo', grant_type: 'client_credentials' } }));
         });
 
         it('should throw an error if `requireClientAuthentication` is explicitly true for the grant', function () {
           const client = { id: 'foo', grants: ['authorization_code'], type: 'public' };
 
-          return shouldReject(
+          return shouldRejectEarly(
             getClient({
               client,
               body: { client_id: 'foo', grant_type: 'authorization_code', code_verifier: 'verifier' },
@@ -1180,7 +1210,7 @@ describe('TokenHandler integration', function () {
         it('should throw an error', function () {
           const client = { id: 'foo', grants: ['authorization_code'], type: 'confidential' };
 
-          return shouldReject(getClient({ client, body: { client_id: 'foo', grant_type: 'authorization_code' } }));
+          return shouldRejectEarly(getClient({ client, body: { client_id: 'foo', grant_type: 'authorization_code' } }));
         });
 
         it('should throw an error for `authorization_code` with PKCE', function () {
@@ -1213,7 +1243,31 @@ describe('TokenHandler integration', function () {
         it('should throw an error', function () {
           const client = { id: 'foo', grants: ['password'] };
 
-          return shouldReject(getClient({ client, body: { client_id: 'foo', grant_type: 'password' } }));
+          return shouldRejectEarly(getClient({ client, body: { client_id: 'foo', grant_type: 'password' } }));
+        });
+
+        it('should throw an error before calling the model if the Authorization header has no secret', function () {
+          const model = Model.from({
+            getClient: function () {
+              should.fail();
+            },
+            saveToken: function () {},
+          });
+          const handler = new TokenHandler({ accessTokenLifetime: 120, model: model, refreshTokenLifetime: 120 });
+          const request = new Request({
+            body: { grant_type: 'password' },
+            headers: { authorization: util.format('Basic %s', Buffer.from('foo:').toString('base64')) },
+            method: {},
+            query: {},
+          });
+
+          return handler
+            .getClient(request, new Response({ body: {}, headers: {} }))
+            .then(should.fail)
+            .catch(function (e) {
+              e.should.be.an.instanceOf(InvalidRequestError);
+              e.message.should.equal('Missing parameter: `client_secret`');
+            });
         });
 
         it('should throw an error for `refresh_token`', function () {
@@ -1391,7 +1445,7 @@ describe('TokenHandler integration', function () {
         refreshTokenLifetime: 120,
       });
       const request = new Request({
-        body: { client_id: 'foo' },
+        body: { client_id: 'foo', grant_type: 'refresh_token' },
         headers: {},
         method: {},
         query: {},
@@ -1399,6 +1453,33 @@ describe('TokenHandler integration', function () {
 
       const credentials = handler.getClientCredentials(request);
       credentials.should.eql({ clientId: 'foo' });
+    });
+
+    it('should throw an error if `client_secret` is missing and no client could be accepted without it', function () {
+      const model = Model.from({
+        getClient: function () {},
+        saveToken: function () {},
+      });
+      const handler = new TokenHandler({
+        accessTokenLifetime: 120,
+        model: model,
+        refreshTokenLifetime: 120,
+      });
+      const request = new Request({
+        body: { client_id: 'foo', grant_type: 'password' },
+        headers: {},
+        method: {},
+        query: {},
+      });
+
+      try {
+        handler.getClientCredentials(request);
+
+        should.fail();
+      } catch (e) {
+        e.should.be.an.instanceOf(InvalidClientError);
+        e.message.should.equal('Invalid client: cannot retrieve client credentials');
+      }
     });
 
     describe('with `client_id` and grant type is `password` and `requireClientAuthentication` is false', function () {
