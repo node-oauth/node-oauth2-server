@@ -25,7 +25,7 @@
 **Kind**: instance method of [<code>CodeResponseType</code>](#CodeResponseType)  
 **Throws**:
 
-- <code>InvalidArgumentError</code> if redirectUri is missing
+- <code>InvalidArgumentError</code> if redirectUri is missing or not an absolute URI
 
 
 | Param |
