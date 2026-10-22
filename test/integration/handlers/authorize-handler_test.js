@@ -19,7 +19,9 @@ const Response = require('../../../lib/response');
 const ServerError = require('../../../lib/errors/server-error');
 const UnauthorizedClientError = require('../../../lib/errors/unauthorized-client-error');
 const should = require('chai').should();
+const sinon = require('sinon');
 const url = require('url');
+const { parseRedirectUri } = require('../../../lib/utils/url-util');
 
 const createModel = (model = {}) => {
   return Model.from({
@@ -455,6 +457,91 @@ describe('AuthorizeHandler integration', function () {
       response
         .get('location')
         .should.equal('http://example.com/cb?code=fooobar-long-authzcode-%3F&state=foobarbazstatemoo');
+    });
+
+    it('should build the redirect without the deprecated url.parse()', async function () {
+      const client = {
+        id: 'client-12343434',
+        grants: ['authorization_code'],
+        redirectUris: ['http://example.com/cb'],
+      };
+      const model = createModel({
+        getAccessToken: async function () {
+          return {
+            client,
+            user: {},
+            accessTokenExpiresAt: new Date(new Date().getTime() + 10000),
+          };
+        },
+        getClient: async function () {
+          return { ...client };
+        },
+        saveAuthorizationCode: async function () {
+          return { authorizationCode: 'foo', client };
+        },
+      });
+      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model });
+      const request = new Request({
+        body: { client_id: client.id, response_type: 'code' },
+        headers: { Authorization: 'Bearer foobarbaztokenmoo' },
+        method: {},
+        query: { state: 'foobarbazstatemoo' },
+      });
+      const response = new Response({ body: {}, headers: {} });
+      const parse = sinon.spy(url, 'parse');
+
+      try {
+        await handler.handle(request, response);
+        parse.called.should.equal(false);
+        response.get('location').should.equal('http://example.com/cb?code=foo&state=foobarbazstatemoo');
+      } finally {
+        parse.restore();
+      }
+    });
+
+    it('should build the error redirect without the deprecated url.parse()', async function () {
+      const client = {
+        id: 'client-12343434',
+        grants: ['authorization_code'],
+        redirectUris: ['http://example.com/cb'],
+      };
+      const model = createModel({
+        getAccessToken: async function () {
+          return {
+            client,
+            user: {},
+            accessTokenExpiresAt: new Date(new Date().getTime() + 10000),
+          };
+        },
+        getClient: async function () {
+          return { ...client };
+        },
+      });
+      const handler = new AuthorizeHandler({ authorizationCodeLifetime: 120, model });
+      const request = new Request({
+        body: { client_id: client.id, response_type: 'code', allowed: 'false' },
+        headers: { Authorization: 'Bearer foobarbaztokenmoo' },
+        method: {},
+        query: { state: 'foobarbazstatemoo' },
+      });
+      const response = new Response({ body: {}, headers: {} });
+      const parse = sinon.spy(url, 'parse');
+
+      try {
+        await handler.handle(request, response);
+
+        should.fail();
+      } catch (e) {
+        e.should.be.an.instanceOf(AccessDeniedError);
+        parse.called.should.equal(false);
+        response
+          .get('location')
+          .should.equal(
+            'http://example.com/cb?error=access_denied&error_description=Access%20denied%3A%20user%20denied%20access%20to%20application&state=foobarbazstatemoo',
+          );
+      } finally {
+        parse.restore();
+      }
     });
 
     it('should redirect to an error response if `scope` is invalid', async function () {
@@ -1813,6 +1900,22 @@ describe('AuthorizeHandler integration', function () {
         .format(redirectUri)
         .should.equal('http://example.com/cb?error=invalid_client&error_description=Bad%20Request');
     });
+
+    it('should throw an error if the `redirectUri` is not an absolute URI', function () {
+      const handler = new AuthorizeHandler({
+        authorizationCodeLifetime: 120,
+        model: createModel(),
+      });
+
+      try {
+        handler.buildErrorRedirectUri('/cb', new InvalidClientError());
+
+        should.fail();
+      } catch (e) {
+        e.should.be.an.instanceOf(InvalidArgumentError);
+        e.message.should.equal('Invalid parameter: `redirectUri`');
+      }
+    });
   });
 
   describe('updateResponse()', function () {
@@ -1827,7 +1930,7 @@ describe('AuthorizeHandler integration', function () {
         model,
       });
       const response = new Response({ body: {}, headers: {} });
-      const uri = url.parse('http://example.com/cb');
+      const uri = parseRedirectUri('http://example.com/cb');
 
       handler.updateResponse(response, uri, 'foobar');
 
