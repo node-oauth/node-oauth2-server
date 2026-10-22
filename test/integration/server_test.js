@@ -165,6 +165,48 @@ describe('Server integration', function () {
 
       handler.should.be.an.instanceOf(Promise);
     });
+
+    it('should set the scopes headers by default if `scope` is set on the server', async function () {
+      const model = Model.from({
+        getAccessToken: function () {
+          return {
+            user: {},
+            accessTokenExpiresAt: new Date(new Date().getTime() + 10000),
+            scope: ['foo', 'bar'],
+          };
+        },
+        verifyScope: function () {
+          return true;
+        },
+        getClient: function () {
+          return {
+            id: 1234,
+            grants: ['authorization_code'],
+            redirectUris: ['http://example.com/cb'],
+          };
+        },
+        saveAuthorizationCode: function () {
+          return { authorizationCode: 123 };
+        },
+      });
+      const server = new Server({ model: model, scope: ['foo'] });
+      const request = new Request({
+        body: {
+          client_id: 1234,
+          response_type: 'code',
+        },
+        headers: { Authorization: 'Bearer foo' },
+        method: {},
+        query: { state: 'foobar' },
+      });
+      const response = new Response({ body: {}, headers: {} });
+
+      const code = await server.authorize(request, response);
+
+      code.authorizationCode.should.equal(123);
+      response.get('X-Accepted-OAuth-Scopes').should.equal('foo');
+      response.get('X-OAuth-Scopes').should.equal('foo bar');
+    });
   });
 
   describe('token()', function () {
