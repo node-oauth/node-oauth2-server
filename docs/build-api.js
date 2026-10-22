@@ -5,11 +5,11 @@ const glob = require('glob');
 
 (async function () {
   // Usage:
-  //   node scripts/build-docs-cli.js [srcRoot] [outRoot]
+  //   node docs/build-api.js [srcRoot] [outRoot]
   // Examples:
-  //   node scripts/build-docs-cli.js               -> src: "src", out: "docs"
-  //   node scripts/build-docs-cli.js lib           -> src: "lib", out: "docs"
-  //   node scripts/build-docs-cli.js lib build/docs -> src: "lib", out: "build/docs"
+  //   node docs/build-api.js                -> src: "lib/", out: "docs/api/"
+  //   node docs/build-api.js lib            -> src: "lib", out: "docs/api/"
+  //   node docs/build-api.js lib build/docs -> src: "lib", out: "build/docs"
 
   const srcRoot = process.argv[2] || 'lib/';
   const outRoot = process.argv[3] || 'docs/api/';

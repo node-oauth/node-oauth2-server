@@ -70,7 +70,7 @@ From here you can run several scripts for development purposes:
 ```bash
 npm run test           # runs the tests once
 npm run test:coverage  # runs the tests including coverage
-npm run docs           # generates the API docs
+npm run docs:api       # generates the API docs
 ```
 
 To work on a new feature or a fix please create a new branch:

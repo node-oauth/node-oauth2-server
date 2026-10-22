@@ -3,7 +3,7 @@
 Starting with release [4.3.0](https://github.com/node-oauth/node-oauth2-server/releases/tag/v4.3.0) this library 
 supports PKCE (Proof Key for Code Exchange by OAuth Public Clients) as defined in [RFC 7636](https://datatracker.ietf.org/doc/html/rfc7636).
 
-The PKCE integrates only with the `authorization code <AuthorizationCodeGrant>`. The abstract workflow looks like
+The PKCE integrates only with the [authorization code grant](./grant-types.md#authorization-code-grant-type). The abstract workflow looks like
 the following:
 
 ```
@@ -70,9 +70,9 @@ strong candidate to become the default in a future major release.
 
 </div>
 
-The following shows an example of how a client could generate a <span class="title-ref">code_challenge</span><span class="title-ref"> and
-</span><span class="title-ref">code_challenge_method</span>\` for the authorizazion request.
+The client generates `code_challenge` and `code_challenge_method` for the authorization request:
 
+    const crypto = require('node:crypto')
     const base64URLEncode = str => str.toString('base64')
           .replace(/\+/g, '-')
           .replace(/\//g, '_')
@@ -95,26 +95,41 @@ The following shows an example of how a client could generate a <span class="tit
 
     // add these to the request that is fired from the client
 
-In this project the authorize endpoint calls OAuth2Server.prototype.authorize which itself uses AuthorizeHandler.
-If your Request body contains code_challenge and code_challenge_method then PKCE is active.
+Authorization reads `code_challenge` and `code_challenge_method` from body or
+query. Use `S256` explicitly. With `enablePlainPKCE: false` (the default),
+plain is rejected and an omitted method defaults to S256. With
+`enablePlainPKCE: true`, plain is allowed and an omitted method defaults to plain,
+both at authorization and when interpreting a loaded code during exchange.
 
-    const server = new OAuth2Server({ model })
+The endpoint examples below assume an Express `app`, parsed URL-encoded bodies,
+a model implementing the [required hooks](./model.md), and login middleware
+populating `req.session.user`. The `sendLocalError` helper is defined in
+[Sending the response](./getting-started.md#sending-the-response). For confidential
+clients, use the endpoint-specific models in the final section.
 
-    // this could be added to express or other middleware
-    const authorizeEndpoint = function (req, res, next) {
-      const request = new Request(req)
-      req.query.code_challenge        // the codeChallenge value
-      req.query.code_challenge_method // 'S256'
+```js
+const OAuth2Server = require('@node-oauth/oauth2-server');
+const { Request, Response } = OAuth2Server;
+const server = new OAuth2Server({ model });
+const options = {
+  enablePlainPKCE: false,
+  authenticateHandler: { handle: request => request.session.user }
+};
 
-      server.authorize(request, response, options)
-        .then(function (code) {
-          // add code to response, code should not contain
-          // code_challenge or code_challenge_method
-        })
-        .catch(function (err) {
-          // handle error condition
-        })
+app.get('/authorize', async (req, res) => {
+  const request = new Request(req);
+  const response = new Response();
+  try {
+    await server.authorize(request, response, options);
+  } catch (err) {
+    if (response.status !== 302 || !response.get('location')) {
+      return sendLocalError(res, err, response);
     }
+  }
+  res.set(response.headers);
+  return res.status(response.status).end();
+});
+```
 
 ## 2. Authorization response
 
@@ -135,24 +150,23 @@ Note that this calls your model with additional properties `code.codeChallenge` 
 
 </div>
 
-This is usually done in your token endpoint, that uses `OAuth2Server.token`.
+The client POSTs a URL-encoded body containing `grant_type=authorization_code`,
+`code`, `client_id`, `redirect_uri`, and `code_verifier`, plus client
+authentication where required. Using the setup above:
 
-    const server = new OAuth2Server({ model })
-
-    // ...authorizeEndpoint
-
-    // this could be added to express or other middleware
-    const tokenEndpoint = function (req, res, next) {
-      const request = new Request(req)
-      request.body.code_verifier // the non-hashed code verifier
-      server.token(request, response, options)
-            .then(function (code) {
-              // add code to response, code should contain
-            })
-            .catch(function (err) {
-              // handle error condition
-            })
-    }
+```js
+app.post('/token', async (req, res) => {
+  const request = new Request(req);
+  const response = new Response();
+  try {
+    await server.token(request, response, { enablePlainPKCE: false });
+  } catch (err) {
+    return sendLocalError(res, err, response);
+  }
+  res.set(response.headers);
+  return res.status(response.status).json(response.body);
+});
+```
 
 Note that your client should have kept `code_verifier` a secret until this step and now includes it as param for the token endpoint call.
 
@@ -162,7 +176,11 @@ This will call `model.getAuthorizationCode` to load the code.
 The loaded code has to contain `codeChallenge` and `codeChallengeMethod`.
 If `model.saveAuthorizationCode` did not cover these values when saving the code then this step will deny the request.
 
-See `Model#saveAuthorizationCode` and `Model#getAuthorizationCode`
+See [saveAuthorizationCode](../api/model.md#Model+saveAuthorizationCode) and
+[getAuthorizationCode](../api/model.md#Model+getAuthorizationCode).
+
+Code exchange revokes the authorization code before verifying PKCE and the redirect
+URI. A failure at either verification consumes the code; start a fresh authorization.
 
 ## PKCE, client authentication and refresh tokens
 
@@ -177,9 +195,10 @@ PKCE is **not** client authentication, and never a substitute for a `client_secr
 
 - A **confidential** client (one issued a `client_secret`) must authenticate with
   its secret on **every** token request, including `refresh_token`. PKCE is
-  additive. Your `model.getClient(clientId, clientSecret)` is responsible for
-  rejecting (returning a falsy value) a confidential client that fails to present
-  its secret.
+  additive. Token endpoint authentication must reject missing or incorrect
+  confidential credentials. Authorization, however, always calls
+  `getClient(clientId, null)` even for confidential clients. A shared hook cannot
+  infer the endpoint from an absent secret; universally rejecting it breaks authorization.
 - A **public** client has no secret. If you choose to issue refresh tokens to
   public clients (weigh the security implications first — see
   [RFC 9700](https://www.rfc-editor.org/rfc/rfc9700)), relax client authentication
@@ -196,3 +215,51 @@ PKCE is **not** client authentication, and never a substitute for a `client_secr
   enforcement must be done in your `model.getClient`. The library does not yet
   model the public/confidential distinction itself (tracked in
   [#81](https://github.com/node-oauth/node-oauth2-server/issues/81)).
+
+
+### Endpoint-specific client lookup
+
+The following model wrappers separate authorization lookup from token
+authentication without mutable global request state. Prerequisites:
+`storageModel` contains the remaining hooks, `findClient(id)` loads a registered
+client with a `confidential` flag, and `verifyClientSecret(client, secret)`
+checks the stored secret securely. These are application functions/metadata,
+not built-in library APIs. Both endpoints must use the same client registry.
+
+```js
+function modelForEndpoint(endpoint) {
+  return {
+    ...storageModel,
+    async getClient(clientId, clientSecret) {
+      const client = await findClient(clientId);
+      if (!client) return false;
+      const supplied = clientSecret !== null && clientSecret !== undefined;
+      if (supplied && !(await verifyClientSecret(client, clientSecret))) {
+        return false;
+      }
+      if (endpoint === 'token' && client.confidential && !supplied) {
+        return false;
+      }
+      return client;
+    }
+  };
+}
+
+const authorizationServer = new OAuth2Server({
+  model: modelForEndpoint('authorize')
+});
+const tokenServer = new OAuth2Server({
+  model: modelForEndpoint('token'),
+  requireClientAuthentication: { refresh_token: false }
+});
+```
+
+In the routes above, replace `server.authorize` with
+`authorizationServer.authorize` and `server.token` with `tokenServer.token`.
+A supplied wrong secret is rejected, confidential token requests without a secret
+are rejected, and confidential authorization lookup with null succeeds.
+Configure `verifyClientSecret` to reject unexpected credentials for public clients.
+
+`requireClientAuthentication` is a per-grant map, not a global boolean switch:
+`requireClientAuthentication: false` does not disable checks. Unlisted grants
+retain the presence check, except for authorization-code requests with a verifier.
