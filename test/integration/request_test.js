@@ -175,6 +175,20 @@ describe('Request integration', function () {
       request.is('json').should.be.false;
     });
 
+    it('should return `false` if the content type is malformed', function () {
+      const request = new Request({
+        body: {},
+        headers: {
+          'content-type': ';charset=utf-8',
+          'transfer-encoding': 'chunked',
+        },
+        method: {},
+        query: {},
+      });
+
+      request.is('application/x-www-form-urlencoded').should.be.false;
+    });
+
     it('should return `false` if the request has no body', function () {
       const request = new Request({
         body: {},
