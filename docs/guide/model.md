@@ -88,6 +88,21 @@ Model functions used by the [password grant](grant-types.md#password-grant-type)
 - [saveToken](../api/model.md#modelsavetokentoken-client-user--codepromiseobjectcode)
 - [validateScope](../api/model.md#modelvalidatescopeuser-client-scope--codepromisebooleancode)
 
+### JWT Bearer Grant (ID-JAG)
+
+Model functions required by the [JWT Bearer grant (ID-JAG)](grant-types.md#jwt-bearer-grant-id-jag):
+
+- `getTrustedIssuer(issuer)` — confirm the assertion's `iss` claim is a trusted Identity Provider.
+- `getRequestingIssuerKey(issuer, kid)` — resolve the public key used to verify the assertion's signature.
+- `getUserFromIdJagAssertion(issuer, subject, client)` — resolve the local user identified by the (verified) `sub` claim.
+- `validateIdJagPermission(client, user, scope, assertion)` — authorize the asserted identity for the target resource.
+- `validateJti(jti, issuer, exp)` — atomically check-and-record the assertion's `jti` for replay protection. May instead be implemented as the pair `isJtiUsed(jti, issuer)` + `recordJti(jti, issuer, exp)`.
+
+Also required, shared with every grant:
+- `saveToken(token, client, user)`
+
+See the JSDoc on each method in `lib/model.js` for full parameter/return details and examples.
+
 ### Extension Grants
 
 The authorization server may also implement custom grant types to issue access (and optionally refresh) tokens.
