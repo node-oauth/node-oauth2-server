@@ -85,12 +85,13 @@ This model function is **required** for all grant types.
 - `password` grant
 
 **Remarks:**
-`clientSecret` is `null`/absent for public clients, and also for
-`authorization_code` requests that authenticate with PKCE (a `code_verifier`)
-instead of a secret — even if the client *has* a `client_secret`. PKCE is
-**not** a substitute for client authentication: your implementation must
-reject (return a falsy value) a confidential client that should have
-presented its `client_secret` but did not.
+`clientSecret` is `null` when the request does not contain a secret. The
+library decides afterwards whether a secret was required, based on the
+returned client's `type` and the `requireClientAuthentication` option:
+a `confidential` client, or a client without `type`, is rejected without
+a secret, even with PKCE. When a `clientSecret` is provided, your implementation must
+always verify it, also for public clients, and return a falsy value if it
+does not match.
 
 **Kind**: instance method of [<code>Model</code>](#Model)  
 **Fulfil**: [<code>ClientData</code>](#ClientData) - An `Object` representing the client and associated data, or a falsy value if no such client could be found.  
@@ -687,4 +688,5 @@ An `Object` representing the client and associated data.
 | grants | <code>Array.&lt;string&gt;</code> | Grant types allowed for the client. |
 | accessTokenLifetime | <code>number</code> | Client-specific lifetime of generated access tokens in seconds. |
 | refreshTokenLifetime | <code>number</code> | Client-specific lifetime of generated refresh tokens in seconds. |
+| type | <code>string</code> | The client type: `public` or `confidential`. Optional. When not set (`undefined` or `null`), the client is treated as confidential. Any other value throws a `ServerError`. |
 
