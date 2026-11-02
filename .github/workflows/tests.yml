@@ -8,8 +8,6 @@ on:
     branches:
       - master    # although master is push protected we still keep it
   pull_request:   # runs on all PR
-    branches-ignore:
-      - release-* # on release, we run an extended workflow so no need for this
 
 jobs:
   lint:
