@@ -107,6 +107,38 @@ describe('ClientCredentials Workflow Compliance (4.4)', function () {
     });
 
     /**
+     * 5.1.  Successful Response
+     *
+     *    The authorization server issues an access token and optional
+     *    refresh token, and constructs the response by adding the following
+     *    parameters to the entity-body of the HTTP response with a 200 (OK)
+     *    status code
+     */
+    it('returns status 200 for a successful token response even if the initial status is 404', async function () {
+      const response = new Response({ status: 404 });
+      const request = createRequest({
+        body: {
+          grant_type: 'client_credentials',
+          scope: enabledScope,
+        },
+        headers: {
+          authorization: 'Basic ' + Buffer.from(clientDoc.id + ':' + clientDoc.secret).toString('base64'),
+          'content-type': 'application/x-www-form-urlencoded',
+        },
+        method: 'POST',
+      });
+
+      const token = await oAuth2Server.token(request, response);
+
+      response.body.access_token.should.equal(token.accessToken);
+      response.body.token_type.should.equal('Bearer');
+      db.accessTokens.has(token.accessToken).should.equal(true);
+
+      // RFC 6749 section 5.1 specifies status 200 for a successful token response.
+      response.status.should.equal(200);
+    });
+
+    /**
      * 7.  Accessing Protected Resources
      *
      *    The client accesses protected resources by presenting the access

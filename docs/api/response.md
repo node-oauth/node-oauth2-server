@@ -8,23 +8,25 @@ response signature.
 **Kind**: global class  
 
 * [Response](#Response)
-    * [new Response(headers, method, [body], ...otherOptions)](#new_Response_new)
+    * [new Response(headers, [body], ...otherOptions)](#new_Response_new)
     * [.get(field)](#Response+get) ⇒ <code>string</code> \| <code>undefined</code>
     * [.redirect(url)](#Response+redirect)
     * [.set(field, value)](#Response+set)
 
 <a name="new_Response_new"></a>
 
-### new Response(headers, method, [body], ...otherOptions)
+### new Response(headers, [body], ...otherOptions)
 Create a new Response instance.
+
+The `status` always starts as `200` and is set by the handlers (for example
+`302` for a redirect, or the error's code), so it cannot be passed in.
 
 
 | Param | Type | Description |
 | --- | --- | --- |
 | headers | <code>object</code> | key-value object of headers |
-| method | <code>string</code> | the HTTP method |
 | [body] | <code>object</code> | optional key-value object of body parameters |
-| ...otherOptions | <code>object</code> | any other properties that should be assigned to the request by your webserver |
+| ...otherOptions | <code>object</code> | any other properties that should be assigned to the response by your webserver; properties the response already has (such as `status` or its methods) are not overwritten |
 
 **Example**  
 ```js
