@@ -11,9 +11,9 @@
     * [.getTokenFromRequestQuery(request)](#AuthenticateHandler+getTokenFromRequestQuery)
     * [.getTokenFromRequestBody(request)](#AuthenticateHandler+getTokenFromRequestBody)
     * [.getAccessToken(token)](#AuthenticateHandler+getAccessToken)
-    * [.validateAccessToken()](#AuthenticateHandler+validateAccessToken)
-    * [.verifyScope()](#AuthenticateHandler+verifyScope)
-    * [.updateResponse()](#AuthenticateHandler+updateResponse)
+    * [.validateAccessToken(accessToken)](#AuthenticateHandler+validateAccessToken)
+    * [.verifyScope(accessToken)](#AuthenticateHandler+verifyScope)
+    * [.updateResponse(response, accessToken)](#AuthenticateHandler+updateResponse)
 
 <a name="new_AuthenticateHandler_new"></a>
 
@@ -27,7 +27,7 @@
 | --- | --- | --- | --- |
 | options | <code>object</code> |  | Server options. |
 | options.model | <code>Model</code> |  | The Model; this is always required. |
-| options.scope | <code>Array.&lt;string&gt;</code> \| <code>undefined</code> |  | The scope(s) to authenticate. |
+| options.scope | <code>string</code> \| <code>Array.&lt;string&gt;</code> \| <code>undefined</code> |  | The scope(s) to authenticate. |
 | [options.addAcceptedScopesHeader] | <code>boolean</code> | <code>true</code> | Set the `X-Accepted-OAuth-Scopes` HTTP header on response objects. |
 | [options.addAuthorizedScopesHeader] | <code>boolean</code> | <code>true</code> | Set the `X-OAuth-Scopes` HTTP header on response objects. |
 | [options.allowBearerTokensInQueryString] | <code>boolean</code> | <code>false</code> | Allow clients to pass bearer tokens in the query string of a request. |
@@ -118,19 +118,35 @@ Get the access token from the model.
 
 <a name="AuthenticateHandler+validateAccessToken"></a>
 
-### authenticateHandler.validateAccessToken()
+### authenticateHandler.validateAccessToken(accessToken)
 Validate access token.
 
 **Kind**: instance method of [<code>AuthenticateHandler</code>](#AuthenticateHandler)  
+
+| Param | Type |
+| --- | --- |
+| accessToken | <code>AccessTokenData</code> | 
+
 <a name="AuthenticateHandler+verifyScope"></a>
 
-### authenticateHandler.verifyScope()
+### authenticateHandler.verifyScope(accessToken)
 Verify scope.
 
 **Kind**: instance method of [<code>AuthenticateHandler</code>](#AuthenticateHandler)  
+
+| Param | Type |
+| --- | --- |
+| accessToken | <code>AccessTokenData</code> | 
+
 <a name="AuthenticateHandler+updateResponse"></a>
 
-### authenticateHandler.updateResponse()
+### authenticateHandler.updateResponse(response, accessToken)
 Update response.
 
 **Kind**: instance method of [<code>AuthenticateHandler</code>](#AuthenticateHandler)  
+
+| Param | Type |
+| --- | --- |
+| response | <code>Response</code> | 
+| accessToken | <code>AccessTokenData</code> | 
+

@@ -1,96 +1,76 @@
 # Model Overview
 
-[OAuth2Server](../api/server.md) requires a model object through which some aspects of storage, 
-retrieval and custom validation are abstracted.
-
-## Migration Notes
-
-**Version \>=5.x:** Callback support has been removed! Each model function supports either sync or async
-(`Promise` or `async function`) return values.
-
-**Version \<=4.x:** Each model function supports *promises*, *Node-style callbacks*, *ES6 generators* 
-and *async*/*await* (using [Babel](https://babeljs.io)). Note that promise support implies support for returning plain
-values where asynchronism is not required.
+[OAuth2Server](../api/server.md) accepts a plain object of storage and validation
+hooks. Hooks may return synchronous values, native Promises, or use async/await.
+Direct generator functions are unsupported; application generator code needs a
+runner that returns a supported value or Promise. Callback support ended in v5.
 
 ## Request Authentication
 
-See [Section 2 of RFC 6750](https://www.rfc-editor.org/rfc/rfc6750#section-2)
-
-The authorization server authenticates requests that are 
-sent to the resource server by verifying the included bearer token.
-
-Model functions used during request authentication:
-
-- [getAccessToken](../api/model.md#modelgetaccesstokenaccesstoken--code-promiseaccesstokendata-code)
-- [verifyScope](../api/model.md#modelverifyscopeaccesstoken-scope--codepromisebooleancode)
-
+`authenticate` requires [getAccessToken](../api/model.md#Model+getAccessToken).
+[verifyScope](../api/model.md#Model+verifyScope) is required only when
+`options.scope` configures scope checking. A custom `authenticateHandler` does
+not replace `OAuth2Server.authenticate`.
 
 ## Grant Types
 
-For each [grant type](./grant-types.md) there are different model required, optional or unused.
-The following sections describe the grant types and the model functions, required for
-the grants.
+Required hooks must be provided even when a particular request does not reach
+them. Optional generators have built-in defaults: 32 random bytes encoded as
+64 lowercase hexadecimal characters. Scope validation is optional; without a
+validator, requested scopes are accepted.
 
 ### Authorization Code Grant
 
-Model functions required by the [authorization code grant](./grant-types.md#authorization-code-grant-type):
+Authorization endpoint requirements:
 
-- [getClient](../api/model.md#modelgetclientclientid-clientsecret--code-promiseclientdata-code)
-- [saveToken](../api/model.md#modelsavetokentoken-client-user--codepromiseobjectcode)
-- [getAuthorizationCode](../api/model.md#modelgetauthorizationcodeauthorizationcode--code-promiseauthorizationcodedata-code)
-- [saveAuthorizationCode](../api/model.md#modelsaveauthorizationcodecode-client-user--codepromiseobjectcode)
-- [revokeAuthorizationCode](../api/model.md#modelrevokeauthorizationcodecode--codepromisebooleancode)
+- Required: [getClient](../api/model.md#Model+getClient) and
+  [saveAuthorizationCode](../api/model.md#Model+saveAuthorizationCode).
+- Conditional: without a custom `authenticateHandler`, the built-in bearer
+  authentication requires `getAccessToken`; scoped authentication also requires
+  `verifyScope` and explicit `addAcceptedScopesHeader` and
+  `addAuthorizedScopesHeader` options (each may be true or false).
+- Optional: [generateAuthorizationCode](../api/model.md#Model+generateAuthorizationCode),
+  [validateScope](../api/model.md#Model+validateScope), and
+  [validateRedirectUri](../api/model.md#Model+validateRedirectUri).
+  Registered `client.redirectUris` are required; the default validator checks exact inclusion.
 
-Required if no custom authenticate handler used:
-- [verifyScope](../api/model.md#modelverifyscopeaccesstoken-scope--codepromisebooleancode)
+For session-based login, supply a handler returning the logged-in user. Handle
+login before calling `authorize`: a falsy user causes a `ServerError` (503),
+not a login challenge. The bearer fallback uses the authenticated token's user.
 
-Required if custom authenticate handler used:
-- [getAccessToken](../api/model.md#modelgetaccesstokenaccesstoken--code-promiseaccesstokendata-code)
+Code exchange requirements:
 
-**Optional, but recommended:**
-- [generateAccessToken](../api/model.md#modelgenerateaccesstokenclient-user-scope--codepromisestringcode)
-- [generateRefreshToken](../api/model.md#modelgeneraterefreshtokenclient-user-scope--codepromisestringcode)
-- [generateAuthorizationCode](../api/model.md#modelgenerateauthorizationcodeclient-user-scope--codepromisestringcode)
-- [validateScope](../api/model.md#modelvalidatescopeuser-client-scope--codepromisebooleancode)
-- [validateRedirectUri](../api/model.md#modelvalidateredirecturiredirecturi-client--codepromisebooleancode)
+- Required: `getClient`, [getAuthorizationCode](../api/model.md#Model+getAuthorizationCode),
+  [revokeAuthorizationCode](../api/model.md#Model+revokeAuthorizationCode), and
+  [saveToken](../api/model.md#Model+saveToken).
+- Optional: `generateAccessToken`, `generateRefreshToken`, and `validateScope`.
+
+Preserve `codeChallenge` and `codeChallengeMethod` when saving and loading codes.
+See [PKCE](./pkce.md) for endpoint-specific client authentication.
 
 ### Client Credentials Grant
 
-Model functions used by the [client credentials grant](grant-types.md#client-credentials-grant-type):
-
-- [getClient](../api/model.md#modelgetclientclientid-clientsecret--code-promiseclientdata-code)
-- [saveToken](../api/model.md#modelsavetokentoken-client-user--codepromiseobjectcode)
-- [getUserFromClient](../api/model.md#modelgetuserfromclientclient--codepromiseobjectcode)
-
-**Optional, but recommended:**
-- [generateAccessToken](../api/model.md#modelgenerateaccesstokenclient-user-scope--codepromisestringcode)
-- [validateScope](../api/model.md#modelvalidatescopeuser-client-scope--codepromisebooleancode)
+Required: `getClient`, `saveToken`, and
+[getUserFromClient](../api/model.md#Model+getUserFromClient).
+Optional: `generateAccessToken` and `validateScope`. No refresh token is issued.
 
 ### Refresh Token Grant
 
-Model functions used by the [refresh token grant](grant-types.md#refresh-token-grant-type):
+Required: `getClient`, `saveToken`,
+[getRefreshToken](../api/model.md#Model+getRefreshToken), and
+[revokeToken](../api/model.md#Model+revokeToken).
+The constructor requires `revokeToken` even with
+`alwaysIssueNewRefreshToken: false`, although it is not called in that mode.
 
-- [generateRefreshToken](../api/model.md#modelgeneraterefreshtokenclient-user-scope--codepromisestringcode)
-- [getRefreshToken](../api/model.md#modelgetrefreshtokenrefreshtoken--code-promiserefreshtokendata-code)
-- [getClient](../api/model.md#modelgetclientclientid-clientsecret--code-promiseclientdata-code)
-- [saveToken](../api/model.md#modelsavetokentoken-client-user--codepromiseobjectcode)
-- [revokeToken](../api/model.md#modelrevoketokentoken--codepromisebooleancode)
-
+Optional: `generateAccessToken` and `generateRefreshToken`.
+Scope narrowing is checked against the stored token; `validateScope` is not called.
 
 ### Password Grant
 
-Model functions used by the [password grant](grant-types.md#password-grant-type):
-
-- [generateAccessToken](../api/model.md#modelgenerateaccesstokenclient-user-scope--codepromisestringcode)
-- [generateRefreshToken](../api/model.md#modelgeneraterefreshtokenclient-user-scope--codepromisestringcode)
-- [getClient](../api/model.md#modelgetclientclientid-clientsecret--code-promiseclientdata-code)
-- [getUser](../api/model.md#modelgetuserusername-password-client--codepromiseobjectnullundefinedfalse0code)
-- [saveToken](../api/model.md#modelsavetokentoken-client-user--codepromiseobjectcode)
-- [validateScope](../api/model.md#modelvalidatescopeuser-client-scope--codepromisebooleancode)
+Required: `getClient`, [getUser](../api/model.md#Model+getUser), and `saveToken`.
+Optional: `generateAccessToken`, `generateRefreshToken`, and `validateScope`.
+See the [password grant warning](./grant-types.md#password-grant-type).
 
 ### Extension Grants
 
-The authorization server may also implement custom grant types to issue access (and optionally refresh) tokens.
-
-See [extension grants](./grant-types.md#extension-grants)
-
+See [extension grants](./grant-types.md#extension-grants) for custom hook requirements.

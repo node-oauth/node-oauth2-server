@@ -2,7 +2,7 @@
 
 `@node-oauth/oauth2-server` implements the OAuth 2.0 *protocol logic* — the grant
 flows, authorization-code and token validation, scope checks, PKCE verification,
-and RFC-compliant success/error responses. It is deliberately **framework-agnostic
+and response preparation. It is deliberately **framework-agnostic
 and transport-agnostic**: it never touches the network, your HTTP framework, or
 your storage directly.
 
@@ -20,17 +20,22 @@ So you know where the boundary sits, the library takes care of:
 
 - The `authorization_code`, `client_credentials`, `refresh_token` and `password`
   grant flows, plus extension grants.
-- Validating authorization codes, refresh tokens and access tokens (existence,
-  ownership and expiry), and enforcing single use of authorization codes.
-- Scope parsing/validation and PKCE verification (see [PKCE](./pkce.md)).
-- Reading request parameters from **both** the query string and the request body.
-- Requiring the token endpoint to use `POST` with
-  `Content-Type: application/x-www-form-urlencoded`.
-- RFC-compliant responses: the `error` / `error_description` body on failures
-  ([§5.2](https://www.rfc-editor.org/rfc/rfc6749#section-5.2)),
-  `Cache-Control: no-store` and `Pragma: no-cache` on token responses
-  ([§5.1](https://www.rfc-editor.org/rfc/rfc6749#section-5.1)), and the
-  `WWW-Authenticate` header on `401` responses.
+- Authorization-code existence, client ownership, required expiry Date and expiry,
+  followed by model revocation. Single use depends on durable, atomic revocation.
+- Refresh-token existence, client ownership and user presence; refresh expiry is
+  checked only when present and must then be a Date.
+- Access-token existence, user presence and required expiry Date. Authentication
+  does not independently bind the token to a requesting client.
+- Scope parsing, configured scope checks and PKCE verification (see [PKCE](./pkce.md)).
+- Authorization parameters generally from body or query. Token grant type,
+  code, verifier, refresh token and password credentials come from the body;
+  client credentials come from HTTP Basic or the body. Code exchange also
+  accepts `redirect_uri` in the query.
+- Token requests must use `POST` and `application/x-www-form-urlencoded`.
+- Successful token responses have `Cache-Control: no-store` and `Pragma: no-cache`.
+  Caught token failures get error bodies, but early failures do not. Authentication
+  sets challenge headers for selected errors, not a complete error response.
+  See [response responsibilities](./getting-started.md#sending-the-response).
 
 ## What you must handle
 
@@ -59,7 +64,8 @@ endpoint, by contrast, MUST be `POST`, which the library enforces.
 
 ### Send the response and perform redirects
 
-The library *populates* the `Response` object; it does not send it. You must copy
+Response preparation varies by endpoint and failure stage; see
+[Sending the response](./getting-started.md#sending-the-response). The library does not send it. You must copy
 the status, headers and body onto your framework's real response object and, for
 the authorization endpoint, issue the redirect (the `location` header is set for
 you). Do not reassign your framework's `req`/`res` to the library's
@@ -88,16 +94,20 @@ redirect matches the value it sent, remain your responsibility
 
 ### Authenticate the resource owner
 
-For the authorization endpoint you must supply an `authenticateHandler` that
-returns the logged-in user (see [Getting started](./getting-started.md)). The
-library does not implement user login or session management.
+Authorization uses built-in bearer authentication when no custom
+`authenticateHandler` is supplied. For session-based login, provide a handler
+returning the logged-in user and handle login first. A falsy handler result is a
+server error, not a login challenge. See [model requirements](./model.md#authorization-code-grant).
+The library does not implement login or session management.
 
 ### Secure storage in your model
 
 Your [model](./model.md) is responsible for handling secrets and tokens safely:
 hash and compare `client_secret`s, store authorization codes and tokens securely
-and honour their expiry, and validate `redirect_uri`s against the registered set
-(`validateRedirectUri`) — see
+and provide registered `client.redirectUris`. The library defaults to exact
+inclusion checks; `validateRedirectUri` is an optional override. Implement atomic
+code/token revocation and enforce client authentication in the appropriate endpoint
+context (see [PKCE client authentication](./pkce.md#pkce-client-authentication-and-refresh-tokens)) — see
 [RFC 6749 §3.1.2](https://www.rfc-editor.org/rfc/rfc6749#section-3.1.2) and
 [§10](https://www.rfc-editor.org/rfc/rfc6749#section-10).
 
@@ -108,7 +118,7 @@ and honour their expiry, and validate `redirect_uri`s against the registered set
 - [ ] Framework response sent and redirects issued (see [Sending the response](./getting-started.md#sending-the-response)).
 - [ ] **Rate limiting / brute-force** protection on the token and authorization endpoints.
 - [ ] **CSRF** protection on the login/consent UI; `state` validated by clients.
-- [ ] Resource owner authenticated via an `authenticateHandler`.
+- [ ] Resource owner authenticated via bearer fallback or a custom `authenticateHandler`.
 - [ ] Model stores secrets/codes/tokens securely and validates `redirect_uri`.
 - [ ] **PKCE** used for the authorization code grant (see [PKCE](./pkce.md)).
 

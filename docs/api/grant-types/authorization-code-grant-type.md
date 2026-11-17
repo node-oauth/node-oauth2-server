@@ -6,7 +6,7 @@
 * [AuthorizationCodeGrantType](#AuthorizationCodeGrantType)
     * [new AuthorizationCodeGrantType(options)](#new_AuthorizationCodeGrantType_new)
     * [.handle(request, client)](#AuthorizationCodeGrantType+handle)
-    * [.getAuthorizationCode(request, client)](#AuthorizationCodeGrantType+getAuthorizationCode) ⇒ <code>Promise.&lt;{user}&gt;</code>
+    * [.getAuthorizationCode(request, client)](#AuthorizationCodeGrantType+getAuthorizationCode) ⇒ <code>Promise.&lt;AuthorizationCodeData&gt;</code>
     * [.verifyPKCE(request, code)](#AuthorizationCodeGrantType+verifyPKCE)
     * [.validateRedirectUri(request, code)](#AuthorizationCodeGrantType+validateRedirectUri)
     * [.revokeAuthorizationCode(code)](#AuthorizationCodeGrantType+revokeAuthorizationCode)
@@ -35,7 +35,7 @@ Handle authorization code grant.
 
 <a name="AuthorizationCodeGrantType+getAuthorizationCode"></a>
 
-### authorizationCodeGrantType.getAuthorizationCode(request, client) ⇒ <code>Promise.&lt;{user}&gt;</code>
+### authorizationCodeGrantType.getAuthorizationCode(request, client) ⇒ <code>Promise.&lt;AuthorizationCodeData&gt;</code>
 Get the authorization code.
 
 **Kind**: instance method of [<code>AuthorizationCodeGrantType</code>](#AuthorizationCodeGrantType)  
@@ -108,5 +108,5 @@ Save token.
 | user | <code>object</code> | 
 | client | <code>ClientData</code> | 
 | authorizationCode | <code>string</code> | 
-| requestedScope | <code>string</code> | 
+| requestedScope | <code>Array.&lt;string&gt;</code> \| <code>undefined</code> | 
 

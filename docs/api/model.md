@@ -7,7 +7,10 @@ which some aspects of storage, retrieval and custom
 validation are abstracted.</p>
 <p>Each model function is resolved async by default.
 This implies that async and sync model functions,
-as well as generators, are supported.</p>
+returning values or native Promises are supported. Direct generator hooks are not run.
+Promise return types below also permit the corresponding synchronous value.
+This class is an internal reference, not exported by the package entry point;
+applications normally pass a plain object of hooks.</p>
 </dd>
 </dl>
 
@@ -37,7 +40,10 @@ validation are abstracted.
 
 Each model function is resolved async by default.
 This implies that async and sync model functions,
-as well as generators, are supported.
+returning values or native Promises are supported. Direct generator hooks are not run.
+Promise return types below also permit the corresponding synchronous value.
+This class is an internal reference, not exported by the package entry point;
+applications normally pass a plain object of hooks.
 
 **Kind**: global class  
 
@@ -58,7 +64,7 @@ as well as generators, are supported.
         * [.generateAccessToken(client, user, scope)](#Model+generateAccessToken) ⇒ <code>Promise.&lt;string&gt;</code>
         * [.generateRefreshToken(client, user, scope)](#Model+generateRefreshToken) ⇒ <code>Promise.&lt;string&gt;</code>
         * [.generateAuthorizationCode(client, user, scope)](#Model+generateAuthorizationCode) ⇒ <code>Promise.&lt;string&gt;</code>
-        * [.validateScope(user, client, scope)](#Model+validateScope) ⇒ <code>Promise.&lt;boolean&gt;</code>
+        * [.validateScope(user, client, [scope])](#Model+validateScope) ⇒ <code>Promise.&lt;(Array.&lt;string&gt;\|null\|undefined\|false\|0)&gt;</code>
         * [.validateRedirectUri(redirectUri, client)](#Model+validateRedirectUri) ⇒ <code>Promise.&lt;boolean&gt;</code>
     * _static_
         * [.from(impl)](#Model.from) ⇒ [<code>Model</code>](#Model)
@@ -68,8 +74,10 @@ as well as generators, are supported.
 ### new Model()
 **Example**  
 ```js
+// Repository-internal import, not a public package export:
+const Model = require('./lib/model');
 const model = Model.from({
-    getClient: () => { ... }
+    getClient: async (id) => db.queryClient({ id })
 })
 ```
 <a name="Model+getClient"></a>
@@ -85,12 +93,13 @@ This model function is **required** for all grant types.
 - `password` grant
 
 **Remarks:**
-`clientSecret` is `null`/absent for public clients, and also for
-`authorization_code` requests that authenticate with PKCE (a `code_verifier`)
-instead of a secret — even if the client *has* a `client_secret`. PKCE is
-**not** a substitute for client authentication: your implementation must
-reject (return a falsy value) a confidential client that should have
-presented its `client_secret` but did not.
+Authorization always calls `getClient(clientId, null)`, including for confidential
+clients. Token requests pass the supplied secret; PKCE or a per-grant option
+can permit its absence. Always validate supplied secrets. An absent secret
+alone cannot identify the endpoint or distinguish public/confidential clients.
+Confidential token requests still require authentication: use endpoint-specific
+model wrappers as shown in the [PKCE guide](../guide/pkce.md#pkce-client-authentication-and-refresh-tokens).
+Universally rejecting missing secrets here breaks confidential-client authorization.
 
 **Kind**: instance method of [<code>Model</code>](#Model)  
 **Fulfil**: [<code>ClientData</code>](#ClientData) - An `Object` representing the client and associated data, or a falsy value if no such client could be found.  
@@ -113,7 +122,7 @@ This model function is **required** for all grant types.
 - `refresh_token` grant
 - `password` grant
 
-If the `allowExtendedTokenAttributes` server option is enabled (see `OAuth2Server#token() <OAuth2Server#token>`) any additional attributes set on the result are copied to the token response sent to the client.
+If the `allowExtendedTokenAttributes` server option is enabled (see [OAuth2Server#token](server.md#OAuth2Server+token)) any additional attributes set on the result are copied to the token response sent to the client.
 
 **Kind**: instance method of [<code>Model</code>](#Model)  
 **Fulfil**: <code>{accessToken:string,accessTokenExpiresAt:Date,refreshToken: string,refreshTokenExpiresAt: Date,scope: string[],client: ClientData,user: object</code>} An `Object` representing the token(s) and associated data.  
@@ -123,44 +132,33 @@ If the `allowExtendedTokenAttributes` server option is enabled (see `OAuth2Serve
 | token | <code>object</code> | The token(s) to be saved. |
 | token.accessToken | <code>string</code> | The access token to be saved. |
 | token.accessTokenExpiresAt | <code>Date</code> | The expiry time of the access token. |
-| token.refreshToken | <code>string</code> | The refresh token to be saved. |
-| token.refreshTokenExpiresAt | <code>Date</code> | The expiry time of the refresh token. |
-| token.scope | <code>Array.&lt;string&gt;</code> | The authorized scope of the token(s) |
+| [token.refreshToken] | <code>string</code> | The refresh token to be saved. |
+| [token.refreshTokenExpiresAt] | <code>Date</code> | The expiry time of the refresh token. |
+| [token.scope] | <code>Array.&lt;string&gt;</code> | The authorized scope of the token(s) |
 | client | [<code>ClientData</code>](#ClientData) | The client associated with the token(s). |
 | user | <code>object</code> | The user associated with the token(s). |
 
 **Example**  
 ```js
-function saveToken(token, client, user) {
-  // imaginary DB queries
-  let fns = [
-    db.saveAccessToken({
-      access_token: token.accessToken,
-      expires_at: token.accessTokenExpiresAt,
-      scope: token.scope,
-      client_id: client.id,
-      user_id: user.id
-    }),
-    db.saveRefreshToken({
+async function saveToken(token, client, user) {
+  // Imaginary DB methods return native Promises. Use a transaction if needed.
+  await db.saveAccessToken({
+    access_token: token.accessToken,
+    expires_at: token.accessTokenExpiresAt,
+    scope: token.scope,
+    client_id: client.id,
+    user_id: user.id
+  });
+  if (token.refreshToken) {
+    await db.saveRefreshToken({
       refresh_token: token.refreshToken,
       expires_at: token.refreshTokenExpiresAt,
       scope: token.scope,
       client_id: client.id,
       user_id: user.id
-    })
-  ];
-  return Promise.all(fns);
-    .spread(function(accessToken, refreshToken) {
-      return {
-        accessToken: accessToken.access_token,
-        accessTokenExpiresAt: accessToken.expires_at,
-        refreshToken: refreshToken.refresh_token,
-        refreshTokenExpiresAt: refreshToken.expires_at,
-        scope: accessToken.scope,
-        client: {id: accessToken.client_id},
-        user: {id: accessToken.user_id}
-      };
     });
+  }
+  return { ...token, client, user };
 }
 ```
 <a name="Model+getUser"></a>
@@ -203,7 +201,7 @@ This model function is **required** if the `client_credentials` grant is used.
 
 **Remarks:**
 
-`client` is the object previously obtained through `Model#getClient() <Model#getClient>`.
+`client` is the object previously obtained through [Model#getClient](model.md#Model+getClient).
 
 **Kind**: instance method of [<code>Model</code>](#Model)  
 **Returns**: <code>Promise.&lt;object&gt;</code> - An `Object` representing the user, or a falsy value if the client does not have an associated user. The user object is completely transparent to *oauth2-server* and is simply used as input to other model functions.  
@@ -222,8 +220,8 @@ function getUserFromClient(client) {
 <a name="Model+getAccessToken"></a>
 
 ### model.getAccessToken(accessToken) ⇒ [<code>Promise.&lt;AccessTokenData&gt;</code>](#AccessTokenData)
-Invoked to retrieve an existing access token, including associated data, that has previously been saved through `Model#saveToken() <Model#saveToken>`.
-This model function is **required** if `OAuth2Server#authenticate() <OAuth2Server#authenticate>` is used.
+Invoked to retrieve an existing access token, including associated data, that has previously been saved through [Model#saveToken](model.md#Model+saveToken).
+This model function is **required** if [OAuth2Server#authenticate](server.md#OAuth2Server+authenticate) is used.
 
 **Invoked during:**
 - request authentication
@@ -241,13 +239,15 @@ function getAccessToken(accessToken) {
   // imaginary DB queries
   return db.queryAccessToken({access_token: accessToken})
     .then(function(token) {
+      if (!token) return [null];
       return Promise.all([
         token,
         db.queryClient({id: token.client_id}),
         db.queryUser({id: token.user_id})
       ]);
     })
-    .spread(function(token, client, user) {
+    .then(function([token, client, user]) {
+      if (!token) return false;
       return {
         accessToken: token.access_token,
         accessTokenExpiresAt: token.expires_at,
@@ -261,7 +261,7 @@ function getAccessToken(accessToken) {
 <a name="Model+getRefreshToken"></a>
 
 ### model.getRefreshToken(refreshToken) ⇒ [<code>Promise.&lt;RefreshTokenData&gt;</code>](#RefreshTokenData)
-Invoked to retrieve an existing refresh token previously saved through `Model#saveToken() <Model#saveToken>`.
+Invoked to retrieve an existing refresh token previously saved through [Model#saveToken](model.md#Model+saveToken).
 This model function is **required** if the `refresh_token` grant is used.
 **Invoked during:**
 - `refresh_token` grant
@@ -271,7 +271,7 @@ This model function is **required** if the `refresh_token` grant is used.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| refreshToken | <code>string</code> | The access token to retrieve. |
+| refreshToken | <code>string</code> | The refresh token to retrieve. |
 
 **Example**  
 ```js
@@ -279,13 +279,15 @@ function getRefreshToken(refreshToken) {
   // imaginary DB queries
   return db.queryRefreshToken({refresh_token: refreshToken})
     .then(function(token) {
+      if (!token) return [null];
       return Promise.all([
         token,
         db.queryClient({id: token.client_id}),
         db.queryUser({id: token.user_id})
       ]);
     })
-    .spread(function(token, client, user) {
+    .then(function([token, client, user]) {
+      if (!token) return false;
       return {
         refreshToken: token.refresh_token,
         refreshTokenExpiresAt: token.expires_at,
@@ -299,7 +301,7 @@ function getRefreshToken(refreshToken) {
 <a name="Model+getAuthorizationCode"></a>
 
 ### model.getAuthorizationCode(authorizationCode) ⇒ [<code>Promise.&lt;AuthorizationCodeData&gt;</code>](#AuthorizationCodeData)
-Invoked to retrieve an existing authorization code previously saved through `Model#saveAuthorizationCode() <Model#saveAuthorizationCode>`.
+Invoked to retrieve an existing authorization code previously saved through [Model#saveAuthorizationCode](model.md#Model+saveAuthorizationCode).
 This model function is **required** if the `authorization_code` grant is used.
 **Invoked during:**
 - `authorization_code` grant
@@ -317,17 +319,21 @@ function getAuthorizationCode(authorizationCode) {
   // imaginary DB queries
   return db.queryAuthorizationCode({authorization_code: authorizationCode})
     .then(function(code) {
+      if (!code) return [null];
       return Promise.all([
         code,
         db.queryClient({id: code.client_id}),
         db.queryUser({id: code.user_id})
       ]);
     })
-    .spread(function(code, client, user) {
+    .then(function([code, client, user]) {
+      if (!code) return false;
       return {
         authorizationCode: code.authorization_code,
         expiresAt: code.expires_at,
         redirectUri: code.redirect_uri,
+        codeChallenge: code.code_challenge,
+        codeChallengeMethod: code.code_challenge_method,
         scope: code.scope,
         client: client, // with 'id' property
         user: user
@@ -353,7 +359,9 @@ This model function is **required** if the `authorization_code` grant is used.
 | code.authorizationCode | <code>string</code> | The authorization code to be saved. |
 | code.expiresAt | <code>Date</code> | The expiry time of the authorization code. |
 | code.redirectUri | <code>string</code> | The redirect URI associated with the authorization code. |
-| code.scope | <code>Array.&lt;string&gt;</code> | The authorized scope of the authorization code. |
+| [code.codeChallenge] | <code>string</code> | PKCE challenge; dropping it prevents PKCE exchange. |
+| [code.codeChallengeMethod] | <code>string</code> | PKCE method; preserve when loading. |
+| [code.scope] | <code>Array.&lt;string&gt;</code> | The authorized scope of the authorization code. |
 | client | [<code>ClientData</code>](#ClientData) | The client associated with the authorization code. |
 | user | <code>object</code> | The user associated with the authorization code. |
 
@@ -365,6 +373,8 @@ function saveAuthorizationCode(code, client, user) {
     authorization_code: code.authorizationCode,
     expires_at: code.expiresAt,
     redirect_uri: code.redirectUri,
+    code_challenge: code.codeChallenge,
+    code_challenge_method: code.codeChallengeMethod,
     scope: code.scope,
     client_id: client.id,
     user_id: user.id
@@ -375,6 +385,8 @@ function saveAuthorizationCode(code, client, user) {
         authorizationCode: authorizationCode.authorization_code,
         expiresAt: authorizationCode.expires_at,
         redirectUri: authorizationCode.redirect_uri,
+        codeChallenge: authorizationCode.code_challenge,
+        codeChallengeMethod: authorizationCode.code_challenge_method,
         scope: authorizationCode.scope,
         client: {id: authorizationCode.client_id},
         user: {id: authorizationCode.user_id}
@@ -388,10 +400,10 @@ function saveAuthorizationCode(code, client, user) {
 Invoked to revoke a refresh token.
 This model function is **required** if the `refresh_token` grant is used.
 **Invoked during:**
-- `refresh_token` grant
+- `refresh_token` grant (hook required even when rotation is disabled; invocation is skipped then)
 
 **Remarks:**
-`token` is the refresh token object previously obtained through `Model#getRefreshToken() <Model#getRefreshToken>`.
+`token` is the refresh token object previously obtained through [Model#getRefreshToken](model.md#Model+getRefreshToken).
 
 **Kind**: instance method of [<code>Model</code>](#Model)  
 **Returns**: <code>Promise.&lt;boolean&gt;</code> - Return `true` if the revocation was successful or `false` if the refresh token could not be found.  
@@ -434,15 +446,16 @@ This model function is **required** if the `authorization_code` grant is used.
 ### model.verifyScope(accessToken, scope) ⇒ <code>Promise.&lt;boolean&gt;</code>
 Invoked during request authentication to check if the provided access token was authorized the requested scopes.
 
-This model function is **required** if scopes are used with `OAuth2Server#authenticate() <OAuth2Server#authenticate>`
-but it's never called, if you provide your own `authenticateHandler` to the options.
+This model function is **required** if scopes are used with [OAuth2Server#authenticate](server.md#OAuth2Server+authenticate)
+A custom `authenticateHandler` bypasses this hook only for `authorize`.
+`OAuth2Server.authenticate` always uses built-in authentication.
 
 **Invoked during:**
 - request authentication
 
 **Remarks:**
-- `token` is the access token object previously obtained through `Model#getAccessToken() <Model#getAccessToken>`.
-- `scope` is the required scope as given to `OAuth2Server#authenticate() <OAuth2Server#authenticate>` as `options.scope`.
+- `token` is the access token object previously obtained through [Model#getAccessToken](model.md#Model+getAccessToken).
+- `scope` is the required scope as given to [OAuth2Server#authenticate](server.md#OAuth2Server+authenticate) as `options.scope`.
 
 **Kind**: instance method of [<code>Model</code>](#Model)  
 **Returns**: <code>Promise.&lt;boolean&gt;</code> - Returns `true` if the access token passes, `false` otherwise.  
@@ -468,7 +481,7 @@ function verifyScope(token, requestedScopes) {
 Invoked to generate a new access token.
 This model function is **optional**.
 
-If not implemented, a default handler is used that generates access tokens consisting of 40 characters in the range of `a..z0..9`.
+If not implemented, a default handler is used that generates access tokens consisting of 64 lowercase hexadecimal characters (`0..9a..f`), encoding 32 random bytes.
 [RFC 6749 Appendix A.12](https://www.rfc-editor.org/rfc/rfc6749#appendix-A.12>) specifies that access tokens must consist of characters inside the range `0x20..0x7E` (i.e. only printable US-ASCII characters).
 
 **Invoked during:**
@@ -478,8 +491,8 @@ If not implemented, a default handler is used that generates access tokens consi
 - `password` grant
 
 **Remarks:**
-- `client` is the object previously obtained through `Model#getClient() <Model#getClient>`.
-- `user` is the user object previously obtained through `Model#getAuthorizationCode() <Model#getAuthorizationCode>` (`code.user`; authorization code grant), `Model#getUserFromClient() <Model#getUserFromClient>` (client credentials grant), `Model#getRefreshToken() <Model#getRefreshToken>` (`token.user`; refresh token grant) or `Model#getUser() <Model#getUser>` (password grant).
+- `client` is the object previously obtained through [Model#getClient](model.md#Model+getClient).
+- `user` is the user object previously obtained through [Model#getAuthorizationCode](model.md#Model+getAuthorizationCode) (`code.user`; authorization code grant), [Model#getUserFromClient](model.md#Model+getUserFromClient) (client credentials grant), [Model#getRefreshToken](model.md#Model+getRefreshToken) (`token.user`; refresh token grant) or [Model#getUser](model.md#Model+getUser) (password grant).
 
 **Kind**: instance method of [<code>Model</code>](#Model)  
 **Returns**: <code>Promise.&lt;string&gt;</code> - A `String` to be used as access token.  
@@ -495,7 +508,7 @@ If not implemented, a default handler is used that generates access tokens consi
 ### model.generateRefreshToken(client, user, scope) ⇒ <code>Promise.&lt;string&gt;</code>
 Invoked to generate a new refresh token.
 
-This model function is **optional**. If not implemented, a default handler is used that generates refresh tokens consisting of 40 characters in the range of `a..z0..9`.
+This model function is **optional**. If not implemented, a default handler is used that generates refresh tokens consisting of 64 lowercase hexadecimal characters (`0..9a..f`), encoding 32 random bytes.
 [RFC 6749 Appendix A.17](https://www.rfc-editor.org/6749#appendix-A.17) specifies that refresh tokens must consist of characters inside the range `0x20..0x7E` (i.e. only printable US-ASCII characters).
 
 **Invoked during:**
@@ -506,9 +519,9 @@ This model function is **optional**. If not implemented, a default handler is us
 
 **Remarks:**
 
-`client` is the object previously obtained through `Model#getClient() <Model#getClient>`.
+`client` is the object previously obtained through [Model#getClient](model.md#Model+getClient).
 
-`user` is the user object previously obtained through `Model#getAuthorizationCode() <Model#getAuthorizationCode>` (`code.user`; authorization code grant), `Model#getRefreshToken() <Model#getRefreshToken>` (`token.user`; refresh token grant) or `Model#getUser() <Model#getUser>` (password grant).
+`user` is the user object previously obtained through [Model#getAuthorizationCode](model.md#Model+getAuthorizationCode) (`code.user`; authorization code grant), [Model#getRefreshToken](model.md#Model+getRefreshToken) (`token.user`; refresh token grant) or [Model#getUser](model.md#Model+getUser) (password grant).
 
 **Kind**: instance method of [<code>Model</code>](#Model)  
 **Returns**: <code>Promise.&lt;string&gt;</code> - A `String` to be used as refresh token.  
@@ -523,7 +536,7 @@ This model function is **optional**. If not implemented, a default handler is us
 
 ### model.generateAuthorizationCode(client, user, scope) ⇒ <code>Promise.&lt;string&gt;</code>
 Invoked to generate a new authorization code.
-This model function is **optional**. If not implemented, a default handler is used that generates authorization codes consisting of 40 characters in the range of `a..z0..9`.
+This model function is **optional**. If not implemented, a default handler is used that generates authorization codes consisting of 64 lowercase hexadecimal characters (`0..9a..f`), encoding 32 random bytes.
 [RFC 6749 Appendix A.11](https://www.rfc-editor.org/6749#appendix-A.11) specifies that authorization codes must consist of characters inside the range `0x20..0x7E` (i.e. only printable US-ASCII characters).
 
 **Invoked during:**
@@ -541,7 +554,7 @@ This model function is **optional**. If not implemented, a default handler is us
 
 <a name="Model+validateScope"></a>
 
-### model.validateScope(user, client, scope) ⇒ <code>Promise.&lt;boolean&gt;</code>
+### model.validateScope(user, client, [scope]) ⇒ <code>Promise.&lt;(Array.&lt;string&gt;\|null\|undefined\|false\|0)&gt;</code>
 Invoked to check if the requested `scope` is valid for a particular `client`/`user` combination.
 
 This model function is **optional**. If not implemented, any scope is accepted.
@@ -554,26 +567,28 @@ This model function is **optional**. If not implemented, any scope is accepted.
 
 **Remarks:**
 
-`user` is the user object previously obtained through `Model#getAuthorizationCode() <Model#getAuthorizationCode>` (`code.user`; authorization code grant), `Model#getUserFromClient() <Model#getUserFromClient>` (client credentials grant) or `Model#getUser() <Model#getUser>` (password grant).
+`user` is the user object previously obtained through [Model#getAuthorizationCode](model.md#Model+getAuthorizationCode) (`code.user`; authorization code grant), [Model#getUserFromClient](model.md#Model+getUserFromClient) (client credentials grant) or [Model#getUser](model.md#Model+getUser) (password grant).
 
-`client` is the object previously obtained through `Model#getClient <Model#getClient>` (all grants).
+`client` is the object previously obtained through [Model#getClient](model.md#Model+getClient) (all grants).
 
 You can decide yourself whether you want to reject or accept partially valid scopes by simply filtering out invalid scopes and returning only the valid ones.
+At the authorization endpoint, `user` comes from the custom authenticate handler
+or the built-in bearer fallback; during code exchange it comes from the stored code.
 
 **Kind**: instance method of [<code>Model</code>](#Model)  
-**Returns**: <code>Promise.&lt;boolean&gt;</code> - Validated scopes to be used or a falsy value to reject the requested scopes.  
+**Returns**: <code>Promise.&lt;(Array.&lt;string&gt;\|null\|undefined\|false\|0)&gt;</code> - Accepted scope array, or a falsy rejection. Synchronous values are also supported. Returning `true` is not a usable scope; `verifyScope` has the separate boolean contract.  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | user | <code>object</code> | The associated user. |
 | client | [<code>ClientData</code>](#ClientData) | The associated client. |
-| scope | <code>Array.&lt;string&gt;</code> | The scopes to validate. |
+| [scope] | <code>Array.&lt;string&gt;</code> | The scopes to validate; omitted scope is undefined. |
 
 **Example**  
 ```js
 // To reject invalid or only partially valid scopes:
 const VALID_SCOPES = ['read', 'write'];
-function validateScope(user, client, scope) {
+function validateScope(user, client, scope = []) {
   if (!scope.every(s => VALID_SCOPES.indexOf(s) >= 0)) {
     return false;
   }
@@ -584,7 +599,7 @@ function validateScope(user, client, scope) {
 ```js
 // To accept partially valid scopes:
 const VALID_SCOPES = ['read', 'write'];
-function validateScope(user, client, scope) {
+function validateScope(user, client, scope = []) {
   return scope.filter(s => VALID_SCOPES.indexOf(s) >= 0);
 }
 ```
@@ -634,7 +649,7 @@ An `Object` representing the access token and associated data. `token.client` an
 | --- | --- | --- |
 | accessToken | <code>string</code> | The access token passed to `getAccessToken()` |
 | accessTokenExpiresAt | <code>Date</code> | The expiry time of the access token. |
-| scope | <code>Array.&lt;string&gt;</code> | The authorized scope of the access token. |
+| [scope] | <code>Array.&lt;string&gt;</code> | The authorized scope of the access token. |
 | client | <code>object</code> | The client associated with the access token. |
 | client.id | <code>string</code> | A unique string identifying the client. |
 | user | <code>object</code> | The user associated with the access token. |
@@ -650,8 +665,8 @@ An `Object` representing the refresh token and associated data. `token.client` a
 | Name | Type | Description |
 | --- | --- | --- |
 | refreshToken | <code>string</code> | The refresh token passed to `getRefreshToken()` |
-| refreshTokenExpiresAt | <code>Date</code> | The expiry time of the refresh token. |
-| scope | <code>Array.&lt;string&gt;</code> | The authorized scope of the refresh token. |
+| [refreshTokenExpiresAt] | <code>Date</code> | The expiry time of the refresh token. |
+| [scope] | <code>Array.&lt;string&gt;</code> | The authorized scope of the refresh token. |
 | client | [<code>ClientData</code>](#ClientData) | The client associated with the refresh token. |
 | user | <code>object</code> | The user associated with the access token. |
 
@@ -665,10 +680,12 @@ An `Object` representing the authorization code and associated data. `code.clien
 
 | Name | Type | Description |
 | --- | --- | --- |
+| [codeChallenge] | <code>string</code> | Stored PKCE challenge; preserve during save/load. |
+| [codeChallengeMethod] | <code>string</code> | Stored PKCE method (S256 or plain). |
 | authorizationCode | <code>string</code> | The authorization code passed to `getAuthorizationCode()`. |
 | expiresAt | <code>Date</code> | The expiry time of the authorization code. |
 | redirectUri | <code>string</code> | The redirect URI of the authorization code. |
-| scope | <code>Array.&lt;string&gt;</code> | The authorized scope of the authorization code. |
+| [scope] | <code>Array.&lt;string&gt;</code> | The authorized scope of the authorization code. |
 | client | [<code>ClientData</code>](#ClientData) | The client associated with the authorization code. |
 | user | <code>object</code> | The user associated with the access token. |
 
@@ -685,6 +702,6 @@ An `Object` representing the client and associated data.
 | id | <code>string</code> | A unique string identifying the client. |
 | redirectUris | <code>Array.&lt;string&gt;</code> | Redirect URIs allowed for the client. Required for the `authorization_code` grant. |
 | grants | <code>Array.&lt;string&gt;</code> | Grant types allowed for the client. |
-| accessTokenLifetime | <code>number</code> | Client-specific lifetime of generated access tokens in seconds. |
-| refreshTokenLifetime | <code>number</code> | Client-specific lifetime of generated refresh tokens in seconds. |
+| [accessTokenLifetime] | <code>number</code> | Client-specific lifetime of generated access tokens in seconds. |
+| [refreshTokenLifetime] | <code>number</code> | Client-specific lifetime of generated refresh tokens in seconds. |
 

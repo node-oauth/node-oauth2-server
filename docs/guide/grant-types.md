@@ -45,7 +45,7 @@ username and password, typically using an interactive form).
 
 **Defined in:** [Section 4.4 of RFC 6749](https://www.rfc-editor.org/rfc/rfc6749#section-4.4).
 
-**Model requirements:** [Model for Refresh Token Code Grant](./model.md#refresh-token-grant)
+**Model requirements:** [Model for Client Credentials Grant](./model.md#client-credentials-grant)
 
 The client can request an access token using only its client credentials (or other supported means of authentication)
 when requesting access to the protected resources under its control.
@@ -53,7 +53,7 @@ The client credentials grant type **must** only be used by confidential clients.
 
 ## Extension Grants
 
-**Defined in:** [Section 4.5 of RFC 6749](https://www.rfc-editor.org/rfc/rfc6749#section-4.4).
+**Defined in:** [Section 4.5 of RFC 6749](https://www.rfc-editor.org/rfc/rfc6749#section-4.5).
 
 Create a subclass of `AbstractGrantType` and create methods <span class="title-ref">handle</span>
 and <span class="title-ref">saveToken</span> along with other required methods according to your needs:
@@ -82,14 +82,14 @@ class MyCustomGrantType extends AbstractGrantType {
     }
 
     async saveToken(user, client, scope) {
-        this.validateScope(user, client, scope);
+        const validatedScope = await this.validateScope(user, client, scope);
 
         let token = {
-            accessToken: await this.generateAccessToken(client, user, scope),
+            accessToken: await this.generateAccessToken(client, user, validatedScope),
             accessTokenExpiresAt: this.getAccessTokenExpiresAt(),
-            refreshToken: await this.generateRefreshToken(client, user, scope),
+            refreshToken: await this.generateRefreshToken(client, user, validatedScope),
             refreshTokenExpiresAt: this.getRefreshTokenExpiresAt(),
-            scope: scope
+            scope: validatedScope
         };
 
         return this.model.saveToken(token, client, user);
@@ -104,7 +104,10 @@ module.exports = MyCustomGrantType;
 ```
 
 Extension grants are registered
-through [OAuth2Server#token](../api/server.md#oauth2servertokenrequest-response-options--codepromiseobjectcode) (
+through [OAuth2Server#token](../api/server.md#OAuth2Server+token) (
 `options.extendedGrantTypes`).
 
-This might require you to approve the new `grant_type` for a particular `client` if you do checks on valid grant types.
+The extension URI must also appear in `client.grants`; the token handler always
+rejects grants not approved for that client. Implement `getUserBySomething` using
+your application's credential validation. Awaiting scope validation prevents token
+storage on rejection and ensures any reduced scope is generated, saved and returned.

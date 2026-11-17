@@ -7,11 +7,11 @@
 * [AbstractGrantType](#AbstractGrantType)
     * [new AbstractGrantType(options)](#new_AbstractGrantType_new)
     * [.generateAccessToken(client, user, scope)](#AbstractGrantType+generateAccessToken) ⇒ <code>Promise.&lt;string&gt;</code>
-    * [.generateRefreshToken()](#AbstractGrantType+generateRefreshToken)
+    * [.generateRefreshToken(client, user, scope)](#AbstractGrantType+generateRefreshToken)
     * [.getAccessTokenExpiresAt()](#AbstractGrantType+getAccessTokenExpiresAt)
     * [.getRefreshTokenExpiresAt()](#AbstractGrantType+getRefreshTokenExpiresAt) ⇒ <code>Date</code>
-    * [.getScope(request)](#AbstractGrantType+getScope) ⇒ <code>string</code> \| <code>undefined</code>
-    * [.validateScope(user, client, scope)](#AbstractGrantType+validateScope) ⇒ <code>string</code>
+    * [.getScope(request)](#AbstractGrantType+getScope) ⇒ <code>Array.&lt;string&gt;</code> \| <code>undefined</code>
+    * [.validateScope(user, client, scope)](#AbstractGrantType+validateScope) ⇒ <code>Promise.&lt;(Array.&lt;string&gt;\|undefined)&gt;</code>
 
 <a name="new_AbstractGrantType_new"></a>
 
@@ -40,18 +40,25 @@ Otherwise, falls back to an internal implementation from `TokenUtil.generateRand
 
 **Kind**: instance method of [<code>AbstractGrantType</code>](#AbstractGrantType)  
 
-| Param |
-| --- |
-| client | 
-| user | 
-| scope | 
+| Param | Type |
+| --- | --- |
+| client | <code>ClientData</code> | 
+| user | <code>object</code> | 
+| scope | <code>Array.&lt;string&gt;</code> \| <code>undefined</code> | 
 
 <a name="AbstractGrantType+generateRefreshToken"></a>
 
-### abstractGrantType.generateRefreshToken()
+### abstractGrantType.generateRefreshToken(client, user, scope)
 Generate refresh token.
 
 **Kind**: instance method of [<code>AbstractGrantType</code>](#AbstractGrantType)  
+
+| Param | Type |
+| --- | --- |
+| client | <code>ClientData</code> | 
+| user | <code>object</code> | 
+| scope | <code>Array.&lt;string&gt;</code> \| <code>undefined</code> | 
+
 <a name="AbstractGrantType+getAccessTokenExpiresAt"></a>
 
 ### abstractGrantType.getAccessTokenExpiresAt()
@@ -66,7 +73,7 @@ Get refresh token expiration date (now + refresh token lifetime)
 **Kind**: instance method of [<code>AbstractGrantType</code>](#AbstractGrantType)  
 <a name="AbstractGrantType+getScope"></a>
 
-### abstractGrantType.getScope(request) ⇒ <code>string</code> \| <code>undefined</code>
+### abstractGrantType.getScope(request) ⇒ <code>Array.&lt;string&gt;</code> \| <code>undefined</code>
 Get scope from the request body.
 
 **Kind**: instance method of [<code>AbstractGrantType</code>](#AbstractGrantType)  
@@ -77,14 +84,14 @@ Get scope from the request body.
 
 <a name="AbstractGrantType+validateScope"></a>
 
-### abstractGrantType.validateScope(user, client, scope) ⇒ <code>string</code>
+### abstractGrantType.validateScope(user, client, scope) ⇒ <code>Promise.&lt;(Array.&lt;string&gt;\|undefined)&gt;</code>
 Validate requested scope.
 Delegates validation to the Model's `validateScope` method,
 if the model implements this method.
 Otherwise, treats given scope as valid.
 
 **Kind**: instance method of [<code>AbstractGrantType</code>](#AbstractGrantType)  
-**Returns**: <code>string</code> - the validated scope  
+**Returns**: <code>Promise.&lt;(Array.&lt;string&gt;\|undefined)&gt;</code> - the validated scope  
 **Throws**:
 
 - <code>InvalidScopeError</code> if the {Model#validateScope} method returned a falsy value
@@ -94,5 +101,5 @@ Otherwise, treats given scope as valid.
 | --- | --- |
 | user | <code>object</code> | 
 | client | <code>ClientData</code> | 
-| scope | <code>string</code> | 
+| scope | <code>Array.&lt;string&gt;</code> \| <code>undefined</code> | 
 

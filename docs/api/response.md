@@ -8,30 +8,28 @@ response signature.
 **Kind**: global class  
 
 * [Response](#Response)
-    * [new Response(headers, method, [body], ...otherOptions)](#new_Response_new)
+    * [new Response([options])](#new_Response_new)
     * [.get(field)](#Response+get) ⇒ <code>string</code> \| <code>undefined</code>
     * [.redirect(url)](#Response+redirect)
     * [.set(field, value)](#Response+set)
 
 <a name="new_Response_new"></a>
 
-### new Response(headers, method, [body], ...otherOptions)
+### new Response([options])
 Create a new Response instance.
+Additional properties on options are copied onto the wrapper.
 
 
 | Param | Type | Description |
 | --- | --- | --- |
-| headers | <code>object</code> | key-value object of headers |
-| method | <code>string</code> | the HTTP method |
-| [body] | <code>object</code> | optional key-value object of body parameters |
-| ...otherOptions | <code>object</code> | any other properties that should be assigned to the request by your webserver |
+| [options] | <code>object</code> | Wrapper options. |
+| [options.headers] | <code>object</code> | key-value object of headers |
+| [options.body] | <code>object</code> | optional key-value object of body parameters |
 
 **Example**  
 ```js
-function (req, res, next) {
-  // most webservers follow a similar structure
-  const response = new Response(res);
-}
+const { Response } = require('@node-oauth/oauth2-server');
+const response = new Response({ headers: {}, body: {} });
 ```
 <a name="Response+get"></a>
 

@@ -15,12 +15,12 @@ depends on *when* it is raised:
   a required method, or `request`/`response` not being instances of this
   library's `Request`/`Response`) it is thrown to your code unchanged, before
   any response is produced — so you can catch it while wiring up the server.
-- **While handling a request** (for example, when a `model` returns malformed
-  token data) the `token` and `authorize` handlers normalise it to a
-  `ServerError` (`server_error`) before the response reaches the client,
-  preserving the original error as `.inner`. So when you `catch` errors from
-  `OAuth2Server#token` or `OAuth2Server#authorize`, expect a `ServerError`
-  (inspect its `.inner`) for these cases — not an `InvalidArgumentError`.
+- **Inside the token/authorize normalization blocks**, programming and non-OAuth
+  errors become `ServerError` with the original error in `.inner`.
+- **Before those blocks**, errors propagate unchanged. In particular, authorization
+  client and user lookup run before its catch, as do token method/content-type
+  checks. Authentication preserves OAuth errors, including `InvalidArgumentError`.
+Integrations must handle early failures locally and avoid exposing internal errors.
 
 **Kind**: global class  
 <a name="new_InvalidArgumentError_new"></a>

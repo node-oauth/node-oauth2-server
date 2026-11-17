@@ -2,6 +2,26 @@ import {defineConfig} from 'vitepress'
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
+    srcExclude: ['plans/**'],
+    markdown: {
+        config(md) {
+            // VitePress normalizes Markdown fragments, but JSDoc emits raw named
+            // anchors. Add matching IDs while preserving the original names.
+            for (const rule of ['html_inline', 'html_block']) {
+                const render = md.renderer.rules[rule]!
+                md.renderer.rules[rule] = (tokens, index, options, env, self) => {
+                    return render(tokens, index, options, env, self).replace(
+                        /<a name="([\w.+]+)">/g,
+                        (anchor, name: string) => {
+                            if (!/[_.+]/.test(name)) return anchor
+                            const id = name.replace(/[_.+]+/g, '-').toLowerCase()
+                            return `<a id="${id}" name="${name}">`
+                        }
+                    )
+                }
+            }
+        }
+    },
     title: "@node-oauth/oauth2-server",
     description: "OAuth2 server for Node.js",
     base: '/node-oauth2-server/',
