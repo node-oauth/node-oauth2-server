@@ -51,6 +51,95 @@ The client can request an access token using only its client credentials (or oth
 when requesting access to the protected resources under its control.
 The client credentials grant type **must** only be used by confidential clients.
 
+## JWT Bearer Grant Type
+
+**Defined in:** [RFC 7523 §2.1](https://datatracker.ietf.org/doc/html/rfc7523#section-2.1) (a profile of the [assertion framework, RFC 7521](https://datatracker.ietf.org/doc/html/rfc7521)).
+
+A signed JWT *is* the authorization grant: the assertion's `iss` identifies a trusted issuer
+and `sub` the principal the access token is issued for. This is the flow used for service-account
+and trusted-IdP token exchange. It ships as an opt-in extension grant, `JwtBearerGrantType`,
+registered through `extendedGrantTypes`:
+
+``` js
+const OAuth2Server = require('@node-oauth/oauth2-server');
+const { JwtBearerGrantType } = OAuth2Server;
+
+const server = new OAuth2Server({
+  model,
+  extendedGrantTypes: {
+    'urn:ietf:params:oauth:grant-type:jwt-bearer': JwtBearerGrantType
+  },
+  // the requester MUST be identified by a registered `client_id` (see note below):
+  requireClientAuthentication: { 'urn:ietf:params:oauth:grant-type:jwt-bearer': false }
+});
+```
+
+The client sends the assertion as a normal token request; `scope` is a body parameter (it is not
+read from the assertion):
+
+```
+POST /oauth/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer
+&assertion=eyJhbGciOiJSUzI1Ni...
+&client_id=client-1
+&scope=read
+```
+
+**Model requirements:** in addition to `getClient` and `saveToken`, the model must implement:
+
+- `getJWTBearerIssuer(issuer)` — resolve a trusted issuer's verification key material and expected
+  audience (`{ audience, jwks | jwksUri | secret }`); return a falsy value to reject an untrusted issuer.
+- `getJWTBearerUser({ issuer, subject, client, scope, jti, assertionId, exp })` — resolve and
+  authorize the principal the token is for; return a falsy value to deny. Enforce single-use replay
+  protection here if required, keyed on `assertionId` (the `jti`, or a signing-input fingerprint when
+  the assertion has no `jti`).
+
+``` js
+const model = {
+  async getJWTBearerIssuer (issuer) {
+    const trusted = await db.findTrustedIssuer(issuer)
+    if (!trusted) return false
+    return { audience: 'https://as.example.com/oauth/token', jwks: trusted.jwks }
+  },
+  async getJWTBearerUser ({ issuer, subject, assertionId, exp }) {
+    // MUST verify this issuer is permitted to assert this subject, otherwise any
+    // trusted issuer could obtain a token for any user:
+    if (!await db.issuerMayAssert(issuer, subject)) return false
+    // Enforce single-use to prevent replay. `assertionId` is the `jti`, or a
+    // signing-input fingerprint when the assertion carries no `jti`:
+    if (await db.assertionIdUsed(assertionId)) return false
+    await db.saveAssertionId(assertionId, exp)
+    return db.findUser(subject)
+  }
+}
+```
+
+The assertion is verified per [RFC 7523 §3](https://datatracker.ietf.org/doc/html/rfc7523#section-3)
+(signature against the issuer's key, required `iss`/`sub`/`aud`/`exp`, audience and algorithm
+checks); a failed assertion is rejected with `invalid_grant`. No refresh token is issued
+([RFC 7521 §5.2](https://datatracker.ietf.org/doc/html/rfc7521#section-5.2)).
+
+> [!WARNING]
+> **Replay:** the library does not track used assertions itself. Unless `getJWTBearerUser` enforces
+> single-use on `assertionId` (and/or you keep `exp` short), a captured assertion is replayable
+> until it expires — and each replay yields a fresh access token. `assertionId` is stable whether or
+> not the assertion carries a `jti`, so track it and prefer short-lived assertions.
+
+> [!WARNING]
+> **Issuer/subject authorization:** `getJWTBearerUser` MUST verify that the `issuer` is permitted to
+> assert the given `subject`. If it merely resolves the subject to a user, any trusted issuer can
+> obtain a token for any user.
+
+> [!NOTE]
+> This grant requires a registered `client_id` (resolved via `getClient`); it does not support the
+> assertion-only request (no `client_id`) used by some providers, because the client is resolved
+> before the grant runs. It asserts *who is authorized* and is distinct from
+> [JWT client authentication](./client-authentication.md#jwt-client-authentication), where the JWT
+> proves the *client's own* identity (`iss == sub == client_id`). The two are separable and may be
+> combined.
+
 ## Extension Grants
 
 **Defined in:** [Section 4.5 of RFC 6749](https://www.rfc-editor.org/rfc/rfc6749#section-4.4).
