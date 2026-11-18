@@ -5,9 +5,9 @@
 These instructions apply only to the `node-oauth2-server` repository, the framework-agnostic OAuth 2.0 server library
 published as `@node-oauth/oauth2-server`.
 
-The sibling `express-oauth-server` repository is outside this file’s scope. Release CI checks out the Express adapter
-as an external integration-test target; it is not a runtime dependency of this package. Changes to the adapter’s code,
-documentation, security policy, and release process are outside this scope.
+The sibling `express-oauth-server` repository is outside this file’s scope. The Express adapter is not a runtime
+dependency of this package. Changes to the adapter’s code, documentation, security policy, and release process are
+outside this scope.
 
 Run package commands from the `node-oauth2-server` repository root; do not expect a parent workspace-level install or
 test command. Before changing the package, check `README.md`, `CONTRIBUTING.md`, `SECURITY.md`, and `package.json`.
@@ -150,17 +150,17 @@ changing the library’s support policy merely to match the local toolchain.
   repository root.
 - Edit the guide under `docs/guide/` directly. `npm run docs:setup` creates the contribution-guide link used by the docs
   build; edit the root `CONTRIBUTING.md` rather than `docs/guide/contributing.md`.
-- Use the `docs:*` scripts in `package.json`; the `npm run docs` example in `CONTRIBUTING.md` is outdated.
+- Use the `docs:*` scripts in `package.json`.
 - Keep README, API documentation, migration notes, and type declarations aligned with behavior. Do not update generated
   output without checking whether the corresponding source change is present.
-- Do not edit `CHANGELOG.md` or bump release versions for ordinary feature or bug-fix pull requests; maintainers handle
-  release bookkeeping.
+- Do not edit `CHANGELOG.md` or bump release versions in pull requests; semantic-release updates both when it releases
+  from `master`.
 
 ## Contributions and Git workflow
 
 Follow [`CONTRIBUTING.md`](./CONTRIBUTING.md) for the established contribution process, including opening or discussing
 an issue before an ordinary feature or bug-fix pull request. Follow the private reporting process below for security
-issues. The branching policy below takes precedence over the guide’s outdated `development` instructions.
+issues.
 
 Use trunk-based development with `master` as the trunk. The `development` branch is deprecated. Create feature or fix
 branches from `master`, keep them closely aligned with it, and target pull requests to `master`. The `master` name is
