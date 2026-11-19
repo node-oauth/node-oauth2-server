@@ -32,6 +32,7 @@ Constructor.
     * [.updateSuccessResponse()](#TokenHandler+updateSuccessResponse)
     * [.updateErrorResponse()](#TokenHandler+updateErrorResponse)
     * [.isClientAuthenticationRequired()](#TokenHandler+isClientAuthenticationRequired)
+    * [.isClientSecretOptional()](#TokenHandler+isClientSecretOptional)
 
 <a name="TokenHandler+handle"></a>
 
@@ -94,7 +95,19 @@ Update response when an error is thrown.
 <a name="TokenHandler+isClientAuthenticationRequired"></a>
 
 ### tokenHandler.isClientAuthenticationRequired()
-Given a grant type, check if client authentication is required
+Given a grant type, client and pkce flag, check if client authentication is required.
+
+An explicit `requireClientAuthentication` entry for the grant type always wins.
+Otherwise the client type decides:
+- `public`: no secret for `refresh_token`; `authorization_code` requires PKCE instead
+- `confidential` or no type: secret always required, PKCE never waives it
+
+**Kind**: instance method of [<code>TokenHandler</code>](#TokenHandler)  
+<a name="TokenHandler+isClientSecretOptional"></a>
+
+### tokenHandler.isClientSecretOptional()
+Given a grant type and pkce flag, check if a request without a client secret could be accepted
+for any client type.
 
 **Kind**: instance method of [<code>TokenHandler</code>](#TokenHandler)  
 <a name="grantTypes"></a>

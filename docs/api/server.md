@@ -40,7 +40,7 @@ Instantiates `OAuth2Server` using the supplied model.
 | [options.accessTokenLifetime] | <code>number</code> | <code>3600</code> | Lifetime of generated access tokens in seconds (default = 1 hour). |
 | [options.refreshTokenLifetime] | <code>number</code> | <code>1209600</code> | Lifetime of generated refresh tokens in seconds (default = 2 weeks). |
 | [options.allowExtendedTokenAttributes] | <code>boolean</code> | <code>false</code> | Allow extended attributes to be set on the returned token (see remarks section). |
-| [options.requireClientAuthentication] | <code>object</code> \| <code>boolean</code> | <code>object</code> | Require a client secret for grant types (names as keys). Defaults to `true` for all grant types. |
+| [options.requireClientAuthentication] | <code>object</code> \| <code>boolean</code> | <code>object</code> | Require a client secret for grant types (names as keys). An entry takes precedence over the client `type`; grants without an entry follow the client `type` (see remarks section). |
 | [options.alwaysIssueNewRefreshToken] | <code>boolean</code> | <code>true</code> | Always revoke the used refresh token and issue a new one for the `refresh_token` grant. |
 | [options.extendedGrantTypes] | <code>object</code> | <code>object</code> | Additional supported grant types. |
 | [options.enablePlainPKCE] | <code>boolean</code> | <code>false</code> | Allow the use of the `plain` code challenge method for PKCE. This is not recommended for production environments. |
@@ -159,7 +159,13 @@ function authorizeHandler(options) {
 Retrieves a new token for an authorized token request.
 **Remarks:**
 If `options.allowExtendedTokenAttributes` is `true` any additional properties set on the object returned from `Model#saveToken() <Model#saveToken>` are copied to the token response sent to the client.
-By default, all grant types require the client to send it's `client_secret` with the token request. `options.requireClientAuthentication` can be used to disable this check for selected grants. If used, this server option must be an object containing properties set to `true` or `false`. Possible keys for the object include all supported values for the token request's `grant_type` field (`authorization_code`, `client_credentials`, `password` and `refresh_token`). Grants that are not specified default to `true` which enables verification of the `client_secret`. Note: setting a grant to `false` disables only the *presence* check of the `client_secret` for that grant, and does so for **all** clients (not just public ones); it does not validate a secret that is sent. The same applies to `authorization_code` requests that use PKCE (a `code_verifier`), where the presence check is skipped. Per-client (public vs confidential) authentication must therefore be enforced in your `Model#getClient() <Model#getClient>` implementation, which should reject a confidential client that fails to present its `client_secret`.
+By default, all grant types require the client to send its `client_secret` with the token request. `options.requireClientAuthentication` overrides this per grant type.
+It must be an object with `grant_type` values as keys (`authorization_code`, `client_credentials`, `password` and `refresh_token`) set to `true` or `false`. 
+An entry takes precedence over the client `type` returned by `Model#getClient() <Model#getClient>` and applies to all clients.
+`false` disables only the *presence* check of the `client_secret`; a secret that is sent is still passed to `Model#getClient()`, which must verify it.
+Grants without an entry follow the client `type`: `confidential` clients and clients without `type` always require a secret, even with PKCE. `public` clients may use `refresh_token` without a secret.
+Public clients must use PKCE for `authorization_code`. The `client_credentials` grant type cannot be used with public clients.
+Any other `type` value throws a `ServerError`. See the PKCE guide for details.
 ```js
 let options = {
   // ...
@@ -194,7 +200,7 @@ For information on how to implement a handler for a custom grant type see the ex
 | [options.accessTokenLifetime] | <code>number</code> | <code>3600</code> | Lifetime of generated access tokens in seconds (default = 1 hour). |
 | [options.refreshTokenLifetime] | <code>number</code> | <code>1209600</code> | Lifetime of generated refresh tokens in seconds (default = 2 weeks). |
 | [options.allowExtendedTokenAttributes] | <code>boolean</code> | <code>false</code> | Allow extended attributes to be set on the returned token (see remarks section). |
-| [options.requireClientAuthentication] | <code>object</code> \| <code>boolean</code> | <code>object</code> | Require a client secret for grant types (names as keys). Defaults to `true` for all grant types. |
+| [options.requireClientAuthentication] | <code>object</code> \| <code>boolean</code> | <code>object</code> | Require a client secret for grant types (names as keys). An entry takes precedence over the client `type`; grants without an entry follow the client `type` (see remarks section). |
 | [options.alwaysIssueNewRefreshToken] | <code>boolean</code> | <code>true</code> | Always revoke the used refresh token and issue a new one for the `refresh_token` grant. |
 | [options.extendedGrantTypes] | <code>object</code> | <code>object</code> | Additional supported grant types. |
 

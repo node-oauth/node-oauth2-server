@@ -232,10 +232,10 @@ declare namespace OAuth2Server {
         allowExtendedTokenAttributes?: boolean;
 
         /**
-         * Require a client secret. Defaults to true for all grant types.
-         * Setting a grant to `false` disables the client_secret presence check for
-         * that grant for ALL clients (not just public ones); per-client
-         * (public vs confidential) enforcement must be done in model.getClient.
+         * Require a client secret per grant type. An entry takes precedence over
+         * the client `type` and applies to ALL clients. `false` disables only the
+         * client_secret presence check; a sent secret must still be verified in
+         * model.getClient. Grants without an entry follow the client `type`.
          */
         requireClientAuthentication?: Record<string, boolean>;
 
@@ -416,6 +416,7 @@ declare namespace OAuth2Server {
         grants: string | string[];
         accessTokenLifetime?: number;
         refreshTokenLifetime?: number;
+        type?: 'public' | 'confidential';
         [key: string]: any;
     }
 
