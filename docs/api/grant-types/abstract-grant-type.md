@@ -87,7 +87,7 @@ Otherwise, treats given scope as valid.
 **Returns**: <code>string</code> - the validated scope  
 **Throws**:
 
-- <code>InvalidScopeError</code> if the {Model#validateScope} method returned a falsy value
+- <code>InvalidScopeError</code> if the {Model#validateScope} method returned a falsy value or an empty array for a requested scope
 
 
 | Param | Type |
