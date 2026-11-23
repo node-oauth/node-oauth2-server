@@ -766,6 +766,14 @@ describe('TokenHandler integration', function () {
           await shouldFailEarly(requestToken(authorizationCode('public', { code_verifier: undefined })));
         });
 
+        it('should return a token for `authorization_code` with a valid code verifier and an empty password in the Authorization header', async function () {
+          const response = await requestToken(authorizationCode('public', { client_id: undefined }), {
+            headers: { authorization: util.format('Basic %s', Buffer.from('public:').toString('base64')) },
+          });
+
+          should.exist(response.body.access_token);
+        });
+
         it('should throw an error for a code issued without a `code_challenge` if it supplies a secret', async function () {
           await shouldFail(
             requestToken(
@@ -872,6 +880,18 @@ describe('TokenHandler integration', function () {
           await shouldFail(requestToken(authorizationCode('confidential')), InvalidClientError, invalidClient);
         });
 
+        it('should throw a 401 error for `authorization_code` with a valid code verifier and an empty password in the Authorization header', async function () {
+          const e = await shouldFail(
+            requestToken(authorizationCode('confidential', { client_id: undefined }), {
+              headers: { authorization: util.format('Basic %s', Buffer.from('confidential:').toString('base64')) },
+            }),
+            InvalidClientError,
+            invalidClient,
+          );
+
+          e.code.should.equal(401);
+        });
+
         it('should return a token for `authorization_code` with a valid code verifier and a secret', async function () {
           const response = await requestToken(authorizationCode('confidential', { client_secret: 'secret' }));
 
@@ -935,6 +955,18 @@ describe('TokenHandler integration', function () {
           await shouldFail(requestToken(authorizationCode('legacy')), InvalidClientError, invalidClient);
         });
 
+        it('should throw a 401 error for `authorization_code` with a valid code verifier and an empty password in the Authorization header', async function () {
+          const e = await shouldFail(
+            requestToken(authorizationCode('legacy', { client_id: undefined }), {
+              headers: { authorization: util.format('Basic %s', Buffer.from('legacy:').toString('base64')) },
+            }),
+            InvalidClientError,
+            invalidClient,
+          );
+
+          e.code.should.equal(401);
+        });
+
         it('should return a token for `authorization_code` with a valid code verifier and a secret', async function () {
           const response = await requestToken(authorizationCode('legacy', { client_secret: 'secret' }));
 
@@ -983,6 +1015,18 @@ describe('TokenHandler integration', function () {
       describe('with a client with an unknown `type` (treated as confidential)', function () {
         it('should throw an error for `authorization_code` with a valid code verifier and no secret', async function () {
           await shouldFail(requestToken(authorizationCode('web')), InvalidClientError, invalidClient);
+        });
+
+        it('should throw a 401 error for `authorization_code` with a valid code verifier and an empty password in the Authorization header', async function () {
+          const e = await shouldFail(
+            requestToken(authorizationCode('web', { client_id: undefined }), {
+              headers: { authorization: util.format('Basic %s', Buffer.from('web:').toString('base64')) },
+            }),
+            InvalidClientError,
+            invalidClient,
+          );
+
+          e.code.should.equal(401);
         });
 
         it('should return a token for `authorization_code` with a valid code verifier and a secret', async function () {
