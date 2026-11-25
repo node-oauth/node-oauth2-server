@@ -304,5 +304,49 @@ describe('AbstractGrantType integration', function () {
         }
       }
     });
+
+    it('throws if the model returns an empty array for a requested scope', async function () {
+      const scope = ['some,scope,this,that'];
+      const user = { id: 123 };
+      const client = { id: 456 };
+      const model = Model.from({
+        async validateScope(_user, _client, _scope) {
+          return _scope.filter((s) => s === 'read');
+        },
+      });
+      const handler = new AbstractGrantType({
+        accessTokenLifetime: 123,
+        model,
+        refreshTokenLifetime: 456,
+      });
+
+      try {
+        await handler.validateScope(user, client, scope);
+        should.fail();
+      } catch (e) {
+        e.should.be.an.instanceOf(InvalidScopeError);
+        e.message.should.equal('Invalid scope: Requested scope is invalid');
+      }
+    });
+
+    it('accepts an empty array from the model, if no scope was requested', async function () {
+      const user = { id: 123 };
+      const client = { id: 456 };
+      const model = Model.from({
+        async validateScope() {
+          return [];
+        },
+      });
+      const handler = new AbstractGrantType({
+        accessTokenLifetime: 123,
+        model,
+        refreshTokenLifetime: 456,
+      });
+
+      for (const scope of [undefined, null, []]) {
+        const validated = await handler.validateScope(user, client, scope);
+        validated.should.eql([]);
+      }
+    });
   });
 });

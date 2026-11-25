@@ -620,6 +620,115 @@ describe('AuthorizeHandler integration', function () {
       }
     });
 
+    it('should redirect to an error response if `validateScope` returns an empty array', async function () {
+      const client = {
+        id: 12345,
+        grants: ['authorization_code'],
+        redirectUris: ['http://example.com/cb'],
+      };
+      const model = createModel({
+        getAccessToken: async function () {
+          return {
+            client: client,
+            user: { name: 'foouser' },
+            accessTokenExpiresAt: new Date(new Date().getTime() + 10000),
+          };
+        },
+        getClient: async function () {
+          return client;
+        },
+        validateScope: async function (_user, _client, _scope) {
+          return _scope.filter((s) => s === 'read');
+        },
+      });
+      const handler = new AuthorizeHandler({
+        authorizationCodeLifetime: 120,
+        model,
+      });
+      const request = new Request({
+        body: {
+          client_id: 12345,
+          response_type: 'code',
+        },
+        headers: {
+          Authorization: 'Bearer foo',
+        },
+        method: {},
+        query: {
+          scope: 'admin',
+          state: 'foobar',
+        },
+      });
+      const response = new Response({ body: {}, headers: {} });
+
+      try {
+        await handler.handle(request, response);
+        should.fail();
+      } catch (e) {
+        e.should.be.an.instanceOf(InvalidScopeError);
+        e.message.should.equal('Invalid scope: Requested scope is invalid');
+        response.status.should.equal(302);
+        response
+          .get('location')
+          .should.equal(
+            'http://example.com/cb?error=invalid_scope&error_description=Invalid%20scope%3A%20Requested%20scope%20is%20invalid&state=foobar',
+          );
+      }
+    });
+
+    it('should redirect to a successful response if `validateScope` returns an empty array and no scope was requested', async function () {
+      const client = {
+        grants: ['authorization_code'],
+        redirectUris: ['http://example.com/cb'],
+      };
+      const model = Model.from({
+        getAccessToken: function () {
+          return {
+            client: client,
+            user: {},
+            accessTokenExpiresAt: new Date(new Date().getTime() + 10000),
+          };
+        },
+        getClient: function () {
+          return client;
+        },
+        saveAuthorizationCode: function (code) {
+          code.scope.should.eql([]);
+          return { authorizationCode: 'fooobar-long-authzcode-?', client };
+        },
+        validateScope: function () {
+          return [];
+        },
+      });
+      const handler = new AuthorizeHandler({
+        authorizationCodeLifetime: 120,
+        model,
+      });
+      const request = new Request({
+        body: {
+          client_id: 12345,
+          response_type: 'code',
+        },
+        headers: {
+          Authorization: 'Bearer foo',
+        },
+        method: {},
+        query: {
+          state: 'foobarbazstatemoo',
+        },
+      });
+      const response = new Response({ body: {}, headers: {} });
+      const data = await handler.handle(request, response);
+      data.should.deep.equal({
+        authorizationCode: 'fooobar-long-authzcode-?',
+        client: client,
+      });
+      response.status.should.equal(302);
+      response
+        .get('location')
+        .should.equal('http://example.com/cb?code=fooobar-long-authzcode-%3F&state=foobarbazstatemoo');
+    });
+
     it('should redirect to an error response if `state` is missing', async function () {
       const model = createModel({
         getAccessToken: async function () {

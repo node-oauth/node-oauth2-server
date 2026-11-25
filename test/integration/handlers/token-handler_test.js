@@ -10,6 +10,7 @@ const InvalidArgumentError = require('../../../lib/errors/invalid-argument-error
 const InvalidClientError = require('../../../lib/errors/invalid-client-error');
 const InvalidGrantError = require('../../../lib/errors/invalid-grant-error');
 const InvalidRequestError = require('../../../lib/errors/invalid-request-error');
+const InvalidScopeError = require('../../../lib/errors/invalid-scope-error');
 const PasswordGrantType = require('../../../lib/grant-types/password-grant-type');
 const Model = require('../../../lib/model');
 const Request = require('../../../lib/request');
@@ -445,6 +446,65 @@ describe('TokenHandler integration', function () {
             error_description: 'Invalid parameter: `accessTokenExpiresAt`',
           });
           response.status.should.equal(503);
+        });
+    });
+
+    it('should respond with `invalid_scope` if `validateScope` returns an empty array', function () {
+      const client = { id: 'foobar', grants: ['authorization_code'] };
+      const code = {
+        authorizationCode: 12345,
+        client: client,
+        expiresAt: new Date(new Date() * 2),
+        scope: ['admin'],
+        user: {},
+      };
+      const model = Model.from({
+        getAuthorizationCode: function () {
+          return code;
+        },
+        getClient: function () {
+          return client;
+        },
+        revokeAuthorizationCode: function () {
+          return code;
+        },
+        saveToken: () => should.fail(),
+        validateScope: function (_user, _client, _scope) {
+          return _scope.filter((s) => s === 'read');
+        },
+      });
+      const handler = new TokenHandler({
+        accessTokenLifetime: 120,
+        model: model,
+        refreshTokenLifetime: 120,
+      });
+      const request = new Request({
+        body: {
+          client_id: 'foobar',
+          client_secret: 'secret',
+          code: 12345,
+          grant_type: 'authorization_code',
+        },
+        headers: {
+          'content-type': 'application/x-www-form-urlencoded',
+          'transfer-encoding': 'chunked',
+        },
+        method: 'POST',
+        query: {},
+      });
+      const response = new Response({ body: {}, headers: {} });
+
+      return handler
+        .handle(request, response)
+        .then(should.fail)
+        .catch(function (e) {
+          e.should.be.an.instanceOf(InvalidScopeError);
+          e.message.should.equal('Invalid scope: Requested scope is invalid');
+          response.body.should.eql({
+            error: 'invalid_scope',
+            error_description: 'Invalid scope: Requested scope is invalid',
+          });
+          response.status.should.equal(400);
         });
     });
 
