@@ -7,6 +7,7 @@
 const CodeResponseType = require('../../../lib/response-types/code-response-type');
 const InvalidArgumentError = require('../../../lib/errors/invalid-argument-error');
 const should = require('chai').should();
+const sinon = require('sinon');
 const url = require('url');
 
 /**
@@ -59,6 +60,30 @@ describe('CodeResponseType integration', function () {
       const redirectUri = responseType.buildRedirectUri('http://example.com/cb?foo=bar');
 
       url.format(redirectUri).should.equal('http://example.com/cb?foo=bar&code=foo');
+    });
+
+    it('should throw an error if the `redirectUri` is not an absolute URI', function () {
+      const responseType = new CodeResponseType('foo');
+
+      try {
+        responseType.buildRedirectUri('/cb');
+
+        should.fail();
+      } catch (e) {
+        e.should.be.an.instanceOf(InvalidArgumentError);
+        e.message.should.equal('Invalid parameter: `redirectUri`');
+      }
+    });
+
+    it('should not call the deprecated url.parse()', function () {
+      const parse = sinon.spy(url, 'parse');
+
+      try {
+        new CodeResponseType('foo').buildRedirectUri('http://example.com/cb?foo=bar');
+        parse.called.should.equal(false);
+      } finally {
+        parse.restore();
+      }
     });
   });
 });
